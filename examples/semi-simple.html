@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Semi-Simple Example</title>
+    <style>
+      .clearfix:before,
+      .clearfix:after {
+        display: table;
+
+        content: " ";
+      }
+
+      .clearfix:after {
+        clear: both;
+      }
+
+      .panel {
+        font-family: Arial;
+        font-size: 12px;
+
+        position: absolute;
+        z-index: 10001 !important;
+        top: 50%;
+
+        margin-left: 50%;
+        padding: 9px;
+        padding-bottom: 0;
+
+        transform: translateY(-50%) translateX(-50%);
+        pointer-events: none;
+
+        color: #555;
+        border: 1px solid rgba(0, 0, 0, 0.02);
+        border-radius: 2px;
+        background: rgba(250, 250, 250, 1);
+        box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
+
+        min-width: 300px;
+      }
+
+      .panel__line {
+        margin-bottom: 6px;
+      }
+
+      .panel__mute {
+        color: #bbb;
+      }
+
+      .panel__badge {
+        display: inline-block;
+
+        padding: 0 4px;
+
+        color: rgba(255, 255, 255, 0.8);
+        border-radius: 2px;
+        background: rgba(248, 204, 50, 1);
+      }
+
+      .panel__badge.-cyan {
+        background: rgba(159, 194, 196, 1);
+      }
+
+      .panel__badge.-purple {
+        background: rgba(164, 138, 212, 1);
+      }
+
+      .panel__badge.-blue {
+        background: rgba(83, 183, 199, 1);
+      }
+
+      .panel__badge-col {
+        width: 1%;
+        padding: 0 4px 0 2px;
+      }
+
+      .panel__table {
+        font-size: 13px;
+      }
+
+      .panel__table table {
+        width: 100%;
+      }
+
+      .panel__table td {
+        padding-bottom: 3px;
+
+        vertical-align: top;
+        line-height: 18px;
+      }
+
+      .panel__table-sep {
+        border-top: 1px solid rgba(0, 0, 0, 0.07);
+      }
+
+      .panel__files {
+        opacity: 0.9;
+        color: #282;
+      }
+
+      .panel__nobr {
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="./semi-simple.dist.js"></script>
+  </body>
+</html>
