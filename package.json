@@ -4,13 +4,16 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node ./examples/build.js"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "ava": "^0.25.0"
+    "ava": "^0.25.0",
+    "chalk": "^2.4.1",
+    "gzip-size": "^5.0.0",
+    "terser": "^3.10.11"
   },
   "dependencies": {
     "@babel/core": "^7.1.5",

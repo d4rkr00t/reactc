@@ -1,7 +1,36 @@
-function App(__props, __context) {
-  let __el_1 = createElement("div");
+let colors = ["#a6e22e", "#a1efe4", "#66d9ef", "#ae81ff", "#cc6633", "#4CAF50", "#00BCD4", "#5C6BC0"];
 
-  renderChildren(__el_1, ["Hello ReactC"])
+function App(__props, __context) {
+  let __el_1 = createElement("div", {
+    class: "barchart"
+  });
+
+  renderChildren(__el_1, [colors.map(function (color) {
+    var height = Math.floor(Math.random() * (140 - 80 + 1)) + 60;
+
+    let __el_2 = createElement("div", {
+      class: "barchart__bar-wrapper"
+    });
+
+    let __el_3 = createElement("div", {
+      class: "barchart__bar-title",
+      style: {
+        color
+      }
+    });
+
+    let __el_4 = createElement("div", {
+      class: "barchart__bar",
+      style: {
+        backgroundColor: color,
+        height
+      }
+    });
+
+    renderChildren(__el_2, [__el_3, __el_4])
+    renderChildren(__el_3, [height])
+    return __el_2;
+  })])
   return __el_1;
 }
 
