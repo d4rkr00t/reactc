@@ -143,15 +143,14 @@ function createElement(type, attrs) {
         return elem.setAttribute(
           key,
           Object.keys(attrs[key])
-            .map(prop =>
-              [
-                prop.replace(/([A-Z])/g, $1 => "-" + $1.toLowerCase()),
-                ": ",
-                typeof attrs[key][prop] === "number"
-                  ? attrs[key][prop] + "px"
-                  : attrs[key][prop]
-              ].join("")
-            )
+            .map(prop => {
+              let val = attrs[key][prop];
+              return (
+                prop.replace(/([A-Z])/g, $1 => "-" + $1.toLowerCase()) +
+                ": " +
+                (typeof val === "number" ? val + "px" : val)
+              );
+            })
             .join(";")
         );
       }
@@ -176,14 +175,7 @@ function renderChildren(root, children) {
 
     if (Array.isArray(child)) {
       let subFragment = document.createDocumentFragment();
-      child.forEach(subChild => {
-        if (isPrimitiveChild(subChild)) {
-          return subFragment.appendChild(document.createTextNode(subChild));
-        }
-
-        subFragment.appendChild(subChild);
-      });
-
+      renderChildren(subFragment, child);
       return fragment.appendChild(subFragment);
     }
 

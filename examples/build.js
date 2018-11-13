@@ -20,6 +20,9 @@ let runtimeContent = fs.readFileSync(
 let transformed = babel.transform(exampleContent, options).code;
 let withRuntime = `${transformed}\n\n\n${runtimeContent}`;
 let minified = Terser.minify(withRuntime, { toplevel: true }).code;
+let runtimeMinified = Terser.minify(`renderChildren(); ${runtimeContent}`, {
+  toplevel: true
+}).code;
 
 fs.writeFileSync(path.join(__dirname, `${name}.dist.js`), withRuntime, "utf8");
 fs.writeFileSync(path.join(__dirname, `${name}.dist.min.js`), minified, "utf8");
@@ -41,5 +44,12 @@ console.log(
 console.log(
   chalk.magenta(
     `Size min + gzip: ${chalk.yellow(gzipSize.sync(minified) + "b")}`
+  )
+);
+console.log(
+  chalk.magenta(
+    `Runtime size min + gzip: ${chalk.yellow(
+      gzipSize.sync(runtimeMinified) + "b"
+    )}`
   )
 );
