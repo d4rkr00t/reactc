@@ -1,6 +1,6 @@
 let colors = ["#a6e22e", "#a1efe4", "#66d9ef", "#ae81ff", "#cc6633", "#4CAF50", "#00BCD4", "#5C6BC0"];
 
-function App(__props, __context) {
+function App(__context) {
   let __el_1 = createElement("div", {
     class: "barchart"
   });

@@ -1,19 +1,22 @@
-function Date() {
-  return React.createElement(
-    "div",
-    { className: "date" },
-    React.createElement("span", { className: "day" }, "12 "),
-    React.createElement("span", { className: "month" }, "Aug "),
-    React.createElement("span", { className: "year" }, "2016")
-  );
+function Date(props) {
+  return React.createElement("div", { className: "date" }, props.children);
 }
 
-function Button() {
-  return React.createElement(
-    "a",
-    { href: "#", className: "button" },
-    "Read more"
-  );
+function Button(_ref) {
+  var children = _ref.children;
+
+  return React.createElement("a", { href: "#", className: "button" }, children);
+}
+
+function Title(props) {
+  return React.createElement("h1", { className: "title" }, props.children);
+}
+
+function Link(_ref2) {
+  var href = _ref2.href,
+    children = _ref2.children;
+
+  return React.createElement("a", { href: href || "#" }, children);
 }
 
 function App() {
@@ -32,7 +35,7 @@ function App() {
           React.createElement(
             "div",
             { className: "header" },
-            React.createElement(Date, null)
+            React.createElement(Date, null, "12 Aug 2016")
           ),
           React.createElement(
             "div",
@@ -42,11 +45,11 @@ function App() {
               { className: "content" },
               React.createElement("span", { className: "author" }, "Jane Doe"),
               React.createElement(
-                "h1",
-                { className: "title" },
+                Title,
+                null,
                 React.createElement(
-                  "a",
-                  { href: "#" },
+                  Link,
+                  null,
                   "Stranger Things: The sound of the Upside Down"
                 )
               ),
@@ -55,7 +58,7 @@ function App() {
                 { className: "text" },
                 "The antsy bingers of Netflix will eagerly anticipate the digital release of the Survive soundtrack, out today."
               ),
-              React.createElement(Button, null)
+              React.createElement(Button, null, "Read more")
             )
           )
         )

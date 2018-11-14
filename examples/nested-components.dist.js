@@ -1,98 +1,108 @@
-function Date(__props, __context) {
+function Date(props, __context) {
   let __el_1 = createElement("div", {
     class: "date"
   });
 
-  let __el_2 = createElement("span", {
-    class: "day"
-  });
-
-  let __el_3 = createElement("span", {
-    class: "month"
-  });
-
-  let __el_4 = createElement("span", {
-    class: "year"
-  });
-
-  renderChildren(__el_1, [__el_2, __el_3, __el_4])
-  renderChildren(__el_2, ["12 "])
-  renderChildren(__el_3, ["Aug "])
-  renderChildren(__el_4, ["2016"])
+  renderChildren(__el_1, [props.children])
   return __el_1;
 }
 
-function Button(__props, __context) {
-  let __el_5 = createElement("a", {
+function Button(_ref, __context) {
+  var children = _ref.children;
+
+  let __el_2 = createElement("a", {
     href: "#",
     class: "button"
   });
 
-  renderChildren(__el_5, ["Read more"])
-  return __el_5;
+  renderChildren(__el_2, [children])
+  return __el_2;
 }
 
-function App(__props, __context) {
-  let __el_6 = createElement("div", {
-    class: "App"
-  });
-
-  let __el_7 = createElement("div", {
-    class: "row"
-  });
-
-  let __el_8 = createElement("div", {
-    class: "card"
-  });
-
-  let __el_9 = createElement("div", {
-    class: "wrapper"
-  });
-
-  let __el_10 = createElement("div", {
-    class: "header"
-  });
-
-  let __cmp_11 = Date();
-
-  let __el_12 = createElement("div", {
-    class: "data"
-  });
-
-  let __el_13 = createElement("div", {
-    class: "content"
-  });
-
-  let __el_14 = createElement("span", {
-    class: "author"
-  });
-
-  let __el_15 = createElement("h1", {
+function Title(props, __context) {
+  let __el_3 = createElement("h1", {
     class: "title"
   });
 
-  let __el_16 = createElement("a", {
-    href: "#"
+  renderChildren(__el_3, [props.children])
+  return __el_3;
+}
+
+function Link(_ref2, __context) {
+  var href = _ref2.href,
+      children = _ref2.children;
+
+  let __el_4 = createElement("a", {
+    href: href || "#"
   });
 
-  let __el_17 = createElement("p", {
+  renderChildren(__el_4, [children])
+  return __el_4;
+}
+
+function App(__context) {
+  let __el_5 = createElement("div", {
+    class: "App"
+  });
+
+  let __cmp_1 = Date({
+    children: ["12 Aug 2016"]
+  });
+
+  let __el_9 = createElement("div", {
+    class: "header"
+  });
+
+  let __el_12 = createElement("span", {
+    class: "author"
+  });
+
+  let __cmp_3 = Link({
+    children: ["Stranger Things: The sound of the Upside Down"]
+  });
+
+  let __cmp_2 = Title({
+    children: [__cmp_3]
+  });
+
+  let __el_13 = createElement("p", {
     class: "text"
   });
 
-  let __cmp_18 = Button();
+  let __cmp_4 = Button({
+    children: ["Read more"]
+  });
 
+  let __el_11 = createElement("div", {
+    class: "content"
+  });
+
+  let __el_10 = createElement("div", {
+    class: "data"
+  });
+
+  let __el_8 = createElement("div", {
+    class: "wrapper"
+  });
+
+  let __el_7 = createElement("div", {
+    class: "card"
+  });
+
+  let __el_6 = createElement("div", {
+    class: "row"
+  });
+
+  renderChildren(__el_5, [__el_6])
   renderChildren(__el_6, [__el_7])
   renderChildren(__el_7, [__el_8])
-  renderChildren(__el_8, [__el_9])
-  renderChildren(__el_9, [__el_10, __el_12])
-  renderChildren(__el_10, [__cmp_11])
-  renderChildren(__el_12, [__el_13])
-  renderChildren(__el_13, [__el_14, __el_15, __el_17, __cmp_18])
-  renderChildren(__el_14, ["Jane Doe"])
-  renderChildren(__el_15, [__el_16])
-  renderChildren(__el_16, ["Stranger Things: The sound of the Upside Down"])
-  renderChildren(__el_17, ["The antsy bingers of Netflix will eagerly anticipate the digital release of the Survive soundtrack, out today."])
-  return __el_6;
+  renderChildren(__el_8, [__el_9, __el_10])
+  renderChildren(__el_9, [__cmp_1])
+  renderChildren(__el_10, [__el_11])
+  renderChildren(__el_11, [__el_12, __cmp_2, __el_13, __cmp_4])
+  renderChildren(__el_12, ["Jane Doe"])
+  renderChildren(__el_13, ["The antsy bingers of Netflix will eagerly anticipate the digital release of the Survive soundtrack, out today."])
+  return __el_5;
 }
 
 renderChildren(document.getElementById("app"), [App(null)]);

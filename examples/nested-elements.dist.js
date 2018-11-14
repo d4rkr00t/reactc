@@ -1,47 +1,37 @@
 // import React from "react";
 // import ReactDOM from "react-dom";
-function App(__props, __context) {
+function App(__context) {
   let __el_1 = createElement("div", {
     class: "panel"
   });
 
-  let __el_2 = createElement("div", {
-    class: "panel__table panel__line"
+  let __el_6 = createElement("span", {
+    class: "panel__mute"
   });
-
-  let __el_3 = createElement("table");
-
-  let __el_4 = createElement("tr");
 
   let __el_5 = createElement("td");
 
-  let __el_6 = createElement("span", {
-    class: "panel__mute"
+  let __el_8 = createElement("span", {
+    class: "panel__badge"
   });
 
   let __el_7 = createElement("td", {
     class: "panel__badge-col"
   });
 
-  let __el_8 = createElement("span", {
-    class: "panel__badge"
-  });
-
   let __el_9 = createElement("td");
 
-  let __el_10 = createElement("tr");
+  let __el_4 = createElement("tr");
 
   let __el_11 = createElement("td");
-
-  let __el_12 = createElement("td", {
-    class: "panel__badge-col"
-  });
 
   let __el_13 = createElement("span", {
     class: "panel__badge -purple"
   });
 
-  let __el_14 = createElement("td");
+  let __el_12 = createElement("td", {
+    class: "panel__badge-col"
+  });
 
   let __el_15 = createElement("span", {
     class: "panel__mute"
@@ -51,44 +41,50 @@ function App(__props, __context) {
     class: "panel__mute"
   });
 
-  let __el_17 = createElement("tr");
+  let __el_14 = createElement("td");
+
+  let __el_10 = createElement("tr");
 
   let __el_18 = createElement("td", {
     colspan: "4",
     class: "panel__table-sep"
   });
 
-  let __el_19 = createElement("tr");
-
-  let __el_20 = createElement("td");
+  let __el_17 = createElement("tr");
 
   let __el_21 = createElement("span", {
     class: "panel__mute"
+  });
+
+  let __el_20 = createElement("td");
+
+  let __el_23 = createElement("span", {
+    class: "panel__badge -blue"
   });
 
   let __el_22 = createElement("td", {
     class: "panel__badge-col"
   });
 
-  let __el_23 = createElement("span", {
-    class: "panel__badge -blue"
-  });
-
   let __el_24 = createElement("td");
 
-  let __el_25 = createElement("tr");
+  let __el_19 = createElement("tr");
 
   let __el_26 = createElement("td", {
     colspan: "4",
     class: "panel__table-sep"
   });
 
-  let __el_27 = createElement("tr");
-
-  let __el_28 = createElement("td");
+  let __el_25 = createElement("tr");
 
   let __el_29 = createElement("span", {
     class: "panel__mute"
+  });
+
+  let __el_28 = createElement("td");
+
+  let __el_31 = createElement("div", {
+    class: "panel__file"
   });
 
   let __el_30 = createElement("td", {
@@ -96,8 +92,12 @@ function App(__props, __context) {
     class: "panel__files"
   });
 
-  let __el_31 = createElement("div", {
-    class: "panel__file"
+  let __el_27 = createElement("tr");
+
+  let __el_3 = createElement("table");
+
+  let __el_2 = createElement("div", {
+    class: "panel__table panel__line"
   });
 
   renderChildren(__el_1, [__el_2])

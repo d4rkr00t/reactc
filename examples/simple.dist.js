@@ -1,4 +1,4 @@
-function App(__props, __context) {
+function App(__context) {
   let __el_1 = createElement("div");
 
   renderChildren(__el_1, ["Hello ReactC"])
