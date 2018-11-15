@@ -18,7 +18,7 @@ let runtimeContent = fs.readFileSync(
   "utf8"
 );
 let transformed = babel.transform(exampleContent, options).code;
-let withRuntime = `${transformed}\n\n\n${runtimeContent}`;
+let withRuntime = `${runtimeContent}\n/* END RUNTIME */\n\n${transformed}`;
 let minified = Terser.minify(withRuntime, { toplevel: true }).code;
 let runtimeMinified = Terser.minify(`renderChildren(); ${runtimeContent}`, {
   toplevel: true

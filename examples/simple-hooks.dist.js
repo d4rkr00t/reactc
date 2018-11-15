@@ -112,92 +112,26 @@ function isPrimitiveChild(child) {
 
 /* END RUNTIME */
 
-function Date(props, __context) {
-  createElement(__context, "e1", "div", {
-    class: "date"
-  })
+function Countdown(props, __context) {
+  createElement(__context, "e1", "div")
   renderChildren(__context.e1, [props.children])
   return __context.e1._;
 }
 
-function Button(_ref, __context) {
-  var children = _ref.children;
-  createElement(__context, "e2", "a", {
-    href: "#",
-    class: "button"
-  })
-  renderChildren(__context.e2, [children])
-  return __context.e2._;
-}
-
-function Title(props, __context) {
-  createElement(__context, "e3", "h1", {
-    class: "title"
-  })
-  renderChildren(__context.e3, [props.children])
-  return __context.e3._;
-}
-
-function Link(_ref2, __context) {
-  var href = _ref2.href,
-      children = _ref2.children;
-  createElement(__context, "e4", "a", {
-    href: href || "#"
-  })
-  renderChildren(__context.e4, [children])
-  return __context.e4._;
-}
-
 function App(__props, __context) {
-  createElement(__context, "e5", "div", {
-    class: "App"
+  var [count, setCount] = useState(__context, App, 0);
+  useEffect(__context, function () {
+    var timeout = setTimeout(function () {
+      return setCount(count + 1);
+    }, 1000);
+    return () => clearTimeout(timeout);
+  });
+  createElement(__context, "e2", "div")
+  createComponent(__context, "c1", Countdown, {
+    children: [count]
   })
-  createComponent(__context, "c1", Date, {
-    children: ["12 Aug 2016"]
-  })
-  createElement(__context, "e9", "div", {
-    class: "header"
-  })
-  createElement(__context, "e12", "span", {
-    class: "author"
-  })
-  createComponent(__context, "c3", Link, {
-    children: ["Stranger Things: The sound of the Upside Down"]
-  })
-  createComponent(__context, "c2", Title, {
-    children: [__context.c3]
-  })
-  createElement(__context, "e13", "p", {
-    class: "text"
-  })
-  createComponent(__context, "c4", Button, {
-    children: ["Read more"]
-  })
-  createElement(__context, "e11", "div", {
-    class: "content"
-  })
-  createElement(__context, "e10", "div", {
-    class: "data"
-  })
-  createElement(__context, "e8", "div", {
-    class: "wrapper"
-  })
-  createElement(__context, "e7", "div", {
-    class: "card"
-  })
-  createElement(__context, "e6", "div", {
-    class: "row"
-  })
-  renderChildren(__context.e5, [__context.e6])
-  renderChildren(__context.e6, [__context.e7])
-  renderChildren(__context.e7, [__context.e8])
-  renderChildren(__context.e8, [__context.e9, __context.e10])
-  renderChildren(__context.e9, [__context.c1])
-  renderChildren(__context.e10, [__context.e11])
-  renderChildren(__context.e11, [__context.e12, __context.c2, __context.e13, __context.c4])
-  renderChildren(__context.e12, ["Jane Doe"])
-  renderChildren(__context.e13, ["The antsy bingers of Netflix will eagerly anticipate the digital release of the Survive soundtrack, out today."])
-  return __context.e5._;
+  renderChildren(__context.e2, [__context.c1])
+  return __context.e2._;
 }
 
 mount(document.getElementById("app"), createComponent({}, "App", App, null));
