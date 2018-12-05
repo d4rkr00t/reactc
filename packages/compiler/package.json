@@ -1,10 +1,8 @@
 {
-  "name": "@reactc/monorepo",
+  "name": "@reactc/compiler",
   "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "build": "node ./examples/build.js"
-  },
+  "description": "",
+  "main": "lib/index.js",
   "keywords": [],
   "author": "",
   "license": "MIT",
@@ -17,10 +15,5 @@
   "dependencies": {
     "@babel/core": "^7.1.5",
     "@babel/helper-plugin-utils": "^7.0.0"
-  },
-  "bolt": {
-    "workspaces": [
-      "packages/*"
-    ]
   }
 }

@@ -1,0 +1,9 @@
+{
+  "name": "@reactc/runtime",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./runtime.js",
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}
