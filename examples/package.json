@@ -1,0 +1,12 @@
+{
+  "name": "@reactc/examples",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@reactc/compiler": "^1.0.0",
+    "@reactc/runtime": "^1.0.0"
+  }
+}

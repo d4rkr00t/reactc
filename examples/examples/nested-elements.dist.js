@@ -115,103 +115,103 @@ function isPrimitiveChild(child) {
 // import React from "react";
 // import ReactDOM from "react-dom";
 function App(__props, __context) {
-  createElement(__context, "e1", "div", {
+  createElement(__context, "e18", "div", {
     class: "panel"
   })
-  createElement(__context, "e6", "span", {
+  createElement(__context, "e23", "span", {
     class: "panel__mute"
   })
-  createElement(__context, "e5", "td")
-  createElement(__context, "e8", "span", {
+  createElement(__context, "e22", "td")
+  createElement(__context, "e25", "span", {
     class: "panel__badge"
   })
-  createElement(__context, "e7", "td", {
+  createElement(__context, "e24", "td", {
     class: "panel__badge-col"
   })
-  createElement(__context, "e9", "td")
-  createElement(__context, "e4", "tr")
-  createElement(__context, "e11", "td")
-  createElement(__context, "e13", "span", {
+  createElement(__context, "e26", "td")
+  createElement(__context, "e21", "tr")
+  createElement(__context, "e28", "td")
+  createElement(__context, "e30", "span", {
     class: "panel__badge -purple"
   })
-  createElement(__context, "e12", "td", {
+  createElement(__context, "e29", "td", {
     class: "panel__badge-col"
   })
-  createElement(__context, "e15", "span", {
+  createElement(__context, "e32", "span", {
     class: "panel__mute"
   })
-  createElement(__context, "e16", "span", {
+  createElement(__context, "e33", "span", {
     class: "panel__mute"
   })
-  createElement(__context, "e14", "td")
-  createElement(__context, "e10", "tr")
-  createElement(__context, "e18", "td", {
+  createElement(__context, "e31", "td")
+  createElement(__context, "e27", "tr")
+  createElement(__context, "e35", "td", {
     colspan: "4",
     class: "panel__table-sep"
   })
-  createElement(__context, "e17", "tr")
-  createElement(__context, "e21", "span", {
+  createElement(__context, "e34", "tr")
+  createElement(__context, "e38", "span", {
     class: "panel__mute"
   })
-  createElement(__context, "e20", "td")
-  createElement(__context, "e23", "span", {
+  createElement(__context, "e37", "td")
+  createElement(__context, "e40", "span", {
     class: "panel__badge -blue"
   })
-  createElement(__context, "e22", "td", {
+  createElement(__context, "e39", "td", {
     class: "panel__badge-col"
   })
-  createElement(__context, "e24", "td")
-  createElement(__context, "e19", "tr")
-  createElement(__context, "e26", "td", {
+  createElement(__context, "e41", "td")
+  createElement(__context, "e36", "tr")
+  createElement(__context, "e43", "td", {
     colspan: "4",
     class: "panel__table-sep"
   })
-  createElement(__context, "e25", "tr")
-  createElement(__context, "e29", "span", {
+  createElement(__context, "e42", "tr")
+  createElement(__context, "e46", "span", {
     class: "panel__mute"
   })
-  createElement(__context, "e28", "td")
-  createElement(__context, "e31", "div", {
+  createElement(__context, "e45", "td")
+  createElement(__context, "e48", "div", {
     class: "panel__file"
   })
-  createElement(__context, "e30", "td", {
+  createElement(__context, "e47", "td", {
     colspan: "2",
     class: "panel__files"
   })
-  createElement(__context, "e27", "tr")
-  createElement(__context, "e3", "table")
-  createElement(__context, "e2", "div", {
+  createElement(__context, "e44", "tr")
+  createElement(__context, "e20", "table")
+  createElement(__context, "e19", "div", {
     class: "panel__table panel__line"
   })
-  renderChildren(__context.e1, [__context.e2])
-  renderChildren(__context.e2, [__context.e3])
-  renderChildren(__context.e3, [__context.e4, __context.e10, __context.e17, __context.e19, __context.e25, __context.e27])
-  renderChildren(__context.e4, [__context.e5, __context.e7, __context.e9])
-  renderChildren(__context.e5, [__context.e6])
-  renderChildren(__context.e6, ["Scope:"])
-  renderChildren(__context.e7, [__context.e8])
-  renderChildren(__context.e8, ["fn"])
-  renderChildren(__context.e9, ["z-entity-gallery__thumbs"])
-  renderChildren(__context.e10, [__context.e11, __context.e12, __context.e14])
-  renderChildren(__context.e12, [__context.e13])
-  renderChildren(__context.e13, ["bem"])
-  renderChildren(__context.e14, [__context.e15, "z-entity-gallery", __context.e16, "image"])
-  renderChildren(__context.e15, ["block:"])
-  renderChildren(__context.e16, [" | elem:"])
-  renderChildren(__context.e17, [__context.e18])
-  renderChildren(__context.e19, [__context.e20, __context.e22, __context.e24])
-  renderChildren(__context.e20, [__context.e21])
-  renderChildren(__context.e21, ["Parent:"])
+  renderChildren(__context.e18, [__context.e19])
+  renderChildren(__context.e19, [__context.e20])
+  renderChildren(__context.e20, [__context.e21, __context.e27, __context.e34, __context.e36, __context.e42, __context.e44])
+  renderChildren(__context.e21, [__context.e22, __context.e24, __context.e26])
   renderChildren(__context.e22, [__context.e23])
-  renderChildren(__context.e23, ["P"])
-  renderChildren(__context.e24, ["z-entity-gallery"])
-  renderChildren(__context.e25, [__context.e26])
-  renderChildren(__context.e27, [__context.e28, __context.e30])
-  renderChildren(__context.e28, [__context.e29])
-  renderChildren(__context.e29, ["File:"])
-  renderChildren(__context.e30, [__context.e31])
-  renderChildren(__context.e31, ["contribs/z-entity-search/blocks-deskpad/z-entity-gallery/__thumbs/z-entity-gallery__thumbs.priv.js:22"])
-  return __context.e1._;
+  renderChildren(__context.e23, ["Scope:"])
+  renderChildren(__context.e24, [__context.e25])
+  renderChildren(__context.e25, ["fn"])
+  renderChildren(__context.e26, ["z-entity-gallery__thumbs"])
+  renderChildren(__context.e27, [__context.e28, __context.e29, __context.e31])
+  renderChildren(__context.e29, [__context.e30])
+  renderChildren(__context.e30, ["bem"])
+  renderChildren(__context.e31, [__context.e32, "z-entity-gallery", __context.e33, "image"])
+  renderChildren(__context.e32, ["block:"])
+  renderChildren(__context.e33, [" | elem:"])
+  renderChildren(__context.e34, [__context.e35])
+  renderChildren(__context.e36, [__context.e37, __context.e39, __context.e41])
+  renderChildren(__context.e37, [__context.e38])
+  renderChildren(__context.e38, ["Parent:"])
+  renderChildren(__context.e39, [__context.e40])
+  renderChildren(__context.e40, ["P"])
+  renderChildren(__context.e41, ["z-entity-gallery"])
+  renderChildren(__context.e42, [__context.e43])
+  renderChildren(__context.e44, [__context.e45, __context.e47])
+  renderChildren(__context.e45, [__context.e46])
+  renderChildren(__context.e46, ["File:"])
+  renderChildren(__context.e47, [__context.e48])
+  renderChildren(__context.e48, ["contribs/z-entity-search/blocks-deskpad/z-entity-gallery/__thumbs/z-entity-gallery__thumbs.priv.js:22"])
+  return __context.e18._;
 }
 
 mount(document.getElementById("app"), createComponent({}, "App", App, null));

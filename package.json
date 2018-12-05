@@ -20,7 +20,8 @@
   },
   "bolt": {
     "workspaces": [
-      "packages/*"
+      "packages/*",
+      "examples"
     ]
   }
 }

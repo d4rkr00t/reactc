@@ -113,9 +113,9 @@ function isPrimitiveChild(child) {
 /* END RUNTIME */
 
 function Countdown(props, __context) {
-  createElement(__context, "e1", "div")
-  renderChildren(__context.e1, [props.children])
-  return __context.e1._;
+  createElement(__context, "e49", "div")
+  renderChildren(__context.e49, [props.children])
+  return __context.e49._;
 }
 
 function App(__props, __context) {
@@ -126,12 +126,12 @@ function App(__props, __context) {
     }, 1000);
     return () => clearTimeout(timeout);
   });
-  createElement(__context, "e2", "div")
-  createComponent(__context, "c1", Countdown, {
+  createElement(__context, "e50", "div")
+  createComponent(__context, "c5", Countdown, {
     children: [count]
   })
-  renderChildren(__context.e2, [__context.c1])
-  return __context.e2._;
+  renderChildren(__context.e50, [__context.c5])
+  return __context.e50._;
 }
 
 mount(document.getElementById("app"), createComponent({}, "App", App, null));

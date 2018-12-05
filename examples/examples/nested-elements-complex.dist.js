@@ -1,0 +1,146 @@
+let [useState, useEffect] = (() => {
+  let stateHooks = new Map();
+  function useState(ctx, cmp, value) {
+    return [
+      stateHooks.get(ctx) || value,
+      newVal => {
+        if (!ctx._) {
+          stateHooks.delete(ctx);
+        }
+        stateHooks.set(ctx, newVal);
+        ctx._ = cmp(ctx.props, ctx);
+      }
+    ];
+  }
+
+  let effectHooks = new Map();
+  function useEffect(ctx, effect) {
+    let existingHook = effectHooks.get(ctx);
+    if (existingHook) {
+      existingHook();
+    }
+
+    let hook = effect();
+    if (hook) {
+      effectHooks.set(ctx, hook);
+    }
+  }
+
+  return [useState, useEffect];
+})();
+
+function mount(container, element) {
+  if (element._.parent === container) return;
+  container.appendChild(element._);
+}
+
+function createElement(ctx, name, type, attrs) {
+  ctx[name] = ctx[name] || {};
+  let elem = ctx[name]._ || document.createElement(type);
+
+  if (attrs) {
+    Object.keys(attrs).forEach(key => {
+      if (key === "style") {
+        return elem.setAttribute(
+          key,
+          Object.keys(attrs[key])
+            .map(prop => {
+              let val = attrs[key][prop];
+              return (
+                prop.replace(/([A-Z])/g, $1 => "-" + $1.toLowerCase()) +
+                ": " +
+                (typeof val === "number" ? val + "px" : val)
+              );
+            })
+            .join(";")
+        );
+      }
+
+      if (key === "onClick") {
+        if (ctx[name].click) {
+          elem.removeEventListener("click", ctx[name].click);
+        }
+        elem.addEventListener("click", attrs[key]);
+        ctx[name].click = attrs[key];
+      }
+
+      elem.setAttribute(key, attrs[key]);
+    });
+  }
+
+  ctx[name]._ = elem;
+  return ctx[name];
+}
+
+function createComponent(ctx, name, cmp, props) {
+  ctx[name] = ctx[name] || {
+    _: null,
+    $: () => {
+      ctx[name] = undefined;
+    },
+    props
+  };
+  ctx[name]._ = cmp(props, ctx[name]);
+  ctx[name].props = props;
+  return ctx[name];
+}
+
+function renderChildren(ctx, children) {
+  ctx._.innerHTML = "";
+
+  let fragment = document.createDocumentFragment();
+  [].concat(children).forEach(child => {
+    if (isPrimitiveChild(child)) {
+      return fragment.appendChild(document.createTextNode(child));
+    }
+
+    if (Array.isArray(child)) {
+      let subFragment = document.createDocumentFragment();
+      renderChildren({ _: subFragment }, child);
+      return fragment.appendChild(subFragment);
+    }
+
+    fragment.appendChild(child._);
+  });
+
+  ctx._.appendChild(fragment);
+}
+
+function isPrimitiveChild(child) {
+  return typeof child === "string" || typeof child === "number";
+}
+
+/* END RUNTIME */
+
+let colors = ["#a6e22e", "#a1efe4", "#66d9ef", "#ae81ff", "#cc6633", "#4CAF50", "#00BCD4", "#5C6BC0"];
+
+function App(__props, __context) {
+  createElement(__context, "e14", "div", {
+    class: "barchart"
+  })
+  renderChildren(__context.e14, [colors.map(function (color) {
+    var height = Math.floor(Math.random() * (140 - 80 + 1)) + 60;
+    createElement(__context, "e15", "div", {
+      class: "barchart__bar-wrapper"
+    })
+    createElement(__context, "e16", "div", {
+      class: "barchart__bar-title",
+      style: {
+        color
+      }
+    })
+    createElement(__context, "e17", "div", {
+      class: "barchart__bar",
+      style: {
+        backgroundColor: color,
+        height
+      }
+    })
+    renderChildren(__context.e15, [__context.e16, __context.e17])
+    renderChildren(__context.e16, [height])
+    return __context.e15._;
+  })])
+  return __context.e14._;
+}
+
+mount(document.getElementById("app"), createComponent({}, "App", App, null));
