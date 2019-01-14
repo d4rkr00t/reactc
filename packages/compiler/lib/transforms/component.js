@@ -14,17 +14,38 @@ function createElementId() {
   return "e" + ++elemGlobalId;
 }
 
-function processProps(props, children) {
+function processAttrs(type, props) {
   let newProps = [];
   if (!t.isNullLiteral(props)) {
     newProps = newProps.concat(
-      props.properties.map(prop => {
-        if (prop.key.name === "className") {
-          prop.key.name = "class";
-        }
-        return prop;
-      })
+      props.properties
+        .map(p => t.cloneNode(p))
+        .map(prop => {
+          let name = prop.key.name;
+          if (name === "className") {
+            prop.key.name = "class";
+          } else if (name === "onDoubleClick") {
+            prop.key.name = "onDblclick";
+          } else if (name.match(/html[A-Z]/)) {
+            prop.key.name = name.replace("html", "").toLowerCase();
+          }
+
+          return prop;
+        })
     );
+  }
+
+  if (newProps.length) {
+    return t.objectExpression(newProps);
+  }
+
+  return false;
+}
+
+function processProps(props, children) {
+  let newProps = [];
+  if (!t.isNullLiteral(props)) {
+    newProps = newProps.concat(props.properties);
   }
 
   if (children && children.length) {
@@ -129,7 +150,7 @@ function transformElement(
   reRenderPath
 ) {
   let id = createElementId();
-  initialRenderPath.push(ch.createElement(id, type, processProps(props)));
+  initialRenderPath.push(ch.createElement(id, type, processAttrs(type, props)));
   let directChildren = procsessChildren(
     children,
     initialRenderPath,

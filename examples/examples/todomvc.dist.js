@@ -83,19 +83,12 @@ function setAttr(ctx, name, value) {
       eventName = "input";
     }
 
-    if (eventName === "doubleclick") {
-      eventName = "dblclick";
-    }
-
     if (ctx.$p[name]) {
       ctx._.removeEventListener(eventName, ctx.$p[name]);
     }
     ctx._.addEventListener(eventName, value);
   } else if (name === "value") {
     ctx._.value = value;
-  } else if (name.match(/html[A-Z]/)) {
-    let attrName = name.replace("html", "").toLowerCase();
-    ctx._.setAttribute(attrName, value);
   } else if (name === "checked") {
     if (value === false) {
       ctx._.checked = false;
@@ -350,7 +343,7 @@ function TodoItem(props, __gctx, __pctx) {
     });
     renderChildren(__ctx, "e55", []);
     createElement(__ctx, "e56", "label", {
-      onDoubleClick: props.onEdit
+      onDblclick: props.onEdit
     });
     renderChildren(__ctx, "e56", [props.todo.title]);
     createElement(__ctx, "e57", "button", {
@@ -489,17 +482,17 @@ function TodoFooter(props, __gctx, __pctx) {
     renderChildren(__ctx, "e62", [props.count]);
     renderChildren(__ctx, "e61", [__ctx.e62, " ", activeTodoWord, " left"]);
 
-    let __e65__class = props.nowShowing === ALL_TODOS ? "selected" : "";
+    let __e65__className = props.nowShowing === ALL_TODOS ? "selected" : "";
 
-    __ctx.e65.$p.class !== __e65__class && setAttr(__ctx.e65, "class", __e65__class);
+    __ctx.e65.$p.className !== __e65__className && setAttr(__ctx.e65, "className", __e65__className);
 
-    let __e67__class = props.nowShowing === ACTIVE_TODOS ? "selected" : "";
+    let __e67__className = props.nowShowing === ACTIVE_TODOS ? "selected" : "";
 
-    __ctx.e67.$p.class !== __e67__class && setAttr(__ctx.e67, "class", __e67__class);
+    __ctx.e67.$p.className !== __e67__className && setAttr(__ctx.e67, "className", __e67__className);
 
-    let __e69__class = props.nowShowing === COMPLETED_TODOS ? "selected" : "";
+    let __e69__className = props.nowShowing === COMPLETED_TODOS ? "selected" : "";
 
-    __ctx.e69.$p.class !== __e69__class && setAttr(__ctx.e69, "class", __e69__class);
+    __ctx.e69.$p.className !== __e69__className && setAttr(__ctx.e69, "className", __e69__className);
     renderChildren(__ctx, "e60", [__ctx.e61, __ctx.e63, clearButton]);
 
     __gctx.pHC();
@@ -642,7 +635,7 @@ function TodoApp(__props, __gctx, __pctx) {
     });
     renderChildren(__ctx, "e71", []);
     createElement(__ctx, "e72", "label", {
-      htmlFor: "toggle-all"
+      for: "toggle-all"
     });
     renderChildren(__ctx, "e72", []);
     createElement(__ctx, "e73", "ul", {

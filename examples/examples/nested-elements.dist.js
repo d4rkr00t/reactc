@@ -83,19 +83,12 @@ function setAttr(ctx, name, value) {
       eventName = "input";
     }
 
-    if (eventName === "doubleclick") {
-      eventName = "dblclick";
-    }
-
     if (ctx.$p[name]) {
       ctx._.removeEventListener(eventName, ctx.$p[name]);
     }
     ctx._.addEventListener(eventName, value);
   } else if (name === "value") {
     ctx._.value = value;
-  } else if (name.match(/html[A-Z]/)) {
-    let attrName = name.replace("html", "").toLowerCase();
-    ctx._.setAttribute(attrName, value);
   } else if (name === "checked") {
     if (value === false) {
       ctx._.checked = false;
