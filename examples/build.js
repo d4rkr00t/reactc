@@ -5,6 +5,7 @@ let Terser = require("terser");
 let gzipSize = require("gzip-size");
 let babel = require("@babel/core");
 let options = {
+  presets: ["@babel/preset-react"],
   plugins: [require.resolve("@reactc/compiler")]
 };
 

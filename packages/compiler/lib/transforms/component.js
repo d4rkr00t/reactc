@@ -1,8 +1,13 @@
 let { types: t } = require("@babel/core");
-let isCreateElementExpression = require("../checks/is-create-element");
-let util = require("util");
+let ch = require("../utils/create-helpers");
+let { CTX } = require("../utils/consts");
+let isCreateElementExpression = require("../utils/checks/is-create-element");
 
 /**
+ * function Countdown(props) {
+ *  return React.createElement("div", null, props.children);
+ * }
+ *
  * function Countdown(props, ctx) {
  *  if (ctx._) {
  *    // Re-render
@@ -42,6 +47,16 @@ let util = require("util");
  *}
  */
 
+let componentGlobalId = 0;
+function createComponentId() {
+  return "c" + ++componentGlobalId;
+}
+
+let elemGlobalId = 0;
+function createElementId() {
+  return "e" + ++elemGlobalId;
+}
+
 function processProps(props, children) {
   let newProps = [];
   if (!t.isNullLiteral(props)) {
@@ -55,8 +70,13 @@ function processProps(props, children) {
     );
   }
 
-  if (children) {
-    newProps.push(t.objectProperty(t.identifier("children"), children));
+  if (children && children.length) {
+    newProps.push(
+      t.objectProperty(
+        t.identifier("children"),
+        children.length === 1 ? children[0] : t.arrayExpression(children)
+      )
+    );
   }
 
   if (newProps.length) {
@@ -66,59 +86,55 @@ function processProps(props, children) {
   return false;
 }
 
-let elemGlobalId = 0;
-function createElementId() {
-  return t.identifier("e" + ++elemGlobalId);
+/**
+ * React.createElement("div", null, props.children);
+ *                    ["div", null, props.children];
+ *                      0     1     2+
+ */
+function processReactCreateElement(node) {
+  return [node.arguments[0], node.arguments[1], node.arguments.slice(2)];
 }
 
-function createElement(id, type, props) {
-  return t.callExpression(
-    t.identifier("createElement"),
-    [
-      t.identifier("__context"),
-      t.stringLiteral(id.name),
-      t.stringLiteral(type.value),
-      processProps(props)
-    ].filter(Boolean)
+function isDynamic(node) {
+  return (
+    t.isFunctionExpression(node) ||
+    t.isIdentifier(node) ||
+    t.isArrowFunctionExpression(node) ||
+    t.isConditionalExpression(node) ||
+    (t.isMemberExpression(node) && node.object.name !== CTX) ||
+    (t.isBinaryExpression(node) &&
+      (isDynamic(node.left) || isDynamic(node.right)))
   );
 }
 
-let componentGlobalId = 0;
-function createComponentId() {
-  return t.identifier("c" + ++componentGlobalId);
+function getDynamicProps(props) {
+  return (props || []).filter(prop => isDynamic(prop.value));
 }
 
-/**
- * createComponent(ctx, "b", Countdown, { children: count });
- */
-function createComponent(id, type, props, children) {
-  return t.callExpression(
-    t.identifier("createComponent"),
-    [
-      t.identifier("__context"),
-      t.stringLiteral(id.name),
-      type,
-      processProps(props, children)
-    ].filter(Boolean)
-  );
+function isDynamicProps(props) {
+  if (!t.isObjectExpression(props)) {
+    return false;
+  }
+
+  return props.properties.some(prop => {
+    if (isDynamic(prop.value)) {
+      return true;
+    }
+    return false;
+  });
 }
 
-/**
- * Takes: Array<children>
- * Returns:
- * [
- *   Array<[id, node]> – define element statements
- *   Array<[[id1, id2, ...], [id3, id4, ...]]>
- * ]
- */
-function processChildren(parentId, children, skipParentId = false) {
-  if (!children.length) return [];
+function isDynamicChildren(children) {
+  return children.some(child => {
+    if (isDynamic(child)) {
+      return true;
+    }
+    return false;
+  });
+}
 
-  let defineStatements = [];
-  let directChildren = skipParentId ? [] : [contextProperty(parentId)];
-  let renderTree = [directChildren];
-
-  children.forEach(child => {
+function procsessChildren(children, initialRenderPath, reRenderPath) {
+  return children.map(child => {
     if (
       t.isStringLiteral(child) ||
       t.isNumericLiteral(child) ||
@@ -126,106 +142,233 @@ function processChildren(parentId, children, skipParentId = false) {
       t.isMemberExpression(child) ||
       (t.isCallExpression(child) && !isCreateElementExpression(child))
     ) {
-      directChildren.push(child);
+      return child;
     }
 
-    if (!isCreateElementExpression(child)) return;
+    let [type, props, children] = processReactCreateElement(child);
 
-    // If child is a variable
-    let id;
-    let newNode;
-    if (t.isIdentifier(child.arguments[0])) {
-      id = createComponentId();
-      let [ds, rt] = processChildren(id, child.arguments.slice(2), true);
-      newNode = createComponent(
-        id,
-        child.arguments[0],
-        child.arguments[1],
-        rt && rt.length
-          ? t.arrayExpression(rt.reduce((acc, item) => acc.concat(item), []))
-          : null
+    if (t.isStringLiteral(type)) {
+      return ch.contextProperty(
+        transformElement(
+          type.value,
+          props,
+          children,
+          initialRenderPath,
+          reRenderPath
+        )
       );
-
-      if (ds && ds.length) {
-        defineStatements.push(...ds);
-      }
     } else {
-      id = createElementId();
-      newNode = createElement(id, child.arguments[0], child.arguments[1]);
-      let [ds, rt] = processChildren(id, child.arguments.slice(2));
-
-      if (ds && ds.length) {
-        defineStatements.push(...ds);
-      }
-
-      if (rt && rt.length) {
-        renderTree.push(...rt);
-      }
+      return ch.contextProperty(
+        transformComponent(
+          type.name,
+          props,
+          children,
+          initialRenderPath,
+          reRenderPath
+        )
+      );
     }
-
-    directChildren.push(contextProperty(id));
-    defineStatements.push(newNode);
   });
-
-  return [defineStatements, renderTree];
 }
 
-function processRenderTree(renderTree) {
-  return (renderTree || []).map(render =>
-    t.callExpression(t.identifier("renderChildren"), [
-      render[0],
-      t.arrayExpression(render.slice(1))
-    ])
+/**
+ * ->
+ *  React.createElement(
+ *    "div",
+ *    { className: "counter" },
+ *    props.children,
+ *    "second child",
+ *    React.createElement(Child, { prop: 1 }, "Text"));
+ *
+ * <- initial render:
+ *  createElement(__ctx, "e1", "div", { className: "counter" });
+ *  createComponent(__ctx, "c1", Child, { prop: "1", children: "Text" });
+ *  renderChildren(__ctx, "e1", [props.children, "second child", __ctx.c1]);
+ *
+ * <- re-render:
+ *  if (props.children !== __ctx.props.children) {
+ *    renderChildren(__ctx, "e1", [props.children, "second child", __ctx.c1]);
+ *  }
+ */
+function transformElement(
+  type,
+  props,
+  children,
+  initialRenderPath,
+  reRenderPath,
+  isRoot
+) {
+  let id = isRoot ? "$r" : createElementId();
+  initialRenderPath.push(ch.createElement(id, type, processProps(props)));
+  let directChildren = procsessChildren(
+    children,
+    initialRenderPath,
+    reRenderPath
   );
+  initialRenderPath.push(ch.renderChildren(id, directChildren));
+  if (isDynamicProps(props)) {
+    let dynamicProps = getDynamicProps(props.properties);
+    reRenderPath.push(
+      ...dynamicProps.reduce(
+        (acc, prop) => acc.concat(ch.setAttr(id, prop.key, prop.value)),
+        []
+      )
+    );
+  }
+  if (isDynamicChildren(directChildren)) {
+    reRenderPath.push(ch.renderChildren(id, directChildren));
+  }
+  return id;
 }
 
-function contextElementProperty(id) {
-  return t.memberExpression(contextProperty(id), t.identifier("_"));
+function transformComponent(
+  type,
+  props,
+  children,
+  initialRenderPath,
+  reRenderPath
+) {
+  let id = createComponentId();
+  let directChildren = procsessChildren(
+    children,
+    initialRenderPath,
+    reRenderPath
+  );
+  initialRenderPath.push(
+    ch.createComponent(id, type, processProps(props, directChildren))
+  );
+  if (isDynamicProps(props) || isDynamicChildren(children)) {
+    reRenderPath.push(
+      t.expressionStatement(
+        t.callExpression(ch.memberExpression(CTX, id, "$"), [
+          processProps(props, directChildren)
+        ])
+      )
+    );
+  }
+  return id;
 }
 
-function contextProperty(id) {
-  return t.memberExpression(t.identifier("__context"), id);
+function transform(node) {
+  let initialRenderPath = [];
+  let reRenderPath = [];
+  let [type, props, children] = processReactCreateElement(node);
+  let id;
+
+  if (t.isStringLiteral(type)) {
+    id = transformElement(
+      type.value,
+      props,
+      children,
+      initialRenderPath,
+      reRenderPath
+    );
+  } else {
+    id = transformComponent(
+      type.name,
+      props,
+      children,
+      initialRenderPath,
+      reRenderPath
+    );
+  }
+
+  return [id, initialRenderPath, reRenderPath];
 }
+
+function findParentPath(path) {
+  let funcParent = path.getFunctionParent();
+  let parentPath = path;
+  while (parentPath && funcParent.node.body !== parentPath.parentPath.node) {
+    parentPath = parentPath.parentPath;
+  }
+  return parentPath;
+}
+
+/**
+ * function Countdown(props, __gctx, __pctx) {
+ *   var __ctx = __pctx || {
+ *     $p: props,
+ *     $: props => {
+ *       Countdown(props, __gctx, __ctx);
+ *     }
+ *   };
+ *
+ *   __gctx.setHooksContext(__ctx);
+ *
+ *   if (__ctx !== __pctx) {
+ *     createElement(__ctx, "e1", "div", {
+ *       class: "counter"
+ *     });
+ *     renderChildren(__ctx, "e1", [props.children]);
+ *     __ctx.$r = __ctx.e1;
+ *
+ *     __gctx.popHooksContext();
+ *
+ *     return __ctx;
+ *   } else {
+ *     renderChildren(__ctx, "e1", [props.children]);
+ *     __gctx.popHooksContext();
+ *   }
+ * }
+ */
 
 module.exports = function transformComponent(path) {
+  let renderPath = [];
+  let updatePath = [];
+
   path.traverse({
-    ReturnStatement(path) {
-      if (!isCreateElementExpression(path.node.argument)) return;
-      let node = path.node.argument;
+    CallExpression(path) {
+      if (path.removed) return;
+      if (!isCreateElementExpression(path.node)) return;
+      let [id, nodes, updateInstructions] = transform(path.node);
+      let parentPath = findParentPath(path);
 
-      // If child is a variable
-      let id;
-      let newNode;
-      let defineStatements = [];
-      let renderTree = [];
+      renderPath.push(...nodes);
+      updatePath.push(...updateInstructions);
 
-      if (t.isIdentifier(node.arguments[0])) {
-        id = createComponentId();
-        let [ds, rt] = processChildren(id, node.arguments.slice(2), true);
-        newNode = createComponent(
-          id,
-          node.arguments[0],
-          node.arguments[1],
-          rt && rt.length
-            ? t.arrayExpression(rt.reduce((acc, item) => acc.concat(item), []))
-            : null
+      // ->
+      //   return <bla/>;
+      // <-
+      //   __ctx.$r = __ctx.e1;
+      //   __gctx.popHooksContext()
+      //   return __ctx;
+      if (t.isReturnStatement(parentPath.node)) {
+        renderPath.push(
+          ...[
+            t.expressionStatement(
+              t.assignmentExpression(
+                "=",
+                ch.contextProperty("$r"),
+                ch.contextProperty(id)
+              )
+            ),
+            ch.popHooksContext()
+          ]
         );
-        defineStatements.push(...(ds || []));
+        path.replaceWith(ch.ctxId);
       } else {
-        id = createElementId();
-        newNode = createElement(id, node.arguments[0], node.arguments[1]);
-        [defineStatements, renderTree] = processChildren(
-          id,
-          node.arguments.slice(2)
-        );
+        path.replaceWith(ch.contextProperty(id));
       }
 
-      path.replaceWithMultiple([
-        newNode,
-        ...defineStatements,
-        ...processRenderTree(renderTree),
-        t.returnStatement(contextElementProperty(id))
-      ]);
+      if (t.isIfStatement(parentPath.node)) {
+        updatePath.push(t.cloneNode(parentPath.node));
+      }
+
+      renderPath.push(t.cloneNode(parentPath.node));
+      if (!parentPath.removed) parentPath.remove();
     }
   });
+
+  renderPath = renderPath.filter(Boolean);
+  updatePath = updatePath.filter(Boolean);
+  path
+    .get("body")
+    .pushContainer("body", [
+      t.ifStatement(
+        t.binaryExpression("!==", ch.ctxId, ch.pCtxId),
+        t.blockStatement(renderPath),
+        t.blockStatement([...updatePath, ch.popHooksContext()])
+      )
+    ]);
 };

@@ -1,5 +1,5 @@
 function App() {
-  return React.createElement("div", null, "Hello ReactC");
+  return <div>Hello ReactC</div>;
 }
 
-ReactDOM.render(React.createElement(App, null), document.getElementById("app"));
+ReactDOM.render(<App />, document.getElementById("app"));

@@ -10,28 +10,26 @@ let colors = [
 ];
 
 function App() {
-  return React.createElement(
-    "div",
-    { className: "barchart" },
-    colors.map(function(color) {
-      var height = Math.floor(Math.random() * (140 - 80 + 1)) + 60;
-      return React.createElement(
-        "div",
-        { className: "barchart__bar-wrapper" },
-        React.createElement(
-          "div",
-          { className: "barchart__bar-title", style: { color } },
-          height
-        ),
-        React.createElement("div", {
-          className: "barchart__bar",
-          style: {
-            backgroundColor: color,
-            height
-          }
-        })
-      );
-    })
+  return (
+    <div className="barchart">
+      {colors.map((color, idx) => {
+        var height = (idx / colors.length) * 140 + 60;
+        return (
+          <div className="barchart__bar-wrapper">
+            <div className="barchart__bar-title" style={{ color }}>
+              {height}
+            </div>
+            <div
+              className="barchart__bar"
+              style={{
+                backgroundColor: color,
+                height
+              }}
+            />
+          </div>
+        );
+      })}
+    </div>
   );
 }
 

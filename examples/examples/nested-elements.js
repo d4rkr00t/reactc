@@ -2,112 +2,60 @@
 // import ReactDOM from "react-dom";
 
 function App() {
-  return React.createElement(
-    "div",
-    { className: "panel" },
-    React.createElement(
-      "div",
-      { className: "panel__table panel__line" },
-      React.createElement(
-        "table",
-        null,
-        React.createElement(
-          "tr",
-          null,
-          React.createElement(
-            "td",
-            null,
-            React.createElement("span", { className: "panel__mute" }, "Scope:")
-          ),
-          React.createElement(
-            "td",
-            { className: "panel__badge-col" },
-            React.createElement("span", { className: "panel__badge" }, "fn")
-          ),
-          React.createElement("td", null, "z-entity-gallery__thumbs")
-        ),
-        React.createElement(
-          "tr",
-          null,
-          React.createElement("td", null),
-          React.createElement(
-            "td",
-            { className: "panel__badge-col" },
-            React.createElement(
-              "span",
-              { className: "panel__badge -purple" },
-              "bem"
-            )
-          ),
-          React.createElement(
-            "td",
-            null,
-            React.createElement("span", { className: "panel__mute" }, "block:"),
-            "z-entity-gallery",
-            React.createElement(
-              "span",
-              { className: "panel__mute" },
-              " | elem:"
-            ),
-            "image"
-          )
-        ),
-        React.createElement(
-          "tr",
-          null,
-          React.createElement("td", {
-            colspan: "4",
-            className: "panel__table-sep"
-          })
-        ),
-        React.createElement(
-          "tr",
-          null,
-          React.createElement(
-            "td",
-            null,
-            React.createElement("span", { className: "panel__mute" }, "Parent:")
-          ),
-          React.createElement(
-            "td",
-            { className: "panel__badge-col" },
-            React.createElement(
-              "span",
-              { className: "panel__badge -blue" },
-              "P"
-            )
-          ),
-          React.createElement("td", null, "z-entity-gallery")
-        ),
-        React.createElement(
-          "tr",
-          null,
-          React.createElement("td", {
-            colspan: "4",
-            className: "panel__table-sep"
-          })
-        ),
-        React.createElement(
-          "tr",
-          null,
-          React.createElement(
-            "td",
-            null,
-            React.createElement("span", { className: "panel__mute" }, "File:")
-          ),
-          React.createElement(
-            "td",
-            { colspan: "2", className: "panel__files" },
-            React.createElement(
-              "div",
-              { className: "panel__file" },
-              "contribs/z-entity-search/blocks-deskpad/z-entity-gallery/__thumbs/z-entity-gallery__thumbs.priv.js:22"
-            )
-          )
-        )
-      )
-    )
+  return (
+    <div className="panel">
+      <div className="panel__table panel__line">
+        <table>
+          <tr>
+            <td>
+              <span className="panel__mute">Scope:</span>
+            </td>
+            <td className="panel__badge-col">
+              <span className="panel__badge">fn</span>
+            </td>
+            <td>z-entity-gallery__thumbs</td>
+          </tr>
+          <tr>
+            <td />
+            <td className="panel__badge-col">
+              <span className="panel__badge -purple">bem</span>
+            </td>
+            <td>
+              <span className="panel__mute">block:</span>
+              z-entity-gallery
+              <span className="panel__mute"> | elem:</span>
+              image
+            </td>
+          </tr>
+          <tr>
+            <td colspan="4" className="panel__table-sep" />
+          </tr>
+          <tr>
+            <td>
+              <span className="panel__mute">Parent:</span>
+            </td>
+            <td className="panel__badge-col">
+              <span className="panel__badge -blue">P</span>
+            </td>
+            <td>z-entity-gallery</td>
+          </tr>
+          <tr>
+            <td colspan="4" className="panel__table-sep" />
+          </tr>
+          <tr>
+            <td>
+              <span className="panel__mute">File:</span>
+            </td>
+            <td colspan="2" className="panel__files">
+              <div className="panel__file">
+                contribs/z-entity-search/blocks-deskpad/z-entity-gallery/__thumbs/z-entity-gallery__thumbs.priv.js:22
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
   );
 }
 
-ReactDOM.render(React.createElement(App, null), document.getElementById("app"));
+ReactDOM.render(<App />, document.getElementById("app"));

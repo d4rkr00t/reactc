@@ -1,11 +1,11 @@
 function Countdown(props) {
-  return React.createElement("div", null, props.children);
+  return <div className="counter">{props.children}</div>;
 }
 
 function App() {
-  var [count, setCount] = useState(__context, App, 0);
+  var [count, setCount] = useState(0);
 
-  useEffect(__context, function() {
+  useEffect(function() {
     var timeout = setTimeout(function() {
       return setCount(count + 1);
     }, 1000);
@@ -13,11 +13,12 @@ function App() {
     return () => clearTimeout(timeout);
   });
 
-  return React.createElement(
-    "div",
-    null,
-    React.createElement(Countdown, null, count)
+  return (
+    <div>
+      <Countdown>{count}</Countdown>
+      <button onClick={() => setCount(count + 1)}>Update counter</button>
+    </div>
   );
 }
 
-ReactDOM.render(React.createElement(App, null), document.getElementById("app"));
+ReactDOM.render(<App />, document.getElementById("app"));

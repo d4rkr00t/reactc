@@ -1,146 +1,325 @@
-let [useState, useEffect] = (() => {
-  let stateHooks = new Map();
-  function useState(ctx, cmp, value) {
-    return [
-      stateHooks.get(ctx) || value,
-      newVal => {
-        if (!ctx._) {
-          stateHooks.delete(ctx);
-        }
-        stateHooks.set(ctx, newVal);
-        ctx._ = cmp(ctx.props, ctx);
-      }
-    ];
-  }
+/**
+ * Global Context [GCTX]:
+ * Map<Updater, CCTX>
+ *
+ * Component Context [CCTX]:
+ * {
+ *   _  => dom element ref
+ *   $  => updater function
+ *   $p => prev props
+ *   $r => root element context
+ *   ...rest => children contexts
+ * }
+ *
+ * Element Context [ECTX]:
+ * {
+ *   _  => dom element ref
+ *   $  => updater function
+ *   $a => attrs
+ * }
+ *
+ * render((ctx) => CCTX);
+ *
+ * updater(props, CCTX);
+ *
+ * createComponent(gCTX, pCTX, localId, Cmp, props)
+ *   => pCTX[localId] = CCTX;
+ * createElement(pCTX, localId, 'type', attrs)
+ *   => pCTX[localId] = ECTX;
+ *
+ * renderChildren(CCTX/ECTX, parentLocalId, [localId1, localId2, localId3]);
+ */
 
-  let effectHooks = new Map();
-  function useEffect(ctx, effect) {
-    let existingHook = effectHooks.get(ctx);
-    if (existingHook) {
-      existingHook();
+function mount(parent, gctx, cmp, props) {
+  let ctx = cmp(props, gctx);
+  if (!ctx) return;
+  parent.innerHTML = "";
+  parent.appendChild(ctx.$r._);
+}
+
+function createComponent(gctx, cctx, lid, cmp, props) {
+  if (cctx[lid]) {
+    if (cctx[lid].$) {
+      cctx[lid].$(props);
+    }
+    return;
+  }
+  let ctx = cmp(props, gctx);
+  cctx[lid] = ctx;
+}
+
+function createElement(cctx, lid, type, attrs) {
+  if (cctx[lid]) {
+    setAttrs(cctx[lid], attrs);
+    return;
+  }
+  let ctx = { _: document.createElement(type), $p: attrs, $h: {} };
+  setAttrs(ctx, attrs);
+  cctx[lid] = ctx;
+}
+
+function setAttr(ctx, name, value) {
+  if (name === "style") {
+    ctx._.setAttribute(
+      name,
+      Object.keys(value)
+        .map(prop => {
+          let val = value[prop];
+          return (
+            prop.replace(/([A-Z])/g, $1 => "-" + $1.toLowerCase()) +
+            ": " +
+            (typeof val === "number" ? val + "px" : val)
+          );
+        })
+        .join(";")
+    );
+  } else if (name.startsWith("on")) {
+    let eventName = name.replace("on", "").toLowerCase();
+    if (
+      eventName === "change" &&
+      ctx._.nodeName === "INPUT" &&
+      ctx._.type === "text"
+    ) {
+      eventName = "input";
     }
 
-    let hook = effect();
-    if (hook) {
-      effectHooks.set(ctx, hook);
+    if (eventName === "doubleclick") {
+      eventName = "dblclick";
     }
+
+    if (ctx.$p[name]) {
+      ctx._.removeEventListener(eventName, ctx.$p[name]);
+    }
+    ctx._.addEventListener(eventName, value);
+  } else if (name === "value") {
+    ctx._.value = value;
+  } else if (name.match(/html[A-Z]/)) {
+    let attrName = name.replace("html", "").toLowerCase();
+    ctx._.setAttribute(attrName, value);
+  } else if (name === "checked") {
+    if (value === false) {
+      ctx._.checked = false;
+    } else {
+      ctx._.checked = true;
+    }
+  } else {
+    ctx._.setAttribute(name, value);
   }
 
-  return [useState, useEffect];
-})();
-
-function mount(container, element) {
-  if (element._.parent === container) return;
-  container.appendChild(element._);
+  ctx.$p[name] = value;
 }
 
-function createElement(ctx, name, type, attrs) {
-  ctx[name] = ctx[name] || {};
-  let elem = ctx[name]._ || document.createElement(type);
+function setAttrs(ctx, attrs) {
+  if (!attrs) return;
+  Object.keys(attrs).forEach(key => setAttr(ctx, key, attrs[key]));
+  ctx.$p = attrs;
+}
 
-  if (attrs) {
-    Object.keys(attrs).forEach(key => {
-      if (key === "style") {
-        return elem.setAttribute(
-          key,
-          Object.keys(attrs[key])
-            .map(prop => {
-              let val = attrs[key][prop];
-              return (
-                prop.replace(/([A-Z])/g, $1 => "-" + $1.toLowerCase()) +
-                ": " +
-                (typeof val === "number" ? val + "px" : val)
-              );
-            })
-            .join(";")
-        );
+function renderChildren(ctx, pid, children, maybeIdx) {
+  let parent = ctx[pid]._;
+  let idx = maybeIdx || 0;
+  let prevChildren = Array.from(parent.childNodes);
+
+  if (!prevChildren.length && !children.length) return;
+
+  children.forEach(child => {
+    if (child === null) {
+      if (prevChildren[idx]) {
+        parent.removeChild(prevChildren[idx]);
+        idx++;
       }
-
-      if (key === "onClick") {
-        if (ctx[name].click) {
-          elem.removeEventListener("click", ctx[name].click);
-        }
-        elem.addEventListener("click", attrs[key]);
-        ctx[name].click = attrs[key];
-      }
-
-      elem.setAttribute(key, attrs[key]);
-    });
-  }
-
-  ctx[name]._ = elem;
-  return ctx[name];
-}
-
-function createComponent(ctx, name, cmp, props) {
-  ctx[name] = ctx[name] || {
-    _: null,
-    $: () => {
-      ctx[name] = undefined;
-    },
-    props
-  };
-  ctx[name]._ = cmp(props, ctx[name]);
-  ctx[name].props = props;
-  return ctx[name];
-}
-
-function renderChildren(ctx, children) {
-  ctx._.innerHTML = "";
-
-  let fragment = document.createDocumentFragment();
-  [].concat(children).forEach(child => {
+      return;
+    }
     if (isPrimitiveChild(child)) {
-      return fragment.appendChild(document.createTextNode(child));
+      if (prevChildren[idx]) {
+        if (prevChildren[idx].nodeType === 3) {
+          if (prevChildren[idx].textContent !== child) {
+            prevChildren[idx].textContent = child;
+          }
+        } else {
+          parent.replaceChild(
+            document.createTextNode(child),
+            prevChildren[idx]
+          );
+        }
+        idx++;
+        return;
+      } else {
+        idx++;
+        return parent.appendChild(document.createTextNode(child));
+      }
+    } else if (Array.isArray(child)) {
+      renderChildren({ $r: { _: parent } }, "$r", child, idx);
+      idx += child.length;
+      return;
+    } else {
+      let newChild = child.$r
+        ? child.$r.$r
+          ? child.$r.$r._
+          : child.$r._
+        : child._;
+      if (prevChildren[idx]) {
+        if (prevChildren[idx] !== newChild) {
+          try {
+            parent.replaceChild(newChild, prevChildren[idx]);
+          } catch (e) {}
+        }
+        idx++;
+        return;
+      } else {
+        if (prevChildren[idx]) {
+          if (prevChildren[idx] !== newChild) {
+            try {
+              parent.replaceChild(newChild, prevChildren[idx]);
+            } catch (e) {}
+          }
+          idx++;
+          return;
+        }
+        parent.appendChild(newChild);
+        idx++;
+        return;
+      }
     }
-
-    if (Array.isArray(child)) {
-      let subFragment = document.createDocumentFragment();
-      renderChildren({ _: subFragment }, child);
-      return fragment.appendChild(subFragment);
-    }
-
-    fragment.appendChild(child._);
   });
 
-  ctx._.appendChild(fragment);
+  while (idx < prevChildren.length) {
+    if (prevChildren[idx].parentNode) {
+      try {
+        prevChildren[idx].parentNode.removeChild(prevChildren[idx]);
+      } catch (e) {}
+    }
+    idx++;
+  }
 }
 
 function isPrimitiveChild(child) {
   return typeof child === "string" || typeof child === "number";
 }
 
+let gCtx = (() => {
+  let $h = []; // Stack of hooks contexts
+  return {
+    // Set hooks context
+    sHC: ctx => $h.push({ ctx, pos: 0 }),
+    // Pop hooks context
+    pHC: () => {
+      let hc = $h.pop();
+      hc.pos = 0;
+    },
+    // Get hooks context
+    gHC: () => $h[$h.length - 1]
+  };
+})();
+
+let [useState, useEffect] = (() => {
+  let stateHooks = new Map();
+  function useState(value) {
+    let hc = gCtx.gHC();
+    let hook = stateHooks.get(hc.ctx) || [];
+    let pos = hc.pos;
+    let val = hook[pos] === undefined ? value : hook[pos];
+
+    hc.pos += 1;
+    hook[pos] = val;
+    stateHooks.set(hc.ctx, hook);
+
+    return [
+      val,
+      newVal => {
+        let hook = stateHooks.get(hc.ctx) || [];
+        hook[pos] = newVal;
+        stateHooks.set(hc.ctx, hook);
+        if (hc.ctx.$) {
+          hc.ctx.$(hc.ctx.$p);
+        }
+      }
+    ];
+  }
+
+  let effectHooks = new Map();
+  function useEffect(effect) {
+    let hc = gCtx.gHC();
+    let hook = effectHooks.get(hc.ctx) || [];
+    let pos = hc.pos;
+    let existingHook = hook[pos];
+    if (existingHook) {
+      existingHook();
+    }
+    let hookDestroy = effect();
+    if (hookDestroy) {
+      hook[pos] = hookDestroy;
+      effectHooks.set(hc.ctx, hook);
+    }
+  }
+
+  return [useState, useEffect];
+})();
+
 /* END RUNTIME */
 
 let colors = ["#a6e22e", "#a1efe4", "#66d9ef", "#ae81ff", "#cc6633", "#4CAF50", "#00BCD4", "#5C6BC0"];
 
-function App(__props, __context) {
-  createElement(__context, "e14", "div", {
-    class: "barchart"
-  })
-  renderChildren(__context.e14, [colors.map(function (color) {
-    var height = Math.floor(Math.random() * (140 - 80 + 1)) + 60;
-    createElement(__context, "e15", "div", {
-      class: "barchart__bar-wrapper"
-    })
-    createElement(__context, "e16", "div", {
-      class: "barchart__bar-title",
-      style: {
-        color
+function App(__props, __gctx, __pctx) {
+  var __ctx = __pctx || {
+    $p: __props,
+    $: props => {
+      App(props, __gctx, __ctx);
+    }
+  };
+
+  __gctx.sHC(__ctx);
+
+  if (__ctx !== __pctx) {
+    createElement(__ctx, "e17", "div", {
+      class: "barchart"
+    });
+    renderChildren(__ctx, "e17", [colors.map((color, idx) => {
+      var __ctx = {};
+
+      __gctx.sHC(__ctx);
+
+      var height = idx / colors.length * 140 + 60;
+
+      if (__ctx !== __pctx) {
+        createElement(__ctx, "e14", "div", {
+          class: "barchart__bar-wrapper"
+        });
+        createElement(__ctx, "e15", "div", {
+          class: "barchart__bar-title",
+          style: {
+            color
+          }
+        });
+        renderChildren(__ctx, "e15", [height]);
+        createElement(__ctx, "e16", "div", {
+          class: "barchart__bar",
+          style: {
+            backgroundColor: color,
+            height
+          }
+        });
+        renderChildren(__ctx, "e16", []);
+        renderChildren(__ctx, "e14", [__ctx.e15, __ctx.e16]);
+        __ctx.$r = __ctx.e14;
+
+        __gctx.pHC();
+
+        return __ctx;
+      } else {
+        renderChildren(__ctx, "e15", [height]);
+
+        __gctx.pHC();
       }
-    })
-    createElement(__context, "e17", "div", {
-      class: "barchart__bar",
-      style: {
-        backgroundColor: color,
-        height
-      }
-    })
-    renderChildren(__context.e15, [__context.e16, __context.e17])
-    renderChildren(__context.e16, [height])
-    return __context.e15._;
-  })])
-  return __context.e14._;
+    })]);
+    __ctx.$r = __ctx.e17;
+
+    __gctx.pHC();
+
+    return __ctx;
+  } else {
+    __gctx.pHC();
+  }
 }
 
-mount(document.getElementById("app"), createComponent({}, "App", App, null));
+mount(document.getElementById("app"), gCtx, App, null);

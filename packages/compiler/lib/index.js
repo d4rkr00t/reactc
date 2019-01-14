@@ -1,33 +1,76 @@
 let { declare } = require("@babel/helper-plugin-utils");
 let { types: t } = require("@babel/core");
-let isReactFunctionComponent = require("./checks/is-react-fc");
-let isReactDOMRenderCallExpression = require("./checks/is-react-dom-render");
+let isReactFunctionComponent = require("./utils/checks/is-react-fc");
+let isReactDOMRenderCallExpression = require("./utils/checks/is-react-dom-render");
+let ch = require("./utils/create-helpers");
 let transformReactDOMRender = require("./transforms/react-dom");
 let transformComponent = require("./transforms/component");
 
 module.exports = declare(() => {
   return {
     visitor: {
-      FunctionDeclaration(path) {
-        let { id, params, body } = path.node;
+      Program: {
+        exit(path) {
+          path.traverse({
+            FunctionDeclaration(path) {
+              let { id, params } = path.node;
+              if (!isReactFunctionComponent(path)) return false;
 
-        if (!isReactFunctionComponent(path)) return false;
-        if (params.find(param => param.name === "__context")) {
-          transformComponent(path);
-          return false;
+              let updatedParams = [
+                ...(params.length ? params : [t.identifier("__props")]),
+                ch.gCtxId,
+                ch.pCtxId
+              ];
+
+              path.set("params", updatedParams);
+              path
+                .get("body")
+                .unshiftContainer("body", [
+                  ch.initComponentContext(id, updatedParams[0], true),
+                  ch.setHooksContext()
+                ]);
+
+              path.traverse({
+                FunctionExpression(path) {
+                  if (!isReactFunctionComponent(path)) return false;
+                  path
+                    .get("body")
+                    .unshiftContainer("body", [
+                      ch.initComponentContext(),
+                      ch.setHooksContext()
+                    ]);
+                  transformComponent(path);
+                },
+                FunctionDeclaration(path) {
+                  if (!isReactFunctionComponent(path)) return false;
+                  path
+                    .get("body")
+                    .unshiftContainer("body", [
+                      ch.initComponentContext(),
+                      ch.setHooksContext()
+                    ]);
+                  transformComponent(path);
+                },
+                ArrowFunctionExpression(path) {
+                  if (!isReactFunctionComponent(path)) return false;
+                  path
+                    .get("body")
+                    .unshiftContainer("body", [
+                      ch.initComponentContext(),
+                      ch.setHooksContext()
+                    ]);
+                  transformComponent(path);
+                }
+              });
+
+              transformComponent(path);
+            },
+            CallExpression(path) {
+              if (!isReactDOMRenderCallExpression(path.node)) return;
+              path.replaceWith(transformReactDOMRender(path));
+            }
+          });
         }
-
-        let updatedParams = [
-          ...(params.length ? params : [t.identifier("__props")]),
-          t.identifier("__context")
-        ];
-        path.replaceWith(
-          t.functionDeclaration(id, updatedParams, t.blockStatement(body.body))
-        );
-      },
-      CallExpression(path) {
-        if (!isReactDOMRenderCallExpression(path.node)) return;
-        path.replaceWith(transformReactDOMRender(path));
       }
     }
   };
