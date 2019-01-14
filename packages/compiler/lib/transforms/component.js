@@ -2,50 +2,7 @@ let { types: t } = require("@babel/core");
 let ch = require("../utils/create-helpers");
 let { CTX } = require("../utils/consts");
 let isCreateElementExpression = require("../utils/checks/is-create-element");
-
-/**
- * function Countdown(props) {
- *  return React.createElement("div", null, props.children);
- * }
- *
- * function Countdown(props, ctx) {
- *  if (ctx._) {
- *    // Re-render
- *    if (ctx.props.children !== props.children) {
- *      renderChildren(ctx.a, props.children);
- *    }
- *  } else {
- *    // Initial render
- *    createElement(ctx, "a", "div");
- *    renderChildren(ctx.a, props.children);
- *  }
- *
- *  return ctx.a._;
- *}
- *
- *function App(_props, ctx) {
- *  let [count, setCount] = useState(ctx, App, Math.random());
- *  useEffect(ctx, () => {
- *    let timeout = setTimeout(() => {
- *      setCount(count + 1);
- *    }, 1000);
- *    return () => clearTimeout(timeout);
- *  });
- *  if (ctx._) {
- *    // Re-render
- *    createComponent(ctx, "b", Countdown, { children: count });
- *    createElement(ctx, "c", "button", { onClick: () => setCount(count + 1) });
- *  } else {
- *    // Initial render
- *    createElement(ctx, "a", "div");
- *    createElement(ctx, "c", "button", { onClick: () => setCount(count + 1) });
- *    renderChildren(ctx.c, ["Update counter"]);
- *    createComponent(ctx, "b", Countdown, { children: count });
- *    renderChildren(ctx.a, [ctx.b, ctx.c]);
- *  }
- *  return ctx.a._;
- *}
- */
+let isReactFunctionComponent = require("../utils/checks/is-react-fc");
 
 let componentGlobalId = 0;
 function createComponentId() {
@@ -285,35 +242,7 @@ function findParentPath(path) {
   return parentPath;
 }
 
-/**
- * function Countdown(props, __gctx, __pctx) {
- *   var __ctx = __pctx || {
- *     $p: props,
- *     $: props => {
- *       Countdown(props, __gctx, __ctx);
- *     }
- *   };
- *
- *   __gctx.setHooksContext(__ctx);
- *
- *   if (__ctx !== __pctx) {
- *     createElement(__ctx, "e1", "div", {
- *       class: "counter"
- *     });
- *     renderChildren(__ctx, "e1", [props.children]);
- *     __ctx.$r = __ctx.e1;
- *
- *     __gctx.popHooksContext();
- *
- *     return __ctx;
- *   } else {
- *     renderChildren(__ctx, "e1", [props.children]);
- *     __gctx.popHooksContext();
- *   }
- * }
- */
-
-module.exports = function transformComponent(path) {
+function transformComponentInternals(path) {
   let renderPath = [];
   let updatePath = [];
 
@@ -371,4 +300,40 @@ module.exports = function transformComponent(path) {
         t.blockStatement([...updatePath, ch.popHooksContext()])
       )
     ]);
+}
+
+function transfromNestedFunctions(path) {
+  if (!isReactFunctionComponent(path)) return;
+  path
+    .get("body")
+    .unshiftContainer("body", [
+      ch.initComponentContext(),
+      ch.setHooksContext()
+    ]);
+  transformComponentInternals(path);
+}
+
+module.exports = function transformComponent(path) {
+  let { id, params } = path.node;
+  let updatedParams = [
+    ...(params.length ? params : [t.identifier("__props")]),
+    ch.gCtxId,
+    ch.pCtxId
+  ];
+
+  path.set("params", updatedParams);
+  path
+    .get("body")
+    .unshiftContainer("body", [
+      ch.initComponentContext(id, updatedParams[0], true),
+      ch.setHooksContext()
+    ]);
+
+  path.traverse({
+    FunctionExpression: transfromNestedFunctions,
+    FunctionDeclaration: transfromNestedFunctions,
+    ArrowFunctionExpression: transfromNestedFunctions
+  });
+
+  transformComponentInternals(path);
 };
