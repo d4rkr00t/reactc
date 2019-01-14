@@ -1,5 +1,6 @@
 let { types: t } = require("@babel/core");
 let { CTX, GCTX, PCTX } = require("./consts");
+let isFunction = require("../utils/checks/is-function");
 let ctxId = t.identifier(CTX);
 let gCtxId = t.identifier(GCTX);
 let pCtxId = t.identifier(PCTX);
@@ -123,6 +124,18 @@ function popHooksContext() {
 }
 
 function setAttr(id, key, value) {
+  if (isFunction(value)) {
+    return [
+      t.expressionStatement(
+        t.callExpression(t.identifier("setAttr"), [
+          contextProperty(id),
+          t.stringLiteral(key.name),
+          value
+        ])
+      )
+    ];
+  }
+
   let newValId = t.identifier("__" + id + "__" + key.name);
   return [
     t.variableDeclaration("let", [

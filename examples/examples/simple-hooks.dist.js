@@ -60,19 +60,16 @@ function createElement(cctx, lid, type, attrs) {
 
 function setAttr(ctx, name, value) {
   if (name === "style") {
-    ctx._.setAttribute(
-      name,
-      Object.keys(value)
-        .map(prop => {
-          let val = value[prop];
-          return (
-            prop.replace(/([A-Z])/g, $1 => "-" + $1.toLowerCase()) +
-            ": " +
-            (typeof val === "number" ? val + "px" : val)
-          );
-        })
-        .join(";")
-    );
+    ctx._[name] = Object.keys(value)
+      .map(prop => {
+        let val = value[prop];
+        return (
+          prop.replace(/([A-Z])/g, $1 => "-" + $1.toLowerCase()) +
+          ": " +
+          (typeof val === "number" ? val + "px" : val)
+        );
+      })
+      .join(";");
   } else if (name.startsWith("on")) {
     let eventName = name.replace("on", "").toLowerCase();
     if (
@@ -87,14 +84,8 @@ function setAttr(ctx, name, value) {
       ctx._.removeEventListener(eventName, ctx.$p[name]);
     }
     ctx._.addEventListener(eventName, value);
-  } else if (name === "value") {
-    ctx._.value = value;
-  } else if (name === "checked") {
-    if (value === false) {
-      ctx._.checked = false;
-    } else {
-      ctx._.checked = true;
-    }
+  } else if (["value", "checked"].indexOf(name) >= 0) {
+    ctx._[name] = value;
   } else {
     ctx._.setAttribute(name, value);
   }
@@ -316,9 +307,7 @@ function App(__props, __gctx, __pctx) {
       children: count
     });
 
-    let __e51__onClick = () => setCount(count + 1);
-
-    __ctx.e51.$p.onClick !== __e51__onClick && setAttr(__ctx.e51, "onClick", __e51__onClick);
+    setAttr(__ctx.e51, "onClick", () => setCount(count + 1));
 
     __gctx.pHC();
   }

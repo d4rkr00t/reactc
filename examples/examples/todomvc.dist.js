@@ -60,19 +60,16 @@ function createElement(cctx, lid, type, attrs) {
 
 function setAttr(ctx, name, value) {
   if (name === "style") {
-    ctx._.setAttribute(
-      name,
-      Object.keys(value)
-        .map(prop => {
-          let val = value[prop];
-          return (
-            prop.replace(/([A-Z])/g, $1 => "-" + $1.toLowerCase()) +
-            ": " +
-            (typeof val === "number" ? val + "px" : val)
-          );
-        })
-        .join(";")
-    );
+    ctx._[name] = Object.keys(value)
+      .map(prop => {
+        let val = value[prop];
+        return (
+          prop.replace(/([A-Z])/g, $1 => "-" + $1.toLowerCase()) +
+          ": " +
+          (typeof val === "number" ? val + "px" : val)
+        );
+      })
+      .join(";");
   } else if (name.startsWith("on")) {
     let eventName = name.replace("on", "").toLowerCase();
     if (
@@ -87,14 +84,8 @@ function setAttr(ctx, name, value) {
       ctx._.removeEventListener(eventName, ctx.$p[name]);
     }
     ctx._.addEventListener(eventName, value);
-  } else if (name === "value") {
-    ctx._.value = value;
-  } else if (name === "checked") {
-    if (value === false) {
-      ctx._.checked = false;
-    } else {
-      ctx._.checked = true;
-    }
+  } else if (["value", "checked"].indexOf(name) >= 0) {
+    ctx._[name] = value;
   } else {
     ctx._.setAttribute(name, value);
   }
@@ -385,23 +376,17 @@ function TodoItem(props, __gctx, __pctx) {
     __ctx.e57.$p.onClick !== __e57__onClick && setAttr(__ctx.e57, "onClick", __e57__onClick);
     let __e58__value = inputValue;
     __ctx.e58.$p.value !== __e58__value && setAttr(__ctx.e58, "value", __e58__value);
-
-    let __e58__onChange = e => setInputValue(e.target.value);
-
-    __ctx.e58.$p.onChange !== __e58__onChange && setAttr(__ctx.e58, "onChange", __e58__onChange);
+    setAttr(__ctx.e58, "onChange", e => setInputValue(e.target.value));
     let __e58__onBlur = handleSubmit;
     __ctx.e58.$p.onBlur !== __e58__onBlur && setAttr(__ctx.e58, "onBlur", __e58__onBlur);
-
-    let __e58__onKeyDown = e => {
+    setAttr(__ctx.e58, "onKeyDown", e => {
       if (e.which === 27) {
         props.onCancel(event);
         setInputValue(props.todo.title);
       } else if (event.which === 13) {
         handleSubmit();
       }
-    };
-
-    __ctx.e58.$p.onKeyDown !== __e58__onKeyDown && setAttr(__ctx.e58, "onKeyDown", __e58__onKeyDown);
+    });
 
     __gctx.pHC();
   }
@@ -695,15 +680,12 @@ function TodoApp(__props, __gctx, __pctx) {
     let __e71__checked = activeTodoCount === 0;
 
     __ctx.e71.$p.checked !== __e71__checked && setAttr(__ctx.e71, "checked", __e71__checked);
-
-    let __e71__onChange = () => {
+    setAttr(__ctx.e71, "onChange", () => {
       let completed = todos.every(t => t.completed);
       updateTodosList(todos.map(t => ({ ...t,
         completed: !completed
       })));
-    };
-
-    __ctx.e71.$p.onChange !== __e71__onChange && setAttr(__ctx.e71, "onChange", __e71__onChange);
+    });
     renderChildren(__ctx, "e73", [todoItems]);
 
     if (todos.length) {
@@ -723,12 +705,8 @@ function TodoApp(__props, __gctx, __pctx) {
 
     let __e77__value = inputValue;
     __ctx.e77.$p.value !== __e77__value && setAttr(__ctx.e77, "value", __e77__value);
-
-    let __e77__onChange = e => setInputValue(e.target.value);
-
-    __ctx.e77.$p.onChange !== __e77__onChange && setAttr(__ctx.e77, "onChange", __e77__onChange);
-
-    let __e77__onKeyDown = e => {
+    setAttr(__ctx.e77, "onChange", e => setInputValue(e.target.value));
+    setAttr(__ctx.e77, "onKeyDown", e => {
       if (e.keyCode !== 13 || !inputValue) return;
       e.preventDefault();
       todos.push({
@@ -738,9 +716,7 @@ function TodoApp(__props, __gctx, __pctx) {
       });
       updateTodosList(todos);
       setInputValue("");
-    };
-
-    __ctx.e77.$p.onKeyDown !== __e77__onKeyDown && setAttr(__ctx.e77, "onKeyDown", __e77__onKeyDown);
+    });
     renderChildren(__ctx, "e74", [__ctx.e75, main, footer]);
 
     __gctx.pHC();
