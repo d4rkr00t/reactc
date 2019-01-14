@@ -61,21 +61,11 @@ function isDynamicProps(props) {
     return false;
   }
 
-  return props.properties.some(prop => {
-    if (isDynamic(prop.value)) {
-      return true;
-    }
-    return false;
-  });
+  return props.properties.some(prop => isDynamic(prop.value));
 }
 
 function isDynamicChildren(children) {
-  return children.some(child => {
-    if (isDynamic(child)) {
-      return true;
-    }
-    return false;
-  });
+  return children.some(child => isDynamic(child));
 }
 
 function procsessChildren(children, initialRenderPath, reRenderPath) {
