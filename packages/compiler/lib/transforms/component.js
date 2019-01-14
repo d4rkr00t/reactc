@@ -136,10 +136,9 @@ function transformElement(
   props,
   children,
   initialRenderPath,
-  reRenderPath,
-  isRoot
+  reRenderPath
 ) {
-  let id = isRoot ? "$r" : createElementId();
+  let id = createElementId();
   initialRenderPath.push(ch.createElement(id, type, processProps(props)));
   let directChildren = procsessChildren(
     children,
@@ -280,7 +279,7 @@ function transfromNestedFunctions(path) {
   transformComponentInternals(path);
 }
 
-module.exports = function transformComponent(path) {
+module.exports = function transformComponentFunction(path) {
   let { id, params } = path.node;
   let updatedParams = [
     ...(params.length ? params : [t.identifier("__props")]),
