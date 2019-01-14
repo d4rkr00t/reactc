@@ -18,10 +18,16 @@ function contextProperty(id) {
   return memberExpression(CTX, id);
 }
 
+/**
+ * __ctx.id.$p.prop
+ */
 function contextElementProperty(id, prop) {
   return memberExpression(CTX, id, "$p", prop);
 }
 
+/**
+ * __ctx.id.$
+ */
 function contextElementUpdater(id) {
   return memberExpression(CTX, id, "$");
 }
@@ -140,6 +146,30 @@ function setAttr(id, key, value) {
   ];
 }
 
+/**
+ * __ctx.$r = __ctx.id;
+ */
+function setRootElement(id) {
+  return t.expressionStatement(
+    t.assignmentExpression("=", contextProperty("$r"), contextProperty(id))
+  );
+}
+
+/**
+ * if (__ctx !== __pCtx) {
+ *   ...renderPath
+ * } else {
+ *   ...updatePath
+ * }
+ */
+function createRenderUpdate(renderPath, updatePath) {
+  return t.ifStatement(
+    t.binaryExpression("!==", ctxId, pCtxId),
+    t.blockStatement(renderPath),
+    t.blockStatement([...updatePath, popHooksContext()])
+  );
+}
+
 module.exports = {
   memberExpression,
   contextProperty,
@@ -153,5 +183,8 @@ module.exports = {
   initComponentContext,
   setHooksContext,
   popHooksContext,
-  setAttr
+  setAttr,
+  setRootElement,
+  contextElementUpdater,
+  createRenderUpdate
 };

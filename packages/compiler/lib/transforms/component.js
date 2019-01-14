@@ -1,8 +1,8 @@
 let { types: t } = require("@babel/core");
 let ch = require("../utils/create-helpers");
-let { CTX } = require("../utils/consts");
 let isCreateElementExpression = require("../utils/checks/is-create-element");
 let isReactFunctionComponent = require("../utils/checks/is-react-fc");
+let isDynamic = require("../utils/checks/is-dynamic");
 
 let componentGlobalId = 0;
 function createComponentId() {
@@ -50,18 +50,6 @@ function processProps(props, children) {
  */
 function processReactCreateElement(node) {
   return [node.arguments[0], node.arguments[1], node.arguments.slice(2)];
-}
-
-function isDynamic(node) {
-  return (
-    t.isFunctionExpression(node) ||
-    t.isIdentifier(node) ||
-    t.isArrowFunctionExpression(node) ||
-    t.isConditionalExpression(node) ||
-    (t.isMemberExpression(node) && node.object.name !== CTX) ||
-    (t.isBinaryExpression(node) &&
-      (isDynamic(node.left) || isDynamic(node.right)))
-  );
 }
 
 function getDynamicProps(props) {
@@ -139,13 +127,9 @@ function procsessChildren(children, initialRenderPath, reRenderPath) {
  *
  * <- initial render:
  *  createElement(__ctx, "e1", "div", { className: "counter" });
- *  createComponent(__ctx, "c1", Child, { prop: "1", children: "Text" });
+ *  createComponent(__gctx, __ctx, "c1", Child, { prop: "1", children: "Text" });
  *  renderChildren(__ctx, "e1", [props.children, "second child", __ctx.c1]);
  *
- * <- re-render:
- *  if (props.children !== __ctx.props.children) {
- *    renderChildren(__ctx, "e1", [props.children, "second child", __ctx.c1]);
- *  }
  */
 function transformElement(
   type,
@@ -197,7 +181,7 @@ function transformComponent(
   if (isDynamicProps(props) || isDynamicChildren(children)) {
     reRenderPath.push(
       t.expressionStatement(
-        t.callExpression(ch.memberExpression(CTX, id, "$"), [
+        t.callExpression(ch.contextElementUpdater(id), [
           processProps(props, directChildren)
         ])
       )
@@ -263,18 +247,7 @@ function transformComponentInternals(path) {
       //   __gctx.popHooksContext()
       //   return __ctx;
       if (t.isReturnStatement(parentPath.node)) {
-        renderPath.push(
-          ...[
-            t.expressionStatement(
-              t.assignmentExpression(
-                "=",
-                ch.contextProperty("$r"),
-                ch.contextProperty(id)
-              )
-            ),
-            ch.popHooksContext()
-          ]
-        );
+        renderPath.push(...[ch.setRootElement(id), ch.popHooksContext()]);
         path.replaceWith(ch.ctxId);
       } else {
         path.replaceWith(ch.contextProperty(id));
@@ -293,13 +266,7 @@ function transformComponentInternals(path) {
   updatePath = updatePath.filter(Boolean);
   path
     .get("body")
-    .pushContainer("body", [
-      t.ifStatement(
-        t.binaryExpression("!==", ch.ctxId, ch.pCtxId),
-        t.blockStatement(renderPath),
-        t.blockStatement([...updatePath, ch.popHooksContext()])
-      )
-    ]);
+    .pushContainer("body", [ch.createRenderUpdate(renderPath, updatePath)]);
 }
 
 function transfromNestedFunctions(path) {
