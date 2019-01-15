@@ -84,7 +84,7 @@ function setAttr(ctx, name, value) {
       ctx._.removeEventListener(eventName, ctx.$p[name]);
     }
     ctx._.addEventListener(eventName, value);
-  } else if (["value", "checked"].indexOf(name) >= 0) {
+  } else if (["value", "checked", "className"].indexOf(name) >= 0) {
     ctx._[name] = value;
   } else {
     ctx._.setAttribute(name, value);
@@ -254,7 +254,7 @@ function Date(props, __gctx, __pctx) {
 
   if (__ctx !== __pctx) {
     createElement(__ctx, "e1", "div", {
-      class: "date"
+      className: "date"
     });
     renderChildren(__ctx, "e1", [props.children]);
     __ctx.$r = __ctx.e1;
@@ -282,7 +282,7 @@ function Button(props, __gctx, __pctx) {
   if (__ctx !== __pctx) {
     createElement(__ctx, "e2", "a", {
       href: "#",
-      class: "button"
+      className: "button"
     });
     renderChildren(__ctx, "e2", [props.children]);
     __ctx.$r = __ctx.e2;
@@ -309,7 +309,7 @@ function Title(props, __gctx, __pctx) {
 
   if (__ctx !== __pctx) {
     createElement(__ctx, "e3", "h1", {
-      class: "title"
+      className: "title"
     });
     renderChildren(__ctx, "e3", [props.children]);
     __ctx.$r = __ctx.e3;
@@ -369,32 +369,32 @@ function App(__props, __gctx, __pctx) {
 
   if (__ctx !== __pctx) {
     createElement(__ctx, "e5", "div", {
-      class: "App"
+      className: "App"
     });
     createElement(__ctx, "e6", "div", {
-      class: "row"
+      className: "row"
     });
     createElement(__ctx, "e7", "div", {
-      class: "card"
+      className: "card"
     });
     createElement(__ctx, "e8", "div", {
-      class: "wrapper"
+      className: "wrapper"
     });
     createElement(__ctx, "e9", "div", {
-      class: "header"
+      className: "header"
     });
     createComponent(__gctx, __ctx, "c1", Date, {
       children: "12 Aug 2016"
     });
     renderChildren(__ctx, "e9", [__ctx.c1]);
     createElement(__ctx, "e10", "div", {
-      class: "data"
+      className: "data"
     });
     createElement(__ctx, "e11", "div", {
-      class: "content"
+      className: "content"
     });
     createElement(__ctx, "e12", "span", {
-      class: "author"
+      className: "author"
     });
     renderChildren(__ctx, "e12", ["Jane Doe"]);
     createComponent(__gctx, __ctx, "c3", Link, {
@@ -404,7 +404,7 @@ function App(__props, __gctx, __pctx) {
       children: __ctx.c3
     });
     createElement(__ctx, "e13", "p", {
-      class: "text"
+      className: "text"
     });
     renderChildren(__ctx, "e13", ["The antsy bingers of Netflix will eagerly anticipate the digital release of the Survive soundtrack, out today."]);
     createComponent(__gctx, __ctx, "c4", Button, {

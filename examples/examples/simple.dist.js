@@ -84,7 +84,7 @@ function setAttr(ctx, name, value) {
       ctx._.removeEventListener(eventName, ctx.$p[name]);
     }
     ctx._.addEventListener(eventName, value);
-  } else if (["value", "checked"].indexOf(name) >= 0) {
+  } else if (["value", "checked", "className"].indexOf(name) >= 0) {
     ctx._[name] = value;
   } else {
     ctx._.setAttribute(name, value);

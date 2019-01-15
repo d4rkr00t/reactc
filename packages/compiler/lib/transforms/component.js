@@ -22,9 +22,7 @@ function processAttrs(type, props) {
         .map(p => t.cloneNode(p))
         .map(prop => {
           let name = prop.key.name;
-          if (name === "className") {
-            prop.key.name = "class";
-          } else if (name === "onDoubleClick") {
+          if (name === "onDoubleClick") {
             prop.key.name = "onDblclick";
           } else if (name.match(/html[A-Z]/)) {
             prop.key.name = name.replace("html", "").toLowerCase();

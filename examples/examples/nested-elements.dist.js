@@ -84,7 +84,7 @@ function setAttr(ctx, name, value) {
       ctx._.removeEventListener(eventName, ctx.$p[name]);
     }
     ctx._.addEventListener(eventName, value);
-  } else if (["value", "checked"].indexOf(name) >= 0) {
+  } else if (["value", "checked", "className"].indexOf(name) >= 0) {
     ctx._[name] = value;
   } else {
     ctx._.setAttribute(name, value);
@@ -256,24 +256,24 @@ function App(__props, __gctx, __pctx) {
 
   if (__ctx !== __pctx) {
     createElement(__ctx, "e18", "div", {
-      class: "panel"
+      className: "panel"
     });
     createElement(__ctx, "e19", "div", {
-      class: "panel__table panel__line"
+      className: "panel__table panel__line"
     });
     createElement(__ctx, "e20", "table");
     createElement(__ctx, "e21", "tr");
     createElement(__ctx, "e22", "td");
     createElement(__ctx, "e23", "span", {
-      class: "panel__mute"
+      className: "panel__mute"
     });
     renderChildren(__ctx, "e23", ["Scope:"]);
     renderChildren(__ctx, "e22", [__ctx.e23]);
     createElement(__ctx, "e24", "td", {
-      class: "panel__badge-col"
+      className: "panel__badge-col"
     });
     createElement(__ctx, "e25", "span", {
-      class: "panel__badge"
+      className: "panel__badge"
     });
     renderChildren(__ctx, "e25", ["fn"]);
     renderChildren(__ctx, "e24", [__ctx.e25]);
@@ -284,20 +284,20 @@ function App(__props, __gctx, __pctx) {
     createElement(__ctx, "e28", "td");
     renderChildren(__ctx, "e28", []);
     createElement(__ctx, "e29", "td", {
-      class: "panel__badge-col"
+      className: "panel__badge-col"
     });
     createElement(__ctx, "e30", "span", {
-      class: "panel__badge -purple"
+      className: "panel__badge -purple"
     });
     renderChildren(__ctx, "e30", ["bem"]);
     renderChildren(__ctx, "e29", [__ctx.e30]);
     createElement(__ctx, "e31", "td");
     createElement(__ctx, "e32", "span", {
-      class: "panel__mute"
+      className: "panel__mute"
     });
     renderChildren(__ctx, "e32", ["block:"]);
     createElement(__ctx, "e33", "span", {
-      class: "panel__mute"
+      className: "panel__mute"
     });
     renderChildren(__ctx, "e33", [" | elem:"]);
     renderChildren(__ctx, "e31", [__ctx.e32, "z-entity-gallery", __ctx.e33, "image"]);
@@ -305,22 +305,22 @@ function App(__props, __gctx, __pctx) {
     createElement(__ctx, "e34", "tr");
     createElement(__ctx, "e35", "td", {
       colspan: "4",
-      class: "panel__table-sep"
+      className: "panel__table-sep"
     });
     renderChildren(__ctx, "e35", []);
     renderChildren(__ctx, "e34", [__ctx.e35]);
     createElement(__ctx, "e36", "tr");
     createElement(__ctx, "e37", "td");
     createElement(__ctx, "e38", "span", {
-      class: "panel__mute"
+      className: "panel__mute"
     });
     renderChildren(__ctx, "e38", ["Parent:"]);
     renderChildren(__ctx, "e37", [__ctx.e38]);
     createElement(__ctx, "e39", "td", {
-      class: "panel__badge-col"
+      className: "panel__badge-col"
     });
     createElement(__ctx, "e40", "span", {
-      class: "panel__badge -blue"
+      className: "panel__badge -blue"
     });
     renderChildren(__ctx, "e40", ["P"]);
     renderChildren(__ctx, "e39", [__ctx.e40]);
@@ -330,23 +330,23 @@ function App(__props, __gctx, __pctx) {
     createElement(__ctx, "e42", "tr");
     createElement(__ctx, "e43", "td", {
       colspan: "4",
-      class: "panel__table-sep"
+      className: "panel__table-sep"
     });
     renderChildren(__ctx, "e43", []);
     renderChildren(__ctx, "e42", [__ctx.e43]);
     createElement(__ctx, "e44", "tr");
     createElement(__ctx, "e45", "td");
     createElement(__ctx, "e46", "span", {
-      class: "panel__mute"
+      className: "panel__mute"
     });
     renderChildren(__ctx, "e46", ["File:"]);
     renderChildren(__ctx, "e45", [__ctx.e46]);
     createElement(__ctx, "e47", "td", {
       colspan: "2",
-      class: "panel__files"
+      className: "panel__files"
     });
     createElement(__ctx, "e48", "div", {
-      class: "panel__file"
+      className: "panel__file"
     });
     renderChildren(__ctx, "e48", ["contribs/z-entity-search/blocks-deskpad/z-entity-gallery/__thumbs/z-entity-gallery__thumbs.priv.js:22"]);
     renderChildren(__ctx, "e47", [__ctx.e48]);

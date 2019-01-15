@@ -84,7 +84,7 @@ function setAttr(ctx, name, value) {
       ctx._.removeEventListener(eventName, ctx.$p[name]);
     }
     ctx._.addEventListener(eventName, value);
-  } else if (["value", "checked"].indexOf(name) >= 0) {
+  } else if (["value", "checked", "className"].indexOf(name) >= 0) {
     ctx._[name] = value;
   } else {
     ctx._.setAttribute(name, value);
@@ -256,7 +256,7 @@ function App(__props, __gctx, __pctx) {
 
   if (__ctx !== __pctx) {
     createElement(__ctx, "e17", "div", {
-      class: "barchart"
+      className: "barchart"
     });
     renderChildren(__ctx, "e17", [colors.map((color, idx) => {
       var __ctx = {};
@@ -267,17 +267,17 @@ function App(__props, __gctx, __pctx) {
 
       if (__ctx !== __pctx) {
         createElement(__ctx, "e14", "div", {
-          class: "barchart__bar-wrapper"
+          className: "barchart__bar-wrapper"
         });
         createElement(__ctx, "e15", "div", {
-          class: "barchart__bar-title",
+          className: "barchart__bar-title",
           style: {
             color
           }
         });
         renderChildren(__ctx, "e15", [height]);
         createElement(__ctx, "e16", "div", {
-          class: "barchart__bar",
+          className: "barchart__bar",
           style: {
             backgroundColor: color,
             height
