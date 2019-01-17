@@ -104,7 +104,7 @@ function renderChildren(ctx, pid, children, maybeIdx) {
   let idx = maybeIdx || 0;
   let prevChildren = Array.from(parent.childNodes);
 
-  if (!prevChildren.length && !children.length) return;
+  if (!children || (!prevChildren.length && !children.length)) return;
 
   children.forEach(child => {
     if (child === null) {
@@ -282,7 +282,7 @@ function App(__props, __gctx, __pctx) {
     renderChildren(__ctx, "e21", [__ctx.e22, __ctx.e24, __ctx.e26]);
     createElement(__ctx, "e27", "tr");
     createElement(__ctx, "e28", "td");
-    renderChildren(__ctx, "e28", []);
+    renderChildren(__ctx, "e28");
     createElement(__ctx, "e29", "td", {
       className: "panel__badge-col"
     });
@@ -307,7 +307,7 @@ function App(__props, __gctx, __pctx) {
       colspan: "4",
       className: "panel__table-sep"
     });
-    renderChildren(__ctx, "e35", []);
+    renderChildren(__ctx, "e35");
     renderChildren(__ctx, "e34", [__ctx.e35]);
     createElement(__ctx, "e36", "tr");
     createElement(__ctx, "e37", "td");
@@ -332,7 +332,7 @@ function App(__props, __gctx, __pctx) {
       colspan: "4",
       className: "panel__table-sep"
     });
-    renderChildren(__ctx, "e43", []);
+    renderChildren(__ctx, "e43");
     renderChildren(__ctx, "e42", [__ctx.e43]);
     createElement(__ctx, "e44", "tr");
     createElement(__ctx, "e45", "td");

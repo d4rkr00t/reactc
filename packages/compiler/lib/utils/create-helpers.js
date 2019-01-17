@@ -60,18 +60,25 @@ function createComponent(id, type, props) {
 }
 
 /**
- * renderChildren(__ctx, 'a', props.children);
+ * renderChildren(__ctx, 'a', [props.children]);
  * renderChildren(__ctx, 'a', [ctx.b, ctx.c, "some text"]);
  */
 function renderChildren(id, children) {
   let processedChildren = children.filter(Boolean);
-  return t.expressionStatement(
-    t.callExpression(t.identifier("renderChildren"), [
-      ctxId,
-      t.stringLiteral(id),
-      t.arrayExpression(processedChildren)
-    ])
-  );
+  return processedChildren.length
+    ? t.expressionStatement(
+        t.callExpression(t.identifier("renderChildren"), [
+          ctxId,
+          t.stringLiteral(id),
+          t.arrayExpression(processedChildren)
+        ])
+      )
+    : t.expressionStatement(
+        t.callExpression(t.identifier("renderChildren"), [
+          ctxId,
+          t.stringLiteral(id)
+        ])
+      );
 }
 
 /**

@@ -104,7 +104,7 @@ function renderChildren(ctx, pid, children, maybeIdx) {
   let idx = maybeIdx || 0;
   let prevChildren = Array.from(parent.childNodes);
 
-  if (!prevChildren.length && !children.length) return;
+  if (!children || (!prevChildren.length && !children.length)) return;
 
   children.forEach(child => {
     if (child === null) {

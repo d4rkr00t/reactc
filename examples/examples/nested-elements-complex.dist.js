@@ -104,7 +104,7 @@ function renderChildren(ctx, pid, children, maybeIdx) {
   let idx = maybeIdx || 0;
   let prevChildren = Array.from(parent.childNodes);
 
-  if (!prevChildren.length && !children.length) return;
+  if (!children || (!prevChildren.length && !children.length)) return;
 
   children.forEach(child => {
     if (child === null) {
@@ -283,7 +283,7 @@ function App(__props, __gctx, __pctx) {
             height
           }
         });
-        renderChildren(__ctx, "e16", []);
+        renderChildren(__ctx, "e16");
         renderChildren(__ctx, "e14", [__ctx.e15, __ctx.e16]);
         __ctx.$r = __ctx.e14;
 

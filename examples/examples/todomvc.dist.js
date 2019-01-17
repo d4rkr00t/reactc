@@ -104,7 +104,7 @@ function renderChildren(ctx, pid, children, maybeIdx) {
   let idx = maybeIdx || 0;
   let prevChildren = Array.from(parent.childNodes);
 
-  if (!prevChildren.length && !children.length) return;
+  if (!children || (!prevChildren.length && !children.length)) return;
 
   children.forEach(child => {
     if (child === null) {
@@ -332,7 +332,7 @@ function TodoItem(props, __gctx, __pctx) {
       checked: props.todo.completed,
       onChange: props.onToggle
     });
-    renderChildren(__ctx, "e55", []);
+    renderChildren(__ctx, "e55");
     createElement(__ctx, "e56", "label", {
       onDblclick: props.onEdit
     });
@@ -341,7 +341,7 @@ function TodoItem(props, __gctx, __pctx) {
       className: "destroy",
       onClick: props.onDestroy
     });
-    renderChildren(__ctx, "e57", []);
+    renderChildren(__ctx, "e57");
     renderChildren(__ctx, "e54", [__ctx.e55, __ctx.e56, __ctx.e57]);
     createElement(__ctx, "e58", "input", {
       className: "edit",
@@ -357,7 +357,7 @@ function TodoItem(props, __gctx, __pctx) {
         }
       }
     });
-    renderChildren(__ctx, "e58", []);
+    renderChildren(__ctx, "e58");
     renderChildren(__ctx, "e53", [__ctx.e54, __ctx.e58]);
     __ctx.$r = __ctx.e53;
 
@@ -618,11 +618,11 @@ function TodoApp(__props, __gctx, __pctx) {
         })));
       }
     });
-    renderChildren(__ctx, "e71", []);
+    renderChildren(__ctx, "e71");
     createElement(__ctx, "e72", "label", {
       for: "toggle-all"
     });
-    renderChildren(__ctx, "e72", []);
+    renderChildren(__ctx, "e72");
     createElement(__ctx, "e73", "ul", {
       className: "todo-list"
     });
@@ -668,7 +668,7 @@ function TodoApp(__props, __gctx, __pctx) {
         setInputValue("");
       }
     });
-    renderChildren(__ctx, "e77", []);
+    renderChildren(__ctx, "e77");
     renderChildren(__ctx, "e75", [__ctx.e76, __ctx.e77]);
     renderChildren(__ctx, "e74", [__ctx.e75, main, footer]);
     __ctx.$r = __ctx.e74;
