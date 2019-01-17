@@ -14,6 +14,13 @@ function createElementId() {
   return "e" + ++elemGlobalId;
 }
 
+function setPropertyName(prop, name) {
+  if (t.isStringLiteral(prop.key)) {
+    return t.objectProperty(t.stringLiteral(name), prop.value);
+  }
+  return t.objectProperty(t.identifier(name), prop.value);
+}
+
 function processAttrs(type, props) {
   let newProps = [];
   if (!t.isNullLiteral(props)) {
@@ -21,11 +28,16 @@ function processAttrs(type, props) {
       props.properties
         .map(p => t.cloneNode(p))
         .map(prop => {
-          let name = prop.key.name;
+          let name = t.isStringLiteral(prop.key)
+            ? prop.key.value
+            : prop.key.name;
           if (name === "onDoubleClick") {
-            prop.key.name = "onDblclick";
+            return setPropertyName(prop, "onDblclick");
           } else if (name.match(/html[A-Z]/)) {
-            prop.key.name = name.replace("html", "").toLowerCase();
+            return setPropertyName(
+              prop,
+              name.replace("html", "").toLowerCase()
+            );
           }
 
           return prop;

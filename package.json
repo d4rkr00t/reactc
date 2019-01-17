@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "node ./examples/build.js",
-    "test": "npm run build all && ava examples/test.js"
+    "test": "npm run build all && ava"
   },
   "keywords": [],
   "author": "",

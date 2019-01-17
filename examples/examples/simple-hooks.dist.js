@@ -35,6 +35,7 @@ function mount(parent, gctx, cmp, props) {
   if (!ctx) return;
   parent.innerHTML = "";
   parent.appendChild(ctx.$r._);
+  return ctx;
 }
 
 function createComponent(gctx, cctx, lid, cmp, props) {
@@ -63,10 +64,18 @@ function setAttr(ctx, name, value) {
     ctx._[name] = Object.keys(value)
       .map(prop => {
         let val = value[prop];
+        let cleanPropName = prop.replace(
+          /([A-Z])/g,
+          $1 => "-" + $1.toLowerCase()
+        );
         return (
-          prop.replace(/([A-Z])/g, $1 => "-" + $1.toLowerCase()) +
+          cleanPropName +
           ": " +
-          (typeof val === "number" ? val + "px" : val)
+          (typeof val === "number" &&
+          ["opacity", "flex", "z-index"].indexOf(cleanPropName) === -1 &&
+          !cleanPropName.match(/^--/)
+            ? val + "px"
+            : "" + val)
         );
       })
       .join(";");
@@ -87,7 +96,11 @@ function setAttr(ctx, name, value) {
   } else if (["value", "checked", "className"].indexOf(name) >= 0) {
     ctx._[name] = value;
   } else {
-    ctx._.setAttribute(name, value);
+    if (value) {
+      ctx._.setAttribute(name, value);
+    } else {
+      ctx._.removeAttribute(name);
+    }
   }
 
   ctx.$p[name] = value;

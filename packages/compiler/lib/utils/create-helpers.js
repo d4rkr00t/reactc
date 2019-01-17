@@ -23,7 +23,14 @@ function contextProperty(id) {
  * __ctx.id.$p.prop
  */
 function contextElementProperty(id, prop) {
-  return memberExpression(CTX, id, "$p", prop);
+  return t.memberExpression(
+    t.memberExpression(
+      t.memberExpression(ctxId, t.identifier(id)),
+      t.identifier("$p")
+    ),
+    prop,
+    t.isStringLiteral(prop) ? true : false
+  );
 }
 
 /**
@@ -151,14 +158,10 @@ function setAttr(id, key, value) {
     t.expressionStatement(
       t.logicalExpression(
         "&&",
-        t.binaryExpression(
-          "!==",
-          contextElementProperty(id, key.name),
-          newValId
-        ),
+        t.binaryExpression("!==", contextElementProperty(id, key), newValId),
         t.callExpression(t.identifier("setAttr"), [
           contextProperty(id),
-          t.stringLiteral(key.name),
+          t.isIdentifier(key) ? t.stringLiteral(key.name) : key,
           newValId
         ])
       )

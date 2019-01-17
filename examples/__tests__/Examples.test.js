@@ -20,7 +20,7 @@ window.localStorage = {
     const div = document.createElement("div");
     div.id = "app";
     document.body.appendChild(div);
-    require(`./examples/${name}.dist.js`);
+    require(`../examples/${name}.dist.js`);
     let result = html(div.innerHTML);
     document.body.innerHTML = "";
 
