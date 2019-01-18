@@ -30,11 +30,15 @@
  * renderChildren(CCTX/ECTX, parentLocalId, [localId1, localId2, localId3]);
  */
 
+function appendChild(p, c) {
+  p.appendChild(c);
+}
+
 function mount(parent, gctx, cmp, props) {
   let ctx = cmp(props, gctx);
   if (!ctx) return;
   parent.innerHTML = "";
-  parent.appendChild(ctx.$r._);
+  appendChild(parent, ctx.$r._);
   return ctx;
 }
 
@@ -143,7 +147,7 @@ function renderChildren(ctx, pid, children, maybeIdx) {
         return;
       } else {
         idx++;
-        return parent.appendChild(document.createTextNode(child));
+        return appendChild(parent, document.createTextNode(child));
       }
     } else if (Array.isArray(child)) {
       renderChildren({ $r: { _: parent } }, "$r", child, idx);
@@ -173,7 +177,7 @@ function renderChildren(ctx, pid, children, maybeIdx) {
           idx++;
           return;
         }
-        parent.appendChild(newChild);
+        appendChild(parent, newChild);
         idx++;
         return;
       }
