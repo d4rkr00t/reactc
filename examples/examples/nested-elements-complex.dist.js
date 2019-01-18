@@ -30,6 +30,10 @@
  * renderChildren(CCTX/ECTX, parentLocalId, [localId1, localId2, localId3]);
  */
 
+function toPx(val) {
+  return typeof val === "number" ? val + "px" : val;
+}
+
 function appendChild(p, c) {
   p.appendChild(c);
 }
@@ -64,26 +68,7 @@ function createElement(cctx, lid, type, attrs) {
 }
 
 function setAttr(ctx, name, value) {
-  if (name === "style") {
-    ctx._[name] = Object.keys(value)
-      .map(prop => {
-        let val = value[prop];
-        let cleanPropName = prop.replace(
-          /([A-Z])/g,
-          $1 => "-" + $1.toLowerCase()
-        );
-        return (
-          cleanPropName +
-          ": " +
-          (typeof val === "number" &&
-          ["opacity", "flex", "z-index"].indexOf(cleanPropName) === -1 &&
-          !cleanPropName.match(/^--/)
-            ? val + "px"
-            : "" + val)
-        );
-      })
-      .join(";");
-  } else if (name.startsWith("on")) {
+  if (name.startsWith("on")) {
     let eventName = name.replace("on", "").toLowerCase();
     if (
       eventName === "change" &&
@@ -97,7 +82,7 @@ function setAttr(ctx, name, value) {
       ctx._.removeEventListener(eventName, ctx.$p[name]);
     }
     ctx._.addEventListener(eventName, value);
-  } else if (["value", "checked", "className"].indexOf(name) >= 0) {
+  } else if (["value", "checked", "className", "style"].indexOf(name) >= 0) {
     ctx._[name] = value;
   } else {
     if (value) {
@@ -288,17 +273,12 @@ function App(__props, __gctx, __pctx) {
         });
         createElement(__ctx, "e15", "div", {
           className: "barchart__bar-title",
-          style: {
-            color
-          }
+          style: `color:${color}`
         });
         renderChildren(__ctx, "e15", [height]);
         createElement(__ctx, "e16", "div", {
           className: "barchart__bar",
-          style: {
-            backgroundColor: color,
-            height
-          }
+          style: `background-color:${color};height:${toPx(height)}`
         });
         renderChildren(__ctx, "e16");
         renderChildren(__ctx, "e14", [__ctx.e15, __ctx.e16]);

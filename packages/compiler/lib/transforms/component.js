@@ -1,4 +1,6 @@
 let { types: t } = require("@babel/core");
+let template = require("@babel/template").default;
+let generator = require("@babel/generator").default;
 let ch = require("../utils/create-helpers");
 let isCreateElementExpression = require("../utils/checks/is-create-element");
 let isReactFunctionComponent = require("../utils/checks/is-react-fc");
@@ -21,6 +23,32 @@ function setPropertyName(prop, name) {
   return t.objectProperty(t.identifier(name), prop.value);
 }
 
+/**
+ * {
+ *   className: "barchart__bar-title",
+ *   style: {
+ *     color: 'color',
+ *     height: height
+ *   },
+ *   'data-name': 'name',
+ *   onClick: () => {}
+ * }
+ * ->
+ * {
+ *   $: {
+ *     className: "barchart__bar-title",
+ *     style: `color: color; height: ${toPx(height)}`
+ *   },
+ *   $e: {
+ *     click: () => {}
+ *   },
+ *   $a: {
+ *     'data-name': 'name'
+ *   }
+ * }
+ */
+let shouldWrapInToPx = name =>
+  ["height", "width", "left", "margin"].indexOf(name) >= 0;
 function processAttrs(type, props) {
   let newProps = [];
   if (!t.isNullLiteral(props)) {
@@ -38,6 +66,39 @@ function processAttrs(type, props) {
               prop,
               name.replace("html", "").toLowerCase()
             );
+          } else if (name === "style" && t.isObjectExpression(prop.value)) {
+            let str = prop.value.properties
+              .map(p => {
+                let cleanPropName = (t.isStringLiteral(p.key)
+                  ? p.key.value
+                  : p.key.name
+                ).replace(/([A-Z])/g, $1 => "-" + $1.toLowerCase());
+                return [
+                  cleanPropName,
+                  shouldWrapInToPx(cleanPropName) && t.isNumericLiteral(p.value)
+                    ? t.stringLiteral(p.value.value + "px")
+                    : shouldWrapInToPx(cleanPropName) &&
+                      !t.isStringLiteral(p.value) &&
+                      !cleanPropName.match(/^--/)
+                    ? t.callExpression(t.identifier("toPx"), [p.value])
+                    : p.value
+                ];
+              })
+              .reduce((acc, strPart) => {
+                if (t.isIdentifier(strPart[1])) {
+                  acc.push(`${strPart[0]}:\${${strPart[1].name}}`);
+                } else if (
+                  t.isStringLiteral(strPart[1]) ||
+                  t.isNumericLiteral(strPart[1])
+                ) {
+                  acc.push(`${strPart[0]}:${strPart[1].value}`);
+                } else if (t.isCallExpression(strPart[1])) {
+                  acc.push(`${strPart[0]}:\${${generator(strPart[1]).code}}`);
+                }
+                return acc;
+              }, [])
+              .join(";");
+            prop.value = template.ast("`" + str + "`").expression;
           }
 
           return prop;

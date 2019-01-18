@@ -18,12 +18,20 @@ test("should automatically append `px` to relevant styles", t => {
 });
 
 test("should not append `px` to styles that might need a number", t => {
-  const styles = {
+  let styles = {
     zIndex: 1,
     opacity: 0.6
   };
   let ctx = compile(`function Cmp() {
     return <div style={${JSON.stringify(styles)}} />;
+  }`);
+  t.snapshot(ctx.$r._.outerHTML);
+});
+
+test("should add px to dynamic values for relevant styles", t => {
+  let ctx = compile(`function Cmp() {
+    let margin = 10;
+    return <div style={{ margin }} />;
   }`);
   t.snapshot(ctx.$r._.outerHTML);
 });
@@ -36,7 +44,7 @@ test("should not set style attribute when no styles exist", t => {
 });
 
 test("should not warn when setting CSS custom properties", t => {
-  const styles = {
+  let styles = {
     "--foo-primary": "bla"
   };
   let ctx = compile(`function Cmp() {
@@ -46,7 +54,7 @@ test("should not warn when setting CSS custom properties", t => {
 });
 
 test("should not add units to CSS custom properties", t => {
-  const styles = {
+  let styles = {
     "--foo-primary": 5
   };
   let ctx = compile(`function Cmp() {
