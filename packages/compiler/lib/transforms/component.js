@@ -309,6 +309,12 @@ module.exports = function transformComponentFunction(path) {
   ];
 
   path.set("params", updatedParams);
+
+  // () => <div>123</div> -> () => { return <div>123</div>; }
+  if (!t.isBlockStatement(path.node.body)) {
+    path.node.body = t.blockStatement([t.returnStatement(path.node.body)]);
+  }
+
   path
     .get("body")
     .unshiftContainer("body", [

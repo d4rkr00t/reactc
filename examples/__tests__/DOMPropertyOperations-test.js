@@ -71,6 +71,7 @@ test("should remove property properly for boolean properties", t => {
   t.false(ctx.$r._.hasAttribute("hidden"));
 });
 
+// TODO:
 // test("should always assign the value attribute for non-inputs", t => {
 //   let ctx = compile(
 //     `function Cmp(props) {
@@ -80,6 +81,7 @@ test("should remove property properly for boolean properties", t => {
 //   t.true(ctx.$r._.hasAttribute("value"));
 // });
 
+// TODO:
 // it('should return the progress to intermediate state on null value', () => {
 //   const container = document.createElement('div');
 //   ReactDOM.render(<progress value={30} />, container);
