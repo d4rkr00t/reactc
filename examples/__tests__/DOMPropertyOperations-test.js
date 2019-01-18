@@ -58,3 +58,40 @@ test("should remove when setting custom attr to null", t => {
   ctx.$({ foo: null });
   t.false(ctx.$r._.hasAttribute("data-foo"));
 });
+
+test("should remove property properly for boolean properties", t => {
+  let ctx = compile(
+    `function Cmp(props) {
+    return <div hidden={props.hidden} />;
+  }`,
+    { hidden: true }
+  );
+  t.true(ctx.$r._.hasAttribute("hidden"));
+  ctx.$({ foo: false });
+  t.false(ctx.$r._.hasAttribute("hidden"));
+});
+
+// test("should always assign the value attribute for non-inputs", t => {
+//   let ctx = compile(
+//     `function Cmp(props) {
+//     return <progress value={30} />;
+//   }`
+//   );
+//   t.true(ctx.$r._.hasAttribute("value"));
+// });
+
+// it('should return the progress to intermediate state on null value', () => {
+//   const container = document.createElement('div');
+//   ReactDOM.render(<progress value={30} />, container);
+//   ReactDOM.render(<progress value={null} />, container);
+//   // Ensure we move progress back to an indeterminate state.
+//   // Regression test for https://github.com/facebook/react/issues/6119
+//   expect(container.firstChild.hasAttribute('value')).toBe(false);
+// });
+
+test("should not remove attributes for custom component tag", t => {
+  let ctx = compile(`function Cmp() {
+    return <my-icon size="5px" />;
+  }`);
+  t.true(ctx.$r._.getAttribute("size") === "5px");
+});
