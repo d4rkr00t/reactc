@@ -30,6 +30,10 @@
  * renderChildren(CCTX/ECTX, parentLocalId, [localId1, localId2, localId3]);
  */
 
+function toPx(val) {
+  return typeof val === "number" ? val + "px" : val;
+}
+
 function appendChild(p, c) {
   p.appendChild(c);
 }
@@ -64,55 +68,34 @@ function createElement(cctx, lid, type, attrs) {
 }
 
 function setAttr(ctx, name, value) {
-  if (name === "style") {
-    ctx._[name] = Object.keys(value)
-      .map(prop => {
-        let val = value[prop];
-        let cleanPropName = prop.replace(
-          /([A-Z])/g,
-          $1 => "-" + $1.toLowerCase()
-        );
-        return (
-          cleanPropName +
-          ": " +
-          (typeof val === "number" &&
-          ["opacity", "flex", "z-index"].indexOf(cleanPropName) === -1 &&
-          !cleanPropName.match(/^--/)
-            ? val + "px"
-            : "" + val)
-        );
-      })
-      .join(";");
-  } else if (name.startsWith("on")) {
-    let eventName = name.replace("on", "").toLowerCase();
-    if (
-      eventName === "change" &&
-      ctx._.nodeName === "INPUT" &&
-      ctx._.type === "text"
-    ) {
-      eventName = "input";
-    }
-
-    if (ctx.$p[name]) {
-      ctx._.removeEventListener(eventName, ctx.$p[name]);
-    }
-    ctx._.addEventListener(eventName, value);
-  } else if (["value", "checked", "className"].indexOf(name) >= 0) {
-    ctx._[name] = value;
+  if (value) {
+    ctx._.setAttribute(name, value);
   } else {
-    if (value) {
-      ctx._.setAttribute(name, value);
-    } else {
-      ctx._.removeAttribute(name);
-    }
+    ctx._.removeAttribute(name);
   }
+  ctx.$p[name] = value;
+}
 
+function setProp(ctx, name, value) {
+  ctx._[name] = value;
+  ctx.$p[name] = value;
+}
+function setEvt(ctx, name, value) {
+  if (ctx.$p[name]) {
+    ctx._.removeEventListener(name, ctx.$p[name]);
+  }
+  ctx._.addEventListener(name, value);
   ctx.$p[name] = value;
 }
 
 function setAttrs(ctx, attrs) {
   if (!attrs) return;
-  Object.keys(attrs).forEach(key => setAttr(ctx, key, attrs[key]));
+  if (attrs.$)
+    Object.keys(attrs.$).forEach(key => setAttr(ctx, key, attrs.$[key]));
+  if (attrs.$e)
+    Object.keys(attrs.$e).forEach(key => setEvt(ctx, key, attrs.$e[key]));
+  if (attrs.$p)
+    Object.keys(attrs.$p).forEach(key => setProp(ctx, key, attrs.$p[key]));
   ctx.$p = attrs;
 }
 
@@ -273,7 +256,9 @@ function App(__props, __gctx, __pctx) {
 
   if (__ctx !== __pctx) {
     createElement(__ctx, "e17", "div", {
-      className: "barchart"
+      $: {
+        class: "barchart"
+      }
     });
     renderChildren(__ctx, "e17", [colors.map((color, idx) => {
       var __ctx = {};
@@ -284,20 +269,21 @@ function App(__props, __gctx, __pctx) {
 
       if (__ctx !== __pctx) {
         createElement(__ctx, "e14", "div", {
-          className: "barchart__bar-wrapper"
+          $: {
+            class: "barchart__bar-wrapper"
+          }
         });
         createElement(__ctx, "e15", "div", {
-          className: "barchart__bar-title",
-          style: {
-            color
+          $: {
+            class: "barchart__bar-title",
+            style: `color:${color}`
           }
         });
         renderChildren(__ctx, "e15", [height]);
         createElement(__ctx, "e16", "div", {
-          className: "barchart__bar",
-          style: {
-            backgroundColor: color,
-            height
+          $: {
+            class: "barchart__bar",
+            style: `background-color:${color};height:${toPx(height)}`
           }
         });
         renderChildren(__ctx, "e16");

@@ -137,11 +137,17 @@ function popHooksContext() {
   );
 }
 
-function setAttr(id, key, value) {
+function setAttr(id, type, key, value) {
+  let typeToSetter = {
+    attributes: "setAttr",
+    eventHandlers: "setEvt",
+    properties: "setProp"
+  };
+  let fn = typeToSetter[type];
   if (isFunction(value)) {
     return [
       t.expressionStatement(
-        t.callExpression(t.identifier("setAttr"), [
+        t.callExpression(t.identifier(fn), [
           contextProperty(id),
           t.stringLiteral(key.name),
           value
@@ -159,7 +165,7 @@ function setAttr(id, key, value) {
       t.logicalExpression(
         "&&",
         t.binaryExpression("!==", contextElementProperty(id, key), newValId),
-        t.callExpression(t.identifier("setAttr"), [
+        t.callExpression(t.identifier(fn), [
           contextProperty(id),
           t.isIdentifier(key) ? t.stringLiteral(key.name) : key,
           newValId

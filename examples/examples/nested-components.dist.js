@@ -30,6 +30,10 @@
  * renderChildren(CCTX/ECTX, parentLocalId, [localId1, localId2, localId3]);
  */
 
+function toPx(val) {
+  return typeof val === "number" ? val + "px" : val;
+}
+
 function appendChild(p, c) {
   p.appendChild(c);
 }
@@ -64,55 +68,34 @@ function createElement(cctx, lid, type, attrs) {
 }
 
 function setAttr(ctx, name, value) {
-  if (name === "style") {
-    ctx._[name] = Object.keys(value)
-      .map(prop => {
-        let val = value[prop];
-        let cleanPropName = prop.replace(
-          /([A-Z])/g,
-          $1 => "-" + $1.toLowerCase()
-        );
-        return (
-          cleanPropName +
-          ": " +
-          (typeof val === "number" &&
-          ["opacity", "flex", "z-index"].indexOf(cleanPropName) === -1 &&
-          !cleanPropName.match(/^--/)
-            ? val + "px"
-            : "" + val)
-        );
-      })
-      .join(";");
-  } else if (name.startsWith("on")) {
-    let eventName = name.replace("on", "").toLowerCase();
-    if (
-      eventName === "change" &&
-      ctx._.nodeName === "INPUT" &&
-      ctx._.type === "text"
-    ) {
-      eventName = "input";
-    }
-
-    if (ctx.$p[name]) {
-      ctx._.removeEventListener(eventName, ctx.$p[name]);
-    }
-    ctx._.addEventListener(eventName, value);
-  } else if (["value", "checked", "className"].indexOf(name) >= 0) {
-    ctx._[name] = value;
+  if (value) {
+    ctx._.setAttribute(name, value);
   } else {
-    if (value) {
-      ctx._.setAttribute(name, value);
-    } else {
-      ctx._.removeAttribute(name);
-    }
+    ctx._.removeAttribute(name);
   }
+  ctx.$p[name] = value;
+}
 
+function setProp(ctx, name, value) {
+  ctx._[name] = value;
+  ctx.$p[name] = value;
+}
+function setEvt(ctx, name, value) {
+  if (ctx.$p[name]) {
+    ctx._.removeEventListener(name, ctx.$p[name]);
+  }
+  ctx._.addEventListener(name, value);
   ctx.$p[name] = value;
 }
 
 function setAttrs(ctx, attrs) {
   if (!attrs) return;
-  Object.keys(attrs).forEach(key => setAttr(ctx, key, attrs[key]));
+  if (attrs.$)
+    Object.keys(attrs.$).forEach(key => setAttr(ctx, key, attrs.$[key]));
+  if (attrs.$e)
+    Object.keys(attrs.$e).forEach(key => setEvt(ctx, key, attrs.$e[key]));
+  if (attrs.$p)
+    Object.keys(attrs.$p).forEach(key => setProp(ctx, key, attrs.$p[key]));
   ctx.$p = attrs;
 }
 
@@ -271,7 +254,9 @@ function Date(props, __gctx, __pctx) {
 
   if (__ctx !== __pctx) {
     createElement(__ctx, "e1", "div", {
-      className: "date"
+      $: {
+        class: "date"
+      }
     });
     renderChildren(__ctx, "e1", [props.children]);
     __ctx.$r = __ctx.e1;
@@ -298,8 +283,10 @@ function Button(props, __gctx, __pctx) {
 
   if (__ctx !== __pctx) {
     createElement(__ctx, "e2", "a", {
-      href: "#",
-      className: "button"
+      $: {
+        href: "#",
+        class: "button"
+      }
     });
     renderChildren(__ctx, "e2", [props.children]);
     __ctx.$r = __ctx.e2;
@@ -326,7 +313,9 @@ function Title(props, __gctx, __pctx) {
 
   if (__ctx !== __pctx) {
     createElement(__ctx, "e3", "h1", {
-      className: "title"
+      $: {
+        class: "title"
+      }
     });
     renderChildren(__ctx, "e3", [props.children]);
     __ctx.$r = __ctx.e3;
@@ -359,7 +348,9 @@ function Link({
 
   if (__ctx !== __pctx) {
     createElement(__ctx, "e4", "a", {
-      href: href || "#"
+      $: {
+        href: href || "#"
+      }
     });
     renderChildren(__ctx, "e4", [children]);
     __ctx.$r = __ctx.e4;
@@ -386,32 +377,48 @@ function App(__props, __gctx, __pctx) {
 
   if (__ctx !== __pctx) {
     createElement(__ctx, "e5", "div", {
-      className: "App"
+      $: {
+        class: "App"
+      }
     });
     createElement(__ctx, "e6", "div", {
-      className: "row"
+      $: {
+        class: "row"
+      }
     });
     createElement(__ctx, "e7", "div", {
-      className: "card"
+      $: {
+        class: "card"
+      }
     });
     createElement(__ctx, "e8", "div", {
-      className: "wrapper"
+      $: {
+        class: "wrapper"
+      }
     });
     createElement(__ctx, "e9", "div", {
-      className: "header"
+      $: {
+        class: "header"
+      }
     });
     createComponent(__gctx, __ctx, "c1", Date, {
       children: "12 Aug 2016"
     });
     renderChildren(__ctx, "e9", [__ctx.c1]);
     createElement(__ctx, "e10", "div", {
-      className: "data"
+      $: {
+        class: "data"
+      }
     });
     createElement(__ctx, "e11", "div", {
-      className: "content"
+      $: {
+        class: "content"
+      }
     });
     createElement(__ctx, "e12", "span", {
-      className: "author"
+      $: {
+        class: "author"
+      }
     });
     renderChildren(__ctx, "e12", ["Jane Doe"]);
     createComponent(__gctx, __ctx, "c3", Link, {
@@ -421,7 +428,9 @@ function App(__props, __gctx, __pctx) {
       children: __ctx.c3
     });
     createElement(__ctx, "e13", "p", {
-      className: "text"
+      $: {
+        class: "text"
+      }
     });
     renderChildren(__ctx, "e13", ["The antsy bingers of Netflix will eagerly anticipate the digital release of the Survive soundtrack, out today."]);
     createComponent(__gctx, __ctx, "c4", Button, {

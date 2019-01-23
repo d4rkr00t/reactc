@@ -3,6 +3,10 @@ let ch = require("../utils/create-helpers");
 let isCreateElementExpression = require("../utils/checks/is-create-element");
 let isReactFunctionComponent = require("../utils/checks/is-react-fc");
 let isDynamic = require("../utils/checks/is-dynamic");
+let {
+  processElementAttributes,
+  processElementAttribute
+} = require("../utils/process-element-attributes");
 
 let componentGlobalId = 0;
 function createComponentId() {
@@ -12,44 +16,6 @@ function createComponentId() {
 let elemGlobalId = 0;
 function createElementId() {
   return "e" + ++elemGlobalId;
-}
-
-function setPropertyName(prop, name) {
-  if (t.isStringLiteral(prop.key)) {
-    return t.objectProperty(t.stringLiteral(name), prop.value);
-  }
-  return t.objectProperty(t.identifier(name), prop.value);
-}
-
-function processAttrs(type, props) {
-  let newProps = [];
-  if (!t.isNullLiteral(props)) {
-    newProps = newProps.concat(
-      props.properties
-        .map(p => t.cloneNode(p))
-        .map(prop => {
-          let name = t.isStringLiteral(prop.key)
-            ? prop.key.value
-            : prop.key.name;
-          if (name === "onDoubleClick") {
-            return setPropertyName(prop, "onDblclick");
-          } else if (name.match(/html[A-Z]/)) {
-            return setPropertyName(
-              prop,
-              name.replace("html", "").toLowerCase()
-            );
-          }
-
-          return prop;
-        })
-    );
-  }
-
-  if (newProps.length) {
-    return t.objectExpression(newProps);
-  }
-
-  return false;
 }
 
 function processProps(props, children) {
@@ -160,7 +126,9 @@ function transformElement(
   reRenderPath
 ) {
   let id = createElementId();
-  initialRenderPath.push(ch.createElement(id, type, processAttrs(type, props)));
+  initialRenderPath.push(
+    ch.createElement(id, type, processElementAttributes(type, props))
+  );
   let directChildren = procsessChildren(
     children,
     initialRenderPath,
@@ -170,10 +138,11 @@ function transformElement(
   if (isDynamicProps(props)) {
     let dynamicProps = getDynamicProps(props.properties);
     reRenderPath.push(
-      ...dynamicProps.reduce(
-        (acc, prop) => acc.concat(ch.setAttr(id, prop.key, prop.value)),
-        []
-      )
+      ...dynamicProps.reduce((acc, prop) => {
+        let [attrType, attr] = processElementAttribute(type, prop, props);
+        acc.push(...ch.setAttr(id, attrType, attr.key, attr.value));
+        return acc;
+      }, [])
     );
   }
   if (isDynamicChildren(directChildren)) {

@@ -30,6 +30,10 @@
  * renderChildren(CCTX/ECTX, parentLocalId, [localId1, localId2, localId3]);
  */
 
+function toPx(val) {
+  return typeof val === "number" ? val + "px" : val;
+}
+
 function appendChild(p, c) {
   p.appendChild(c);
 }
@@ -64,55 +68,34 @@ function createElement(cctx, lid, type, attrs) {
 }
 
 function setAttr(ctx, name, value) {
-  if (name === "style") {
-    ctx._[name] = Object.keys(value)
-      .map(prop => {
-        let val = value[prop];
-        let cleanPropName = prop.replace(
-          /([A-Z])/g,
-          $1 => "-" + $1.toLowerCase()
-        );
-        return (
-          cleanPropName +
-          ": " +
-          (typeof val === "number" &&
-          ["opacity", "flex", "z-index"].indexOf(cleanPropName) === -1 &&
-          !cleanPropName.match(/^--/)
-            ? val + "px"
-            : "" + val)
-        );
-      })
-      .join(";");
-  } else if (name.startsWith("on")) {
-    let eventName = name.replace("on", "").toLowerCase();
-    if (
-      eventName === "change" &&
-      ctx._.nodeName === "INPUT" &&
-      ctx._.type === "text"
-    ) {
-      eventName = "input";
-    }
-
-    if (ctx.$p[name]) {
-      ctx._.removeEventListener(eventName, ctx.$p[name]);
-    }
-    ctx._.addEventListener(eventName, value);
-  } else if (["value", "checked", "className"].indexOf(name) >= 0) {
-    ctx._[name] = value;
+  if (value) {
+    ctx._.setAttribute(name, value);
   } else {
-    if (value) {
-      ctx._.setAttribute(name, value);
-    } else {
-      ctx._.removeAttribute(name);
-    }
+    ctx._.removeAttribute(name);
   }
+  ctx.$p[name] = value;
+}
 
+function setProp(ctx, name, value) {
+  ctx._[name] = value;
+  ctx.$p[name] = value;
+}
+function setEvt(ctx, name, value) {
+  if (ctx.$p[name]) {
+    ctx._.removeEventListener(name, ctx.$p[name]);
+  }
+  ctx._.addEventListener(name, value);
   ctx.$p[name] = value;
 }
 
 function setAttrs(ctx, attrs) {
   if (!attrs) return;
-  Object.keys(attrs).forEach(key => setAttr(ctx, key, attrs[key]));
+  if (attrs.$)
+    Object.keys(attrs.$).forEach(key => setAttr(ctx, key, attrs.$[key]));
+  if (attrs.$e)
+    Object.keys(attrs.$e).forEach(key => setEvt(ctx, key, attrs.$e[key]));
+  if (attrs.$p)
+    Object.keys(attrs.$p).forEach(key => setProp(ctx, key, attrs.$p[key]));
   ctx.$p = attrs;
 }
 
@@ -273,24 +256,34 @@ function App(__props, __gctx, __pctx) {
 
   if (__ctx !== __pctx) {
     createElement(__ctx, "e18", "div", {
-      className: "panel"
+      $: {
+        class: "panel"
+      }
     });
     createElement(__ctx, "e19", "div", {
-      className: "panel__table panel__line"
+      $: {
+        class: "panel__table panel__line"
+      }
     });
     createElement(__ctx, "e20", "table");
     createElement(__ctx, "e21", "tr");
     createElement(__ctx, "e22", "td");
     createElement(__ctx, "e23", "span", {
-      className: "panel__mute"
+      $: {
+        class: "panel__mute"
+      }
     });
     renderChildren(__ctx, "e23", ["Scope:"]);
     renderChildren(__ctx, "e22", [__ctx.e23]);
     createElement(__ctx, "e24", "td", {
-      className: "panel__badge-col"
+      $: {
+        class: "panel__badge-col"
+      }
     });
     createElement(__ctx, "e25", "span", {
-      className: "panel__badge"
+      $: {
+        class: "panel__badge"
+      }
     });
     renderChildren(__ctx, "e25", ["fn"]);
     renderChildren(__ctx, "e24", [__ctx.e25]);
@@ -301,43 +294,59 @@ function App(__props, __gctx, __pctx) {
     createElement(__ctx, "e28", "td");
     renderChildren(__ctx, "e28");
     createElement(__ctx, "e29", "td", {
-      className: "panel__badge-col"
+      $: {
+        class: "panel__badge-col"
+      }
     });
     createElement(__ctx, "e30", "span", {
-      className: "panel__badge -purple"
+      $: {
+        class: "panel__badge -purple"
+      }
     });
     renderChildren(__ctx, "e30", ["bem"]);
     renderChildren(__ctx, "e29", [__ctx.e30]);
     createElement(__ctx, "e31", "td");
     createElement(__ctx, "e32", "span", {
-      className: "panel__mute"
+      $: {
+        class: "panel__mute"
+      }
     });
     renderChildren(__ctx, "e32", ["block:"]);
     createElement(__ctx, "e33", "span", {
-      className: "panel__mute"
+      $: {
+        class: "panel__mute"
+      }
     });
     renderChildren(__ctx, "e33", [" | elem:"]);
     renderChildren(__ctx, "e31", [__ctx.e32, "z-entity-gallery", __ctx.e33, "image"]);
     renderChildren(__ctx, "e27", [__ctx.e28, __ctx.e29, __ctx.e31]);
     createElement(__ctx, "e34", "tr");
     createElement(__ctx, "e35", "td", {
-      colspan: "4",
-      className: "panel__table-sep"
+      $: {
+        colspan: "4",
+        class: "panel__table-sep"
+      }
     });
     renderChildren(__ctx, "e35");
     renderChildren(__ctx, "e34", [__ctx.e35]);
     createElement(__ctx, "e36", "tr");
     createElement(__ctx, "e37", "td");
     createElement(__ctx, "e38", "span", {
-      className: "panel__mute"
+      $: {
+        class: "panel__mute"
+      }
     });
     renderChildren(__ctx, "e38", ["Parent:"]);
     renderChildren(__ctx, "e37", [__ctx.e38]);
     createElement(__ctx, "e39", "td", {
-      className: "panel__badge-col"
+      $: {
+        class: "panel__badge-col"
+      }
     });
     createElement(__ctx, "e40", "span", {
-      className: "panel__badge -blue"
+      $: {
+        class: "panel__badge -blue"
+      }
     });
     renderChildren(__ctx, "e40", ["P"]);
     renderChildren(__ctx, "e39", [__ctx.e40]);
@@ -346,24 +355,32 @@ function App(__props, __gctx, __pctx) {
     renderChildren(__ctx, "e36", [__ctx.e37, __ctx.e39, __ctx.e41]);
     createElement(__ctx, "e42", "tr");
     createElement(__ctx, "e43", "td", {
-      colspan: "4",
-      className: "panel__table-sep"
+      $: {
+        colspan: "4",
+        class: "panel__table-sep"
+      }
     });
     renderChildren(__ctx, "e43");
     renderChildren(__ctx, "e42", [__ctx.e43]);
     createElement(__ctx, "e44", "tr");
     createElement(__ctx, "e45", "td");
     createElement(__ctx, "e46", "span", {
-      className: "panel__mute"
+      $: {
+        class: "panel__mute"
+      }
     });
     renderChildren(__ctx, "e46", ["File:"]);
     renderChildren(__ctx, "e45", [__ctx.e46]);
     createElement(__ctx, "e47", "td", {
-      colspan: "2",
-      className: "panel__files"
+      $: {
+        colspan: "2",
+        class: "panel__files"
+      }
     });
     createElement(__ctx, "e48", "div", {
-      className: "panel__file"
+      $: {
+        class: "panel__file"
+      }
     });
     renderChildren(__ctx, "e48", ["contribs/z-entity-search/blocks-deskpad/z-entity-gallery/__thumbs/z-entity-gallery__thumbs.priv.js:22"]);
     renderChildren(__ctx, "e47", [__ctx.e48]);
