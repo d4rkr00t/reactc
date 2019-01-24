@@ -49,3 +49,45 @@ test("should allow children to be passed as an argument", t => {
   );
   t.true(ctx.$r._.innerHTML === "child");
 });
+
+// TODO:
+// test("should overwrite props.children with children argument", t => {
+//   let ctx = compile(
+//     `function Child(props) {
+//       return<div>
+//         {props.children}
+//       </div>
+//      }
+
+//      function Cmp() {
+//        return (
+//         <Child children="fakechild">
+//           child
+//         </Child>
+//       );
+//      }`,
+//   );
+//   t.true(ctx.$r._.innerHTML === "child");
+// });
+
+test("should purge the DOM cache when removing nodes", t => {
+  let ctx = compile(
+    `
+     function Cmp(props) {
+       let dog;
+       if (props.render) {
+        dog = <div key="theDog" className={props.className} />;
+       }
+       return (
+        <div>
+          {dog}
+          <div key="theBird" className="bird" />
+        </div>
+      );
+     }`,
+    { render: true, className: "dog" }
+  );
+  ctx.$({ render: false, className: "" });
+  ctx.$({ render: true, className: "bigdog" });
+  t.true(ctx.$r._.childNodes[0].className === "bigdog");
+});

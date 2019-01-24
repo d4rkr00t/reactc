@@ -249,3 +249,96 @@ let [useState, useEffect] = (() => {
 
   return [useState, useEffect];
 })();
+
+/* END RUNTIME */
+
+function DynamicChild(props, __gctx, __pctx) {
+  var __ctx = __pctx || {
+    $p: props,
+    $: props => {
+      DynamicChild(props, __gctx, __ctx);
+    }
+  };
+
+  __gctx.sHC(__ctx);
+
+  let dog;
+
+  if (__ctx !== __pctx) {
+    createElement(__ctx, "e1", "div", {
+      $: {
+        class: props.className
+      }
+    });
+    renderChildren(__ctx, "e1", ["dog"]);
+
+    if (props.render) {
+      dog = __ctx.e1;
+    }
+
+    createElement(__ctx, "e2", "div");
+    createElement(__ctx, "e3", "div");
+    renderChildren(__ctx, "e3", ["cat"]);
+    renderChildren(__ctx, "e2", [dog, __ctx.e3]);
+    __ctx.$r = __ctx.e2;
+
+    __gctx.pHC();
+
+    return __ctx;
+  } else {
+    let __e1__class = props.className;
+    __ctx.e1.$p.class !== __e1__class && setAttr(__ctx.e1, "class", __e1__class);
+
+    if (props.render) {
+      dog = __ctx.e1;
+    }
+
+    renderChildren(__ctx, "e2", [dog, __ctx.e3]);
+
+    __gctx.pHC();
+  }
+}
+
+function App(__props, __gctx, __pctx) {
+  var __ctx = __pctx || {
+    $p: __props,
+    $: props => {
+      App(props, __gctx, __ctx);
+    }
+  };
+
+  __gctx.sHC(__ctx);
+
+  let [render, setRender] = useState(true);
+
+  if (__ctx !== __pctx) {
+    createElement(__ctx, "e4", "div");
+    createComponent(__gctx, __ctx, "c1", DynamicChild, {
+      render: render,
+      className: "bigdog"
+    });
+    createElement(__ctx, "e5", "button", {
+      $e: {
+        click: () => setRender(!render)
+      }
+    });
+    renderChildren(__ctx, "e5", ["Re-render"]);
+    renderChildren(__ctx, "e4", [__ctx.c1, __ctx.e5]);
+    __ctx.$r = __ctx.e4;
+
+    __gctx.pHC();
+
+    return __ctx;
+  } else {
+    __ctx.c1.$({
+      render: render,
+      className: "bigdog"
+    });
+
+    setEvt(__ctx.e5, "click", () => setRender(!render));
+
+    __gctx.pHC();
+  }
+}
+
+mount(document.getElementById("app"), gCtx, App, null);
