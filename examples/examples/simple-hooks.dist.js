@@ -244,19 +244,19 @@ function Countdown(props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e52", "div", {
+    createElement(__ctx, "be", "div", {
       $: {
         class: "counter"
       }
     });
-    renderChildren(__ctx, "e52", [props.children]);
-    __ctx.$r = __ctx.e52;
+    renderChildren(__ctx, "be", [props.children]);
+    __ctx.$r = __ctx.be;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "e52", [props.children]);
+    renderChildren(__ctx, "be", [props.children]);
 
     __gctx.pHC();
   }
@@ -281,28 +281,28 @@ function App(__props, __gctx, __pctx) {
   });
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e53", "div");
-    createComponent(__gctx, __ctx, "c5", Countdown, {
+    createElement(__ctx, "bf", "div");
+    createComponent(__gctx, __ctx, "bg", Countdown, {
       children: count
     });
-    createElement(__ctx, "e54", "button", {
+    createElement(__ctx, "bh", "button", {
       $e: {
         click: () => setCount(count + 1)
       }
     });
-    renderChildren(__ctx, "e54", ["Update counter"]);
-    renderChildren(__ctx, "e53", [__ctx.c5, __ctx.e54]);
-    __ctx.$r = __ctx.e53;
+    renderChildren(__ctx, "bh", ["Update counter"]);
+    renderChildren(__ctx, "bf", [__ctx.bg, __ctx.bh]);
+    __ctx.$r = __ctx.bf;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    __ctx.c5.$({
+    __ctx.bg.$({
       children: count
     });
 
-    setEvt(__ctx.e54, "click", () => setCount(count + 1));
+    setEvt(__ctx.bh, "click", () => setCount(count + 1));
 
     __gctx.pHC();
   }

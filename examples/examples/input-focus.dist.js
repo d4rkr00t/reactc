@@ -246,8 +246,8 @@ function App(__props, __gctx, __pctx) {
   let [value, setValue] = useState("");
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e2", "div");
-    createElement(__ctx, "e3", "input", {
+    createElement(__ctx, "c", "div");
+    createElement(__ctx, "d", "input", {
       $e: {
         input: e => {
           console.log(e.target.value);
@@ -258,57 +258,57 @@ function App(__props, __gctx, __pctx) {
         value: value
       }
     });
-    renderChildren(__ctx, "e3");
-    renderChildren(__ctx, "e2", [value.split("").map(item => {
+    renderChildren(__ctx, "d");
+    renderChildren(__ctx, "c", [value.split("").map(item => {
       var __ctx = {};
 
       __gctx.sHC(__ctx);
 
       if (__ctx !== __pctx) {
-        createElement(__ctx, "e1", "div");
-        renderChildren(__ctx, "e1", [item]);
-        __ctx.$r = __ctx.e1;
+        createElement(__ctx, "b", "div");
+        renderChildren(__ctx, "b", [item]);
+        __ctx.$r = __ctx.b;
 
         __gctx.pHC();
 
         return __ctx;
       } else {
-        renderChildren(__ctx, "e1", [item]);
+        renderChildren(__ctx, "b", [item]);
 
         __gctx.pHC();
       }
-    }), __ctx.e3]);
-    __ctx.$r = __ctx.e2;
+    }), __ctx.d]);
+    __ctx.$r = __ctx.c;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    let __e3__value = value;
-    __ctx.e3.$p.value !== __e3__value && setProp(__ctx.e3, "value", __e3__value);
-    setEvt(__ctx.e3, "input", e => {
+    let __d__value = value;
+    __ctx.d.$p.value !== __d__value && setProp(__ctx.d, "value", __d__value);
+    setEvt(__ctx.d, "input", e => {
       console.log(e.target.value);
       setValue(e.target.value);
     });
-    renderChildren(__ctx, "e2", [value.split("").map(item => {
+    renderChildren(__ctx, "c", [value.split("").map(item => {
       var __ctx = {};
 
       __gctx.sHC(__ctx);
 
       if (__ctx !== __pctx) {
-        createElement(__ctx, "e1", "div");
-        renderChildren(__ctx, "e1", [item]);
-        __ctx.$r = __ctx.e1;
+        createElement(__ctx, "b", "div");
+        renderChildren(__ctx, "b", [item]);
+        __ctx.$r = __ctx.b;
 
         __gctx.pHC();
 
         return __ctx;
       } else {
-        renderChildren(__ctx, "e1", [item]);
+        renderChildren(__ctx, "b", [item]);
 
         __gctx.pHC();
       }
-    }), __ctx.e3]);
+    }), __ctx.d]);
 
     __gctx.pHC();
   }

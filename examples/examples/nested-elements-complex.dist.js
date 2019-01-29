@@ -246,12 +246,12 @@ function App(__props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e20", "div", {
+    createElement(__ctx, "y", "div", {
       $: {
         class: "barchart"
       }
     });
-    renderChildren(__ctx, "e20", [colors.map((color, idx) => {
+    renderChildren(__ctx, "y", [colors.map((color, idx) => {
       var __ctx = {};
 
       __gctx.sHC(__ctx);
@@ -259,44 +259,44 @@ function App(__props, __gctx, __pctx) {
       var height = idx / colors.length * 140 + 60;
 
       if (__ctx !== __pctx) {
-        createElement(__ctx, "e17", "div", {
+        createElement(__ctx, "v", "div", {
           $: {
             class: "barchart__bar-wrapper"
           }
         });
-        createElement(__ctx, "e18", "div", {
+        createElement(__ctx, "w", "div", {
           $: {
             class: "barchart__bar-title",
             style: `color:${color}`
           }
         });
-        renderChildren(__ctx, "e18", [height]);
-        createElement(__ctx, "e19", "div", {
+        renderChildren(__ctx, "w", [height]);
+        createElement(__ctx, "x", "div", {
           $: {
             class: "barchart__bar",
             style: `background-color:${color};height:${toPx(height)}`
           }
         });
-        renderChildren(__ctx, "e19");
-        renderChildren(__ctx, "e17", [__ctx.e18, __ctx.e19]);
-        __ctx.$r = __ctx.e17;
+        renderChildren(__ctx, "x");
+        renderChildren(__ctx, "v", [__ctx.w, __ctx.x]);
+        __ctx.$r = __ctx.v;
 
         __gctx.pHC();
 
         return __ctx;
       } else {
-        renderChildren(__ctx, "e18", [height]);
+        renderChildren(__ctx, "w", [height]);
 
         __gctx.pHC();
       }
     })]);
-    __ctx.$r = __ctx.e20;
+    __ctx.$r = __ctx.y;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "e20", [colors.map((color, idx) => {
+    renderChildren(__ctx, "y", [colors.map((color, idx) => {
       var __ctx = {};
 
       __gctx.sHC(__ctx);
@@ -304,33 +304,33 @@ function App(__props, __gctx, __pctx) {
       var height = idx / colors.length * 140 + 60;
 
       if (__ctx !== __pctx) {
-        createElement(__ctx, "e17", "div", {
+        createElement(__ctx, "v", "div", {
           $: {
             class: "barchart__bar-wrapper"
           }
         });
-        createElement(__ctx, "e18", "div", {
+        createElement(__ctx, "w", "div", {
           $: {
             class: "barchart__bar-title",
             style: `color:${color}`
           }
         });
-        renderChildren(__ctx, "e18", [height]);
-        createElement(__ctx, "e19", "div", {
+        renderChildren(__ctx, "w", [height]);
+        createElement(__ctx, "x", "div", {
           $: {
             class: "barchart__bar",
             style: `background-color:${color};height:${toPx(height)}`
           }
         });
-        renderChildren(__ctx, "e19");
-        renderChildren(__ctx, "e17", [__ctx.e18, __ctx.e19]);
-        __ctx.$r = __ctx.e17;
+        renderChildren(__ctx, "x");
+        renderChildren(__ctx, "v", [__ctx.w, __ctx.x]);
+        __ctx.$r = __ctx.v;
 
         __gctx.pHC();
 
         return __ctx;
       } else {
-        renderChildren(__ctx, "e18", [height]);
+        renderChildren(__ctx, "w", [height]);
 
         __gctx.pHC();
       }

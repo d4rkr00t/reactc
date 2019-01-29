@@ -8,14 +8,27 @@ let {
   processElementAttribute
 } = require("../utils/process-element-attributes");
 
-let componentGlobalId = 0;
-function createComponentId() {
-  return "c" + ++componentGlobalId;
+function createId(value) {
+  let decimal = value;
+  let result = "";
+  decimal++;
+
+  while (decimal > 0) {
+    --decimal;
+    result = String.fromCharCode(97 + (decimal % 26)) + result;
+    decimal = Math.floor(decimal / 26);
+  }
+
+  return result;
 }
 
-let elemGlobalId = 0;
+let globalId = 0;
+function createComponentId() {
+  return createId(++globalId);
+}
+
 function createElementId() {
-  return "e" + ++elemGlobalId;
+  return createId(++globalId);
 }
 
 function processProps(props, children) {

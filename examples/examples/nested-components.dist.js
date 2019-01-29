@@ -244,19 +244,19 @@ function Date(props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e4", "div", {
+    createElement(__ctx, "e", "div", {
       $: {
         class: "date"
       }
     });
-    renderChildren(__ctx, "e4", [props.children]);
-    __ctx.$r = __ctx.e4;
+    renderChildren(__ctx, "e", [props.children]);
+    __ctx.$r = __ctx.e;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "e4", [props.children]);
+    renderChildren(__ctx, "e", [props.children]);
 
     __gctx.pHC();
   }
@@ -273,20 +273,20 @@ function Button(props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e5", "a", {
+    createElement(__ctx, "f", "a", {
       $: {
         href: "#",
         class: "button"
       }
     });
-    renderChildren(__ctx, "e5", [props.children]);
-    __ctx.$r = __ctx.e5;
+    renderChildren(__ctx, "f", [props.children]);
+    __ctx.$r = __ctx.f;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "e5", [props.children]);
+    renderChildren(__ctx, "f", [props.children]);
 
     __gctx.pHC();
   }
@@ -303,19 +303,19 @@ function Title(props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e6", "h1", {
+    createElement(__ctx, "g", "h1", {
       $: {
         class: "title"
       }
     });
-    renderChildren(__ctx, "e6", [props.children]);
-    __ctx.$r = __ctx.e6;
+    renderChildren(__ctx, "g", [props.children]);
+    __ctx.$r = __ctx.g;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "e6", [props.children]);
+    renderChildren(__ctx, "g", [props.children]);
 
     __gctx.pHC();
   }
@@ -338,19 +338,19 @@ function Link({
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e7", "a", {
+    createElement(__ctx, "h", "a", {
       $: {
         href: href || "#"
       }
     });
-    renderChildren(__ctx, "e7", [children]);
-    __ctx.$r = __ctx.e7;
+    renderChildren(__ctx, "h", [children]);
+    __ctx.$r = __ctx.h;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "e7", [children]);
+    renderChildren(__ctx, "h", [children]);
 
     __gctx.pHC();
   }
@@ -367,80 +367,80 @@ function App(__props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e8", "div", {
+    createElement(__ctx, "i", "div", {
       $: {
         class: "App"
       }
     });
-    createElement(__ctx, "e9", "div", {
+    createElement(__ctx, "j", "div", {
       $: {
         class: "row"
       }
     });
-    createElement(__ctx, "e10", "div", {
+    createElement(__ctx, "k", "div", {
       $: {
         class: "card"
       }
     });
-    createElement(__ctx, "e11", "div", {
+    createElement(__ctx, "l", "div", {
       $: {
         class: "wrapper"
       }
     });
-    createElement(__ctx, "e12", "div", {
+    createElement(__ctx, "m", "div", {
       $: {
         class: "header"
       }
     });
-    createComponent(__gctx, __ctx, "c1", Date, {
+    createComponent(__gctx, __ctx, "n", Date, {
       children: "12 Aug 2016"
     });
-    renderChildren(__ctx, "e12", [__ctx.c1]);
-    createElement(__ctx, "e13", "div", {
+    renderChildren(__ctx, "m", [__ctx.n]);
+    createElement(__ctx, "o", "div", {
       $: {
         class: "data"
       }
     });
-    createElement(__ctx, "e14", "div", {
+    createElement(__ctx, "p", "div", {
       $: {
         class: "content"
       }
     });
-    createElement(__ctx, "e15", "span", {
+    createElement(__ctx, "q", "span", {
       $: {
         class: "author"
       }
     });
-    renderChildren(__ctx, "e15", ["Jane Doe"]);
-    createComponent(__gctx, __ctx, "c3", Link, {
+    renderChildren(__ctx, "q", ["Jane Doe"]);
+    createComponent(__gctx, __ctx, "s", Link, {
       children: "Stranger Things: The sound of the Upside Down"
     });
-    createComponent(__gctx, __ctx, "c2", Title, {
-      children: __ctx.c3
+    createComponent(__gctx, __ctx, "r", Title, {
+      children: __ctx.s
     });
-    createElement(__ctx, "e16", "p", {
+    createElement(__ctx, "t", "p", {
       $: {
         class: "text"
       }
     });
-    renderChildren(__ctx, "e16", ["The antsy bingers of Netflix will eagerly anticipate the digital release of the Survive soundtrack, out today."]);
-    createComponent(__gctx, __ctx, "c4", Button, {
+    renderChildren(__ctx, "t", ["The antsy bingers of Netflix will eagerly anticipate the digital release of the Survive soundtrack, out today."]);
+    createComponent(__gctx, __ctx, "u", Button, {
       children: "Read more"
     });
-    renderChildren(__ctx, "e14", [__ctx.e15, __ctx.c2, __ctx.e16, __ctx.c4]);
-    renderChildren(__ctx, "e13", [__ctx.e14]);
-    renderChildren(__ctx, "e11", [__ctx.e12, __ctx.e13]);
-    renderChildren(__ctx, "e10", [__ctx.e11]);
-    renderChildren(__ctx, "e9", [__ctx.e10]);
-    renderChildren(__ctx, "e8", [__ctx.e9]);
-    __ctx.$r = __ctx.e8;
+    renderChildren(__ctx, "p", [__ctx.q, __ctx.r, __ctx.t, __ctx.u]);
+    renderChildren(__ctx, "o", [__ctx.p]);
+    renderChildren(__ctx, "l", [__ctx.m, __ctx.o]);
+    renderChildren(__ctx, "k", [__ctx.l]);
+    renderChildren(__ctx, "j", [__ctx.k]);
+    renderChildren(__ctx, "i", [__ctx.j]);
+    __ctx.$r = __ctx.i;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    __ctx.c2.$({
-      children: __ctx.c3
+    __ctx.r.$({
+      children: __ctx.s
     });
 
     __gctx.pHC();
