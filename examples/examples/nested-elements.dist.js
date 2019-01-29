@@ -103,78 +103,69 @@ function renderChildren(ctx, pid, children, maybeIdx) {
   let parent = ctx[pid]._;
   let idx = maybeIdx || 0;
   let prevChildren = Array.from(parent.childNodes);
+  let isEmpty = !prevChildren.length;
 
-  if (!children || (!prevChildren.length && !children.length)) return;
+  if (!children || (!prevChildren.length && !children.length)) return idx;
 
-  children.forEach(child => {
-    if (child === null) {
-      if (prevChildren[idx]) {
-        parent.removeChild(prevChildren[idx]);
-        idx++;
-      }
+  let flatChildren = children.reduce((acc, i) => acc.concat(i), []);
+  let nodesToKeep = new WeakSet();
+
+  flatChildren.forEach(child => {
+    if (child === null || child === undefined) {
       return;
     }
-    if (isPrimitiveChild(child)) {
-      if (prevChildren[idx]) {
-        if (prevChildren[idx].nodeType === 3) {
-          if (prevChildren[idx].textContent !== child) {
-            prevChildren[idx].textContent = child;
-          }
-        } else {
-          parent.replaceChild(
-            document.createTextNode(child),
-            prevChildren[idx]
-          );
-        }
-        idx++;
-        return;
-      } else {
-        idx++;
-        return appendChild(parent, document.createTextNode(child));
-      }
-    } else if (Array.isArray(child)) {
-      renderChildren({ $r: { _: parent } }, "$r", child, idx);
-      idx += child.length;
+
+    let isPrimitive = isPrimitiveChild(child);
+    let childElem = isPrimitive
+      ? document.createTextNode(child)
+      : child.$r
+      ? child.$r.$r
+        ? child.$r.$r._
+        : child.$r._
+      : child._;
+    let childIdx = prevChildren.indexOf(childElem);
+    let prevChild = prevChildren[idx];
+
+    // input | c0 |
+    //
+    // 1     | c1 | c0 | 0
+    // input | c0 |    | +1
+    //
+    // 1     | c1 | c1, c0 | +1
+    // 2     | c2 |        | 0
+    // input | c0 |        | +1
+
+    if (childElem === null || childElem === undefined) {
       return;
-    } else {
-      let newChild = child.$r
-        ? child.$r.$r
-          ? child.$r.$r._
-          : child.$r._
-        : child._;
-      if (prevChildren[idx]) {
-        if (prevChildren[idx] !== newChild) {
-          try {
-            parent.replaceChild(newChild, prevChildren[idx]);
-          } catch (e) {}
-        }
-        idx++;
-        return;
-      } else {
-        if (prevChildren[idx]) {
-          if (prevChildren[idx] !== newChild) {
-            try {
-              parent.replaceChild(newChild, prevChildren[idx]);
-            } catch (e) {}
-          }
-          idx++;
-          return;
-        }
-        appendChild(parent, newChild);
-        idx++;
-        return;
-      }
+    }
+
+    if (isEmpty) {
+      isEmpty = false;
+      nodesToKeep.add(childElem);
+      return appendChild(parent, childElem);
+    } else if (childIdx === -1 && prevChild && !isPrimitive) {
+      nodesToKeep.add(childElem);
+      return parent.insertBefore(childElem, prevChild);
+    } else if (isPrimitive && prevChild && prevChild.nodeType === 3) {
+      prevChild.textContent = child;
+      idx++;
+      nodesToKeep.add(prevChild);
+      return;
+    } else if (prevChildren[childIdx] === childElem) {
+      idx++;
+      nodesToKeep.add(childElem);
+      return;
+    } else if (!prevChild) {
+      nodesToKeep.add(childElem);
+      return appendChild(parent, childElem);
     }
   });
 
-  while (idx < prevChildren.length) {
-    if (prevChildren[idx].parentNode) {
-      try {
-        prevChildren[idx].parentNode.removeChild(prevChildren[idx]);
-      } catch (e) {}
+  prevChildren.forEach(child => {
+    if (!nodesToKeep.has(child)) {
+      parent.removeChild(child);
     }
-    idx++;
-  }
+  });
 }
 
 function isPrimitiveChild(child) {
@@ -255,140 +246,140 @@ function App(__props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e18", "div", {
+    createElement(__ctx, "e21", "div", {
       $: {
         class: "panel"
       }
     });
-    createElement(__ctx, "e19", "div", {
+    createElement(__ctx, "e22", "div", {
       $: {
         class: "panel__table panel__line"
       }
     });
-    createElement(__ctx, "e20", "table");
-    createElement(__ctx, "e21", "tr");
-    createElement(__ctx, "e22", "td");
-    createElement(__ctx, "e23", "span", {
+    createElement(__ctx, "e23", "table");
+    createElement(__ctx, "e24", "tr");
+    createElement(__ctx, "e25", "td");
+    createElement(__ctx, "e26", "span", {
       $: {
         class: "panel__mute"
       }
     });
-    renderChildren(__ctx, "e23", ["Scope:"]);
-    renderChildren(__ctx, "e22", [__ctx.e23]);
-    createElement(__ctx, "e24", "td", {
+    renderChildren(__ctx, "e26", ["Scope:"]);
+    renderChildren(__ctx, "e25", [__ctx.e26]);
+    createElement(__ctx, "e27", "td", {
       $: {
         class: "panel__badge-col"
       }
     });
-    createElement(__ctx, "e25", "span", {
+    createElement(__ctx, "e28", "span", {
       $: {
         class: "panel__badge"
       }
     });
-    renderChildren(__ctx, "e25", ["fn"]);
-    renderChildren(__ctx, "e24", [__ctx.e25]);
-    createElement(__ctx, "e26", "td");
-    renderChildren(__ctx, "e26", ["z-entity-gallery__thumbs"]);
-    renderChildren(__ctx, "e21", [__ctx.e22, __ctx.e24, __ctx.e26]);
-    createElement(__ctx, "e27", "tr");
-    createElement(__ctx, "e28", "td");
-    renderChildren(__ctx, "e28");
-    createElement(__ctx, "e29", "td", {
+    renderChildren(__ctx, "e28", ["fn"]);
+    renderChildren(__ctx, "e27", [__ctx.e28]);
+    createElement(__ctx, "e29", "td");
+    renderChildren(__ctx, "e29", ["z-entity-gallery__thumbs"]);
+    renderChildren(__ctx, "e24", [__ctx.e25, __ctx.e27, __ctx.e29]);
+    createElement(__ctx, "e30", "tr");
+    createElement(__ctx, "e31", "td");
+    renderChildren(__ctx, "e31");
+    createElement(__ctx, "e32", "td", {
       $: {
         class: "panel__badge-col"
       }
     });
-    createElement(__ctx, "e30", "span", {
+    createElement(__ctx, "e33", "span", {
       $: {
         class: "panel__badge -purple"
       }
     });
-    renderChildren(__ctx, "e30", ["bem"]);
-    renderChildren(__ctx, "e29", [__ctx.e30]);
-    createElement(__ctx, "e31", "td");
-    createElement(__ctx, "e32", "span", {
+    renderChildren(__ctx, "e33", ["bem"]);
+    renderChildren(__ctx, "e32", [__ctx.e33]);
+    createElement(__ctx, "e34", "td");
+    createElement(__ctx, "e35", "span", {
       $: {
         class: "panel__mute"
       }
     });
-    renderChildren(__ctx, "e32", ["block:"]);
-    createElement(__ctx, "e33", "span", {
+    renderChildren(__ctx, "e35", ["block:"]);
+    createElement(__ctx, "e36", "span", {
       $: {
         class: "panel__mute"
       }
     });
-    renderChildren(__ctx, "e33", [" | elem:"]);
-    renderChildren(__ctx, "e31", [__ctx.e32, "z-entity-gallery", __ctx.e33, "image"]);
-    renderChildren(__ctx, "e27", [__ctx.e28, __ctx.e29, __ctx.e31]);
-    createElement(__ctx, "e34", "tr");
-    createElement(__ctx, "e35", "td", {
+    renderChildren(__ctx, "e36", [" | elem:"]);
+    renderChildren(__ctx, "e34", [__ctx.e35, "z-entity-gallery", __ctx.e36, "image"]);
+    renderChildren(__ctx, "e30", [__ctx.e31, __ctx.e32, __ctx.e34]);
+    createElement(__ctx, "e37", "tr");
+    createElement(__ctx, "e38", "td", {
       $: {
         colspan: "4",
         class: "panel__table-sep"
       }
     });
-    renderChildren(__ctx, "e35");
-    renderChildren(__ctx, "e34", [__ctx.e35]);
-    createElement(__ctx, "e36", "tr");
-    createElement(__ctx, "e37", "td");
-    createElement(__ctx, "e38", "span", {
+    renderChildren(__ctx, "e38");
+    renderChildren(__ctx, "e37", [__ctx.e38]);
+    createElement(__ctx, "e39", "tr");
+    createElement(__ctx, "e40", "td");
+    createElement(__ctx, "e41", "span", {
       $: {
         class: "panel__mute"
       }
     });
-    renderChildren(__ctx, "e38", ["Parent:"]);
-    renderChildren(__ctx, "e37", [__ctx.e38]);
-    createElement(__ctx, "e39", "td", {
+    renderChildren(__ctx, "e41", ["Parent:"]);
+    renderChildren(__ctx, "e40", [__ctx.e41]);
+    createElement(__ctx, "e42", "td", {
       $: {
         class: "panel__badge-col"
       }
     });
-    createElement(__ctx, "e40", "span", {
+    createElement(__ctx, "e43", "span", {
       $: {
         class: "panel__badge -blue"
       }
     });
-    renderChildren(__ctx, "e40", ["P"]);
-    renderChildren(__ctx, "e39", [__ctx.e40]);
-    createElement(__ctx, "e41", "td");
-    renderChildren(__ctx, "e41", ["z-entity-gallery"]);
-    renderChildren(__ctx, "e36", [__ctx.e37, __ctx.e39, __ctx.e41]);
-    createElement(__ctx, "e42", "tr");
-    createElement(__ctx, "e43", "td", {
+    renderChildren(__ctx, "e43", ["P"]);
+    renderChildren(__ctx, "e42", [__ctx.e43]);
+    createElement(__ctx, "e44", "td");
+    renderChildren(__ctx, "e44", ["z-entity-gallery"]);
+    renderChildren(__ctx, "e39", [__ctx.e40, __ctx.e42, __ctx.e44]);
+    createElement(__ctx, "e45", "tr");
+    createElement(__ctx, "e46", "td", {
       $: {
         colspan: "4",
         class: "panel__table-sep"
       }
     });
-    renderChildren(__ctx, "e43");
-    renderChildren(__ctx, "e42", [__ctx.e43]);
-    createElement(__ctx, "e44", "tr");
-    createElement(__ctx, "e45", "td");
-    createElement(__ctx, "e46", "span", {
+    renderChildren(__ctx, "e46");
+    renderChildren(__ctx, "e45", [__ctx.e46]);
+    createElement(__ctx, "e47", "tr");
+    createElement(__ctx, "e48", "td");
+    createElement(__ctx, "e49", "span", {
       $: {
         class: "panel__mute"
       }
     });
-    renderChildren(__ctx, "e46", ["File:"]);
-    renderChildren(__ctx, "e45", [__ctx.e46]);
-    createElement(__ctx, "e47", "td", {
+    renderChildren(__ctx, "e49", ["File:"]);
+    renderChildren(__ctx, "e48", [__ctx.e49]);
+    createElement(__ctx, "e50", "td", {
       $: {
         colspan: "2",
         class: "panel__files"
       }
     });
-    createElement(__ctx, "e48", "div", {
+    createElement(__ctx, "e51", "div", {
       $: {
         class: "panel__file"
       }
     });
-    renderChildren(__ctx, "e48", ["contribs/z-entity-search/blocks-deskpad/z-entity-gallery/__thumbs/z-entity-gallery__thumbs.priv.js:22"]);
-    renderChildren(__ctx, "e47", [__ctx.e48]);
-    renderChildren(__ctx, "e44", [__ctx.e45, __ctx.e47]);
-    renderChildren(__ctx, "e20", [__ctx.e21, __ctx.e27, __ctx.e34, __ctx.e36, __ctx.e42, __ctx.e44]);
-    renderChildren(__ctx, "e19", [__ctx.e20]);
-    renderChildren(__ctx, "e18", [__ctx.e19]);
-    __ctx.$r = __ctx.e18;
+    renderChildren(__ctx, "e51", ["contribs/z-entity-search/blocks-deskpad/z-entity-gallery/__thumbs/z-entity-gallery__thumbs.priv.js:22"]);
+    renderChildren(__ctx, "e50", [__ctx.e51]);
+    renderChildren(__ctx, "e47", [__ctx.e48, __ctx.e50]);
+    renderChildren(__ctx, "e23", [__ctx.e24, __ctx.e30, __ctx.e37, __ctx.e39, __ctx.e45, __ctx.e47]);
+    renderChildren(__ctx, "e22", [__ctx.e23]);
+    renderChildren(__ctx, "e21", [__ctx.e22]);
+    __ctx.$r = __ctx.e21;
 
     __gctx.pHC();
 

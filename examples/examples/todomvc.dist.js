@@ -103,78 +103,69 @@ function renderChildren(ctx, pid, children, maybeIdx) {
   let parent = ctx[pid]._;
   let idx = maybeIdx || 0;
   let prevChildren = Array.from(parent.childNodes);
+  let isEmpty = !prevChildren.length;
 
-  if (!children || (!prevChildren.length && !children.length)) return;
+  if (!children || (!prevChildren.length && !children.length)) return idx;
 
-  children.forEach(child => {
-    if (child === null) {
-      if (prevChildren[idx]) {
-        parent.removeChild(prevChildren[idx]);
-        idx++;
-      }
+  let flatChildren = children.reduce((acc, i) => acc.concat(i), []);
+  let nodesToKeep = new WeakSet();
+
+  flatChildren.forEach(child => {
+    if (child === null || child === undefined) {
       return;
     }
-    if (isPrimitiveChild(child)) {
-      if (prevChildren[idx]) {
-        if (prevChildren[idx].nodeType === 3) {
-          if (prevChildren[idx].textContent !== child) {
-            prevChildren[idx].textContent = child;
-          }
-        } else {
-          parent.replaceChild(
-            document.createTextNode(child),
-            prevChildren[idx]
-          );
-        }
-        idx++;
-        return;
-      } else {
-        idx++;
-        return appendChild(parent, document.createTextNode(child));
-      }
-    } else if (Array.isArray(child)) {
-      renderChildren({ $r: { _: parent } }, "$r", child, idx);
-      idx += child.length;
+
+    let isPrimitive = isPrimitiveChild(child);
+    let childElem = isPrimitive
+      ? document.createTextNode(child)
+      : child.$r
+      ? child.$r.$r
+        ? child.$r.$r._
+        : child.$r._
+      : child._;
+    let childIdx = prevChildren.indexOf(childElem);
+    let prevChild = prevChildren[idx];
+
+    // input | c0 |
+    //
+    // 1     | c1 | c0 | 0
+    // input | c0 |    | +1
+    //
+    // 1     | c1 | c1, c0 | +1
+    // 2     | c2 |        | 0
+    // input | c0 |        | +1
+
+    if (childElem === null || childElem === undefined) {
       return;
-    } else {
-      let newChild = child.$r
-        ? child.$r.$r
-          ? child.$r.$r._
-          : child.$r._
-        : child._;
-      if (prevChildren[idx]) {
-        if (prevChildren[idx] !== newChild) {
-          try {
-            parent.replaceChild(newChild, prevChildren[idx]);
-          } catch (e) {}
-        }
-        idx++;
-        return;
-      } else {
-        if (prevChildren[idx]) {
-          if (prevChildren[idx] !== newChild) {
-            try {
-              parent.replaceChild(newChild, prevChildren[idx]);
-            } catch (e) {}
-          }
-          idx++;
-          return;
-        }
-        appendChild(parent, newChild);
-        idx++;
-        return;
-      }
+    }
+
+    if (isEmpty) {
+      isEmpty = false;
+      nodesToKeep.add(childElem);
+      return appendChild(parent, childElem);
+    } else if (childIdx === -1 && prevChild && !isPrimitive) {
+      nodesToKeep.add(childElem);
+      return parent.insertBefore(childElem, prevChild);
+    } else if (isPrimitive && prevChild && prevChild.nodeType === 3) {
+      prevChild.textContent = child;
+      idx++;
+      nodesToKeep.add(prevChild);
+      return;
+    } else if (prevChildren[childIdx] === childElem) {
+      idx++;
+      nodesToKeep.add(childElem);
+      return;
+    } else if (!prevChild) {
+      nodesToKeep.add(childElem);
+      return appendChild(parent, childElem);
     }
   });
 
-  while (idx < prevChildren.length) {
-    if (prevChildren[idx].parentNode) {
-      try {
-        prevChildren[idx].parentNode.removeChild(prevChildren[idx]);
-      } catch (e) {}
+  prevChildren.forEach(child => {
+    if (!nodesToKeep.has(child)) {
+      parent.removeChild(child);
     }
-    idx++;
-  }
+  });
 }
 
 function isPrimitiveChild(child) {
@@ -320,17 +311,17 @@ function TodoItem(props, __gctx, __pctx) {
   };
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e53", "li", {
+    createElement(__ctx, "e61", "li", {
       $: {
         class: className.join(" ")
       }
     });
-    createElement(__ctx, "e54", "div", {
+    createElement(__ctx, "e62", "div", {
       $: {
         class: "view"
       }
     });
-    createElement(__ctx, "e55", "input", {
+    createElement(__ctx, "e63", "input", {
       $: {
         class: "toggle",
         type: "checkbox"
@@ -342,14 +333,14 @@ function TodoItem(props, __gctx, __pctx) {
         checked: props.todo.completed
       }
     });
-    renderChildren(__ctx, "e55");
-    createElement(__ctx, "e56", "label", {
+    renderChildren(__ctx, "e63");
+    createElement(__ctx, "e64", "label", {
       $e: {
         dblclick: props.onEdit
       }
     });
-    renderChildren(__ctx, "e56", [props.todo.title]);
-    createElement(__ctx, "e57", "button", {
+    renderChildren(__ctx, "e64", [props.todo.title]);
+    createElement(__ctx, "e65", "button", {
       $: {
         class: "destroy"
       },
@@ -357,9 +348,9 @@ function TodoItem(props, __gctx, __pctx) {
         click: props.onDestroy
       }
     });
-    renderChildren(__ctx, "e57");
-    renderChildren(__ctx, "e54", [__ctx.e55, __ctx.e56, __ctx.e57]);
-    createElement(__ctx, "e58", "input", {
+    renderChildren(__ctx, "e65");
+    renderChildren(__ctx, "e62", [__ctx.e63, __ctx.e64, __ctx.e65]);
+    createElement(__ctx, "e66", "input", {
       $: {
         class: "edit"
       },
@@ -379,29 +370,29 @@ function TodoItem(props, __gctx, __pctx) {
         value: inputValue
       }
     });
-    renderChildren(__ctx, "e58");
-    renderChildren(__ctx, "e53", [__ctx.e54, __ctx.e58]);
-    __ctx.$r = __ctx.e53;
+    renderChildren(__ctx, "e66");
+    renderChildren(__ctx, "e61", [__ctx.e62, __ctx.e66]);
+    __ctx.$r = __ctx.e61;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    let __e55__checked = props.todo.completed;
-    __ctx.e55.$p.checked !== __e55__checked && setProp(__ctx.e55, "checked", __e55__checked);
-    let __e55__change = props.onToggle;
-    __ctx.e55.$p.change !== __e55__change && setEvt(__ctx.e55, "change", __e55__change);
-    let __e56__dblclick = props.onEdit;
-    __ctx.e56.$p.dblclick !== __e56__dblclick && setEvt(__ctx.e56, "dblclick", __e56__dblclick);
-    renderChildren(__ctx, "e56", [props.todo.title]);
-    let __e57__click = props.onDestroy;
-    __ctx.e57.$p.click !== __e57__click && setEvt(__ctx.e57, "click", __e57__click);
-    let __e58__value = inputValue;
-    __ctx.e58.$p.value !== __e58__value && setProp(__ctx.e58, "value", __e58__value);
-    setEvt(__ctx.e58, "input", e => setInputValue(e.target.value));
-    let __e58__blur = handleSubmit;
-    __ctx.e58.$p.blur !== __e58__blur && setEvt(__ctx.e58, "blur", __e58__blur);
-    setEvt(__ctx.e58, "keydown", e => {
+    let __e63__checked = props.todo.completed;
+    __ctx.e63.$p.checked !== __e63__checked && setProp(__ctx.e63, "checked", __e63__checked);
+    let __e63__change = props.onToggle;
+    __ctx.e63.$p.change !== __e63__change && setEvt(__ctx.e63, "change", __e63__change);
+    let __e64__dblclick = props.onEdit;
+    __ctx.e64.$p.dblclick !== __e64__dblclick && setEvt(__ctx.e64, "dblclick", __e64__dblclick);
+    renderChildren(__ctx, "e64", [props.todo.title]);
+    let __e65__click = props.onDestroy;
+    __ctx.e65.$p.click !== __e65__click && setEvt(__ctx.e65, "click", __e65__click);
+    let __e66__value = inputValue;
+    __ctx.e66.$p.value !== __e66__value && setProp(__ctx.e66, "value", __e66__value);
+    setEvt(__ctx.e66, "input", e => setInputValue(e.target.value));
+    let __e66__blur = handleSubmit;
+    __ctx.e66.$p.blur !== __e66__blur && setEvt(__ctx.e66, "blur", __e66__blur);
+    setEvt(__ctx.e66, "keydown", e => {
       if (e.which === 27) {
         props.onCancel(event);
         setInputValue(props.todo.title);
@@ -409,6 +400,10 @@ function TodoItem(props, __gctx, __pctx) {
         handleSubmit();
       }
     });
+
+    let __e61__class = className.join(" ");
+
+    __ctx.e61.$p.class !== __e61__class && setAttr(__ctx.e61, "class", __e61__class);
 
     __gctx.pHC();
   }
@@ -428,7 +423,7 @@ function TodoFooter(props, __gctx, __pctx) {
   let clearButton = null;
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e59", "button", {
+    createElement(__ctx, "e67", "button", {
       $: {
         class: "clear-completed"
       },
@@ -436,87 +431,87 @@ function TodoFooter(props, __gctx, __pctx) {
         click: props.onClearCompleted
       }
     });
-    renderChildren(__ctx, "e59", ["Clear completed"]);
+    renderChildren(__ctx, "e67", ["Clear completed"]);
 
     if (props.completedCount > 0) {
-      clearButton = __ctx.e59;
+      clearButton = __ctx.e67;
     }
 
-    createElement(__ctx, "e60", "footer", {
+    createElement(__ctx, "e68", "footer", {
       $: {
         class: "footer"
       }
     });
-    createElement(__ctx, "e61", "span", {
+    createElement(__ctx, "e69", "span", {
       $: {
         class: "todo-count"
       }
     });
-    createElement(__ctx, "e62", "strong");
-    renderChildren(__ctx, "e62", [props.count]);
-    renderChildren(__ctx, "e61", [__ctx.e62, " ", activeTodoWord, " left"]);
-    createElement(__ctx, "e63", "ul", {
+    createElement(__ctx, "e70", "strong");
+    renderChildren(__ctx, "e70", [props.count]);
+    renderChildren(__ctx, "e69", [__ctx.e70, " ", activeTodoWord, " left"]);
+    createElement(__ctx, "e71", "ul", {
       $: {
         class: "filters"
       }
     });
-    createElement(__ctx, "e64", "li");
-    createElement(__ctx, "e65", "a", {
+    createElement(__ctx, "e72", "li");
+    createElement(__ctx, "e73", "a", {
       $: {
         href: "#/",
         class: props.nowShowing === ALL_TODOS ? "selected" : ""
       }
     });
-    renderChildren(__ctx, "e65", ["All"]);
-    renderChildren(__ctx, "e64", [__ctx.e65]);
-    createElement(__ctx, "e66", "li");
-    createElement(__ctx, "e67", "a", {
+    renderChildren(__ctx, "e73", ["All"]);
+    renderChildren(__ctx, "e72", [__ctx.e73]);
+    createElement(__ctx, "e74", "li");
+    createElement(__ctx, "e75", "a", {
       $: {
         href: "#/active",
         class: props.nowShowing === ACTIVE_TODOS ? "selected" : ""
       }
     });
-    renderChildren(__ctx, "e67", ["Active"]);
-    renderChildren(__ctx, "e66", [__ctx.e67]);
-    createElement(__ctx, "e68", "li");
-    createElement(__ctx, "e69", "a", {
+    renderChildren(__ctx, "e75", ["Active"]);
+    renderChildren(__ctx, "e74", [__ctx.e75]);
+    createElement(__ctx, "e76", "li");
+    createElement(__ctx, "e77", "a", {
       $: {
         href: "#/completed",
         class: props.nowShowing === COMPLETED_TODOS ? "selected" : ""
       }
     });
-    renderChildren(__ctx, "e69", ["Completed"]);
-    renderChildren(__ctx, "e68", [__ctx.e69]);
-    renderChildren(__ctx, "e63", [__ctx.e64, __ctx.e66, __ctx.e68]);
-    renderChildren(__ctx, "e60", [__ctx.e61, __ctx.e63, clearButton]);
-    __ctx.$r = __ctx.e60;
+    renderChildren(__ctx, "e77", ["Completed"]);
+    renderChildren(__ctx, "e76", [__ctx.e77]);
+    renderChildren(__ctx, "e71", [__ctx.e72, __ctx.e74, __ctx.e76]);
+    renderChildren(__ctx, "e68", [__ctx.e69, __ctx.e71, clearButton]);
+    __ctx.$r = __ctx.e68;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    let __e59__click = props.onClearCompleted;
-    __ctx.e59.$p.click !== __e59__click && setEvt(__ctx.e59, "click", __e59__click);
+    let __e67__click = props.onClearCompleted;
+    __ctx.e67.$p.click !== __e67__click && setEvt(__ctx.e67, "click", __e67__click);
 
     if (props.completedCount > 0) {
-      clearButton = __ctx.e59;
+      clearButton = __ctx.e67;
     }
 
-    renderChildren(__ctx, "e62", [props.count]);
-    renderChildren(__ctx, "e61", [__ctx.e62, " ", activeTodoWord, " left"]);
+    renderChildren(__ctx, "e70", [props.count]);
+    renderChildren(__ctx, "e69", [__ctx.e70, " ", activeTodoWord, " left"]);
 
-    let __e65__class = props.nowShowing === ALL_TODOS ? "selected" : "";
+    let __e73__class = props.nowShowing === ALL_TODOS ? "selected" : "";
 
-    __ctx.e65.$p.class !== __e65__class && setAttr(__ctx.e65, "class", __e65__class);
+    __ctx.e73.$p.class !== __e73__class && setAttr(__ctx.e73, "class", __e73__class);
 
-    let __e67__class = props.nowShowing === ACTIVE_TODOS ? "selected" : "";
+    let __e75__class = props.nowShowing === ACTIVE_TODOS ? "selected" : "";
 
-    __ctx.e67.$p.class !== __e67__class && setAttr(__ctx.e67, "class", __e67__class);
+    __ctx.e75.$p.class !== __e75__class && setAttr(__ctx.e75, "class", __e75__class);
 
-    let __e69__class = props.nowShowing === COMPLETED_TODOS ? "selected" : "";
+    let __e77__class = props.nowShowing === COMPLETED_TODOS ? "selected" : "";
 
-    __ctx.e69.$p.class !== __e69__class && setAttr(__ctx.e69, "class", __e69__class);
-    renderChildren(__ctx, "e60", [__ctx.e61, __ctx.e63, clearButton]);
+    __ctx.e77.$p.class !== __e77__class && setAttr(__ctx.e77, "class", __e77__class);
+    renderChildren(__ctx, "e68", [__ctx.e69, __ctx.e71, clearButton]);
 
     __gctx.pHC();
   }
@@ -575,7 +570,7 @@ function TodoApp(__props, __gctx, __pctx) {
     __gctx.sHC(__ctx);
 
     if (__ctx !== __pctx) {
-      createComponent(__gctx, __ctx, "c6", TodoItem, {
+      createComponent(__gctx, __ctx, "c7", TodoItem, {
         key: todo.id,
         todo: todo,
         editing: editing === todo.id,
@@ -599,13 +594,13 @@ function TodoApp(__props, __gctx, __pctx) {
           updateTodosList(todos);
         }
       });
-      __ctx.$r = __ctx.c6;
+      __ctx.$r = __ctx.c7;
 
       __gctx.pHC();
 
       return __ctx;
     } else {
-      __ctx.c6.$({
+      __ctx.c7.$({
         key: todo.id,
         todo: todo,
         editing: editing === todo.id,
@@ -641,12 +636,12 @@ function TodoApp(__props, __gctx, __pctx) {
   let footer = null;
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e70", "section", {
+    createElement(__ctx, "e78", "section", {
       $: {
         class: "main"
       }
     });
-    createElement(__ctx, "e71", "input", {
+    createElement(__ctx, "e79", "input", {
       $: {
         id: "toggle-all",
         class: "toggle-all",
@@ -664,26 +659,26 @@ function TodoApp(__props, __gctx, __pctx) {
         checked: activeTodoCount === 0
       }
     });
-    renderChildren(__ctx, "e71");
-    createElement(__ctx, "e72", "label", {
+    renderChildren(__ctx, "e79");
+    createElement(__ctx, "e80", "label", {
       $: {
         for: "toggle-all"
       }
     });
-    renderChildren(__ctx, "e72");
-    createElement(__ctx, "e73", "ul", {
+    renderChildren(__ctx, "e80");
+    createElement(__ctx, "e81", "ul", {
       $: {
         class: "todo-list"
       }
     });
-    renderChildren(__ctx, "e73", [todoItems]);
-    renderChildren(__ctx, "e70", [__ctx.e71, __ctx.e72, __ctx.e73]);
+    renderChildren(__ctx, "e81", [todoItems]);
+    renderChildren(__ctx, "e78", [__ctx.e79, __ctx.e80, __ctx.e81]);
 
     if (todos.length) {
-      main = __ctx.e70;
+      main = __ctx.e78;
     }
 
-    createComponent(__gctx, __ctx, "c7", TodoFooter, {
+    createComponent(__gctx, __ctx, "c8", TodoFooter, {
       count: activeTodoCount,
       completedCount: completedCount,
       nowShowing: nowShowing,
@@ -691,18 +686,18 @@ function TodoApp(__props, __gctx, __pctx) {
     });
 
     if (activeTodoCount || completedCount) {
-      footer = __ctx.c7;
+      footer = __ctx.c8;
     }
 
-    createElement(__ctx, "e74", "div");
-    createElement(__ctx, "e75", "header", {
+    createElement(__ctx, "e82", "div");
+    createElement(__ctx, "e83", "header", {
       $: {
         class: "header"
       }
     });
-    createElement(__ctx, "e76", "h1");
-    renderChildren(__ctx, "e76", ["todos"]);
-    createElement(__ctx, "e77", "input", {
+    createElement(__ctx, "e84", "h1");
+    renderChildren(__ctx, "e84", ["todos"]);
+    createElement(__ctx, "e85", "input", {
       $: {
         class: "new-todo",
         placeholder: "What needs to be done?",
@@ -726,31 +721,31 @@ function TodoApp(__props, __gctx, __pctx) {
         value: inputValue
       }
     });
-    renderChildren(__ctx, "e77");
-    renderChildren(__ctx, "e75", [__ctx.e76, __ctx.e77]);
-    renderChildren(__ctx, "e74", [__ctx.e75, main, footer]);
-    __ctx.$r = __ctx.e74;
+    renderChildren(__ctx, "e85");
+    renderChildren(__ctx, "e83", [__ctx.e84, __ctx.e85]);
+    renderChildren(__ctx, "e82", [__ctx.e83, main, footer]);
+    __ctx.$r = __ctx.e82;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    let __e71__checked = activeTodoCount === 0;
+    let __e79__checked = activeTodoCount === 0;
 
-    __ctx.e71.$p.checked !== __e71__checked && setProp(__ctx.e71, "checked", __e71__checked);
-    setEvt(__ctx.e71, "change", () => {
+    __ctx.e79.$p.checked !== __e79__checked && setProp(__ctx.e79, "checked", __e79__checked);
+    setEvt(__ctx.e79, "change", () => {
       let completed = todos.every(t => t.completed);
       updateTodosList(todos.map(t => ({ ...t,
         completed: !completed
       })));
     });
-    renderChildren(__ctx, "e73", [todoItems]);
+    renderChildren(__ctx, "e81", [todoItems]);
 
     if (todos.length) {
-      main = __ctx.e70;
+      main = __ctx.e78;
     }
 
-    __ctx.c7.$({
+    __ctx.c8.$({
       count: activeTodoCount,
       completedCount: completedCount,
       nowShowing: nowShowing,
@@ -758,13 +753,13 @@ function TodoApp(__props, __gctx, __pctx) {
     });
 
     if (activeTodoCount || completedCount) {
-      footer = __ctx.c7;
+      footer = __ctx.c8;
     }
 
-    let __e77__value = inputValue;
-    __ctx.e77.$p.value !== __e77__value && setProp(__ctx.e77, "value", __e77__value);
-    setEvt(__ctx.e77, "input", e => setInputValue(e.target.value));
-    setEvt(__ctx.e77, "keydown", e => {
+    let __e85__value = inputValue;
+    __ctx.e85.$p.value !== __e85__value && setProp(__ctx.e85, "value", __e85__value);
+    setEvt(__ctx.e85, "input", e => setInputValue(e.target.value));
+    setEvt(__ctx.e85, "keydown", e => {
       if (e.keyCode !== 13 || !inputValue) return;
       e.preventDefault();
       todos.push({
@@ -775,7 +770,7 @@ function TodoApp(__props, __gctx, __pctx) {
       updateTodosList(todos);
       setInputValue("");
     });
-    renderChildren(__ctx, "e74", [__ctx.e75, main, footer]);
+    renderChildren(__ctx, "e82", [__ctx.e83, main, footer]);
 
     __gctx.pHC();
   }

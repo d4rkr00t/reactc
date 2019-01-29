@@ -103,78 +103,69 @@ function renderChildren(ctx, pid, children, maybeIdx) {
   let parent = ctx[pid]._;
   let idx = maybeIdx || 0;
   let prevChildren = Array.from(parent.childNodes);
+  let isEmpty = !prevChildren.length;
 
-  if (!children || (!prevChildren.length && !children.length)) return;
+  if (!children || (!prevChildren.length && !children.length)) return idx;
 
-  children.forEach(child => {
-    if (child === null) {
-      if (prevChildren[idx]) {
-        parent.removeChild(prevChildren[idx]);
-        idx++;
-      }
+  let flatChildren = children.reduce((acc, i) => acc.concat(i), []);
+  let nodesToKeep = new WeakSet();
+
+  flatChildren.forEach(child => {
+    if (child === null || child === undefined) {
       return;
     }
-    if (isPrimitiveChild(child)) {
-      if (prevChildren[idx]) {
-        if (prevChildren[idx].nodeType === 3) {
-          if (prevChildren[idx].textContent !== child) {
-            prevChildren[idx].textContent = child;
-          }
-        } else {
-          parent.replaceChild(
-            document.createTextNode(child),
-            prevChildren[idx]
-          );
-        }
-        idx++;
-        return;
-      } else {
-        idx++;
-        return appendChild(parent, document.createTextNode(child));
-      }
-    } else if (Array.isArray(child)) {
-      renderChildren({ $r: { _: parent } }, "$r", child, idx);
-      idx += child.length;
+
+    let isPrimitive = isPrimitiveChild(child);
+    let childElem = isPrimitive
+      ? document.createTextNode(child)
+      : child.$r
+      ? child.$r.$r
+        ? child.$r.$r._
+        : child.$r._
+      : child._;
+    let childIdx = prevChildren.indexOf(childElem);
+    let prevChild = prevChildren[idx];
+
+    // input | c0 |
+    //
+    // 1     | c1 | c0 | 0
+    // input | c0 |    | +1
+    //
+    // 1     | c1 | c1, c0 | +1
+    // 2     | c2 |        | 0
+    // input | c0 |        | +1
+
+    if (childElem === null || childElem === undefined) {
       return;
-    } else {
-      let newChild = child.$r
-        ? child.$r.$r
-          ? child.$r.$r._
-          : child.$r._
-        : child._;
-      if (prevChildren[idx]) {
-        if (prevChildren[idx] !== newChild) {
-          try {
-            parent.replaceChild(newChild, prevChildren[idx]);
-          } catch (e) {}
-        }
-        idx++;
-        return;
-      } else {
-        if (prevChildren[idx]) {
-          if (prevChildren[idx] !== newChild) {
-            try {
-              parent.replaceChild(newChild, prevChildren[idx]);
-            } catch (e) {}
-          }
-          idx++;
-          return;
-        }
-        appendChild(parent, newChild);
-        idx++;
-        return;
-      }
+    }
+
+    if (isEmpty) {
+      isEmpty = false;
+      nodesToKeep.add(childElem);
+      return appendChild(parent, childElem);
+    } else if (childIdx === -1 && prevChild && !isPrimitive) {
+      nodesToKeep.add(childElem);
+      return parent.insertBefore(childElem, prevChild);
+    } else if (isPrimitive && prevChild && prevChild.nodeType === 3) {
+      prevChild.textContent = child;
+      idx++;
+      nodesToKeep.add(prevChild);
+      return;
+    } else if (prevChildren[childIdx] === childElem) {
+      idx++;
+      nodesToKeep.add(childElem);
+      return;
+    } else if (!prevChild) {
+      nodesToKeep.add(childElem);
+      return appendChild(parent, childElem);
     }
   });
 
-  while (idx < prevChildren.length) {
-    if (prevChildren[idx].parentNode) {
-      try {
-        prevChildren[idx].parentNode.removeChild(prevChildren[idx]);
-      } catch (e) {}
+  prevChildren.forEach(child => {
+    if (!nodesToKeep.has(child)) {
+      parent.removeChild(child);
     }
-    idx++;
-  }
+  });
 }
 
 function isPrimitiveChild(child) {
@@ -253,19 +244,19 @@ function Countdown(props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e49", "div", {
+    createElement(__ctx, "e52", "div", {
       $: {
         class: "counter"
       }
     });
-    renderChildren(__ctx, "e49", [props.children]);
-    __ctx.$r = __ctx.e49;
+    renderChildren(__ctx, "e52", [props.children]);
+    __ctx.$r = __ctx.e52;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "e49", [props.children]);
+    renderChildren(__ctx, "e52", [props.children]);
 
     __gctx.pHC();
   }
@@ -290,18 +281,18 @@ function App(__props, __gctx, __pctx) {
   });
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e50", "div");
+    createElement(__ctx, "e53", "div");
     createComponent(__gctx, __ctx, "c5", Countdown, {
       children: count
     });
-    createElement(__ctx, "e51", "button", {
+    createElement(__ctx, "e54", "button", {
       $e: {
         click: () => setCount(count + 1)
       }
     });
-    renderChildren(__ctx, "e51", ["Update counter"]);
-    renderChildren(__ctx, "e50", [__ctx.c5, __ctx.e51]);
-    __ctx.$r = __ctx.e50;
+    renderChildren(__ctx, "e54", ["Update counter"]);
+    renderChildren(__ctx, "e53", [__ctx.c5, __ctx.e54]);
+    __ctx.$r = __ctx.e53;
 
     __gctx.pHC();
 
@@ -311,7 +302,7 @@ function App(__props, __gctx, __pctx) {
       children: count
     });
 
-    setEvt(__ctx.e51, "click", () => setCount(count + 1));
+    setEvt(__ctx.e54, "click", () => setCount(count + 1));
 
     __gctx.pHC();
   }

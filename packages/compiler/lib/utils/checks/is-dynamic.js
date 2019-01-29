@@ -10,6 +10,7 @@ module.exports = function isDynamic(node) {
   return (
     isFunction(node) ||
     isDynamicTemplateLiteral(node) ||
+    t.isCallExpression(node) ||
     t.isIdentifier(node) ||
     t.isConditionalExpression(node) ||
     (t.isMemberExpression(node) && node.object.name !== CTX) ||

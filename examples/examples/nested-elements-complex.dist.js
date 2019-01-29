@@ -103,78 +103,69 @@ function renderChildren(ctx, pid, children, maybeIdx) {
   let parent = ctx[pid]._;
   let idx = maybeIdx || 0;
   let prevChildren = Array.from(parent.childNodes);
+  let isEmpty = !prevChildren.length;
 
-  if (!children || (!prevChildren.length && !children.length)) return;
+  if (!children || (!prevChildren.length && !children.length)) return idx;
 
-  children.forEach(child => {
-    if (child === null) {
-      if (prevChildren[idx]) {
-        parent.removeChild(prevChildren[idx]);
-        idx++;
-      }
+  let flatChildren = children.reduce((acc, i) => acc.concat(i), []);
+  let nodesToKeep = new WeakSet();
+
+  flatChildren.forEach(child => {
+    if (child === null || child === undefined) {
       return;
     }
-    if (isPrimitiveChild(child)) {
-      if (prevChildren[idx]) {
-        if (prevChildren[idx].nodeType === 3) {
-          if (prevChildren[idx].textContent !== child) {
-            prevChildren[idx].textContent = child;
-          }
-        } else {
-          parent.replaceChild(
-            document.createTextNode(child),
-            prevChildren[idx]
-          );
-        }
-        idx++;
-        return;
-      } else {
-        idx++;
-        return appendChild(parent, document.createTextNode(child));
-      }
-    } else if (Array.isArray(child)) {
-      renderChildren({ $r: { _: parent } }, "$r", child, idx);
-      idx += child.length;
+
+    let isPrimitive = isPrimitiveChild(child);
+    let childElem = isPrimitive
+      ? document.createTextNode(child)
+      : child.$r
+      ? child.$r.$r
+        ? child.$r.$r._
+        : child.$r._
+      : child._;
+    let childIdx = prevChildren.indexOf(childElem);
+    let prevChild = prevChildren[idx];
+
+    // input | c0 |
+    //
+    // 1     | c1 | c0 | 0
+    // input | c0 |    | +1
+    //
+    // 1     | c1 | c1, c0 | +1
+    // 2     | c2 |        | 0
+    // input | c0 |        | +1
+
+    if (childElem === null || childElem === undefined) {
       return;
-    } else {
-      let newChild = child.$r
-        ? child.$r.$r
-          ? child.$r.$r._
-          : child.$r._
-        : child._;
-      if (prevChildren[idx]) {
-        if (prevChildren[idx] !== newChild) {
-          try {
-            parent.replaceChild(newChild, prevChildren[idx]);
-          } catch (e) {}
-        }
-        idx++;
-        return;
-      } else {
-        if (prevChildren[idx]) {
-          if (prevChildren[idx] !== newChild) {
-            try {
-              parent.replaceChild(newChild, prevChildren[idx]);
-            } catch (e) {}
-          }
-          idx++;
-          return;
-        }
-        appendChild(parent, newChild);
-        idx++;
-        return;
-      }
+    }
+
+    if (isEmpty) {
+      isEmpty = false;
+      nodesToKeep.add(childElem);
+      return appendChild(parent, childElem);
+    } else if (childIdx === -1 && prevChild && !isPrimitive) {
+      nodesToKeep.add(childElem);
+      return parent.insertBefore(childElem, prevChild);
+    } else if (isPrimitive && prevChild && prevChild.nodeType === 3) {
+      prevChild.textContent = child;
+      idx++;
+      nodesToKeep.add(prevChild);
+      return;
+    } else if (prevChildren[childIdx] === childElem) {
+      idx++;
+      nodesToKeep.add(childElem);
+      return;
+    } else if (!prevChild) {
+      nodesToKeep.add(childElem);
+      return appendChild(parent, childElem);
     }
   });
 
-  while (idx < prevChildren.length) {
-    if (prevChildren[idx].parentNode) {
-      try {
-        prevChildren[idx].parentNode.removeChild(prevChildren[idx]);
-      } catch (e) {}
+  prevChildren.forEach(child => {
+    if (!nodesToKeep.has(child)) {
+      parent.removeChild(child);
     }
-    idx++;
-  }
+  });
 }
 
 function isPrimitiveChild(child) {
@@ -255,12 +246,12 @@ function App(__props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e17", "div", {
+    createElement(__ctx, "e20", "div", {
       $: {
         class: "barchart"
       }
     });
-    renderChildren(__ctx, "e17", [colors.map((color, idx) => {
+    renderChildren(__ctx, "e20", [colors.map((color, idx) => {
       var __ctx = {};
 
       __gctx.sHC(__ctx);
@@ -268,43 +259,83 @@ function App(__props, __gctx, __pctx) {
       var height = idx / colors.length * 140 + 60;
 
       if (__ctx !== __pctx) {
-        createElement(__ctx, "e14", "div", {
+        createElement(__ctx, "e17", "div", {
           $: {
             class: "barchart__bar-wrapper"
           }
         });
-        createElement(__ctx, "e15", "div", {
+        createElement(__ctx, "e18", "div", {
           $: {
             class: "barchart__bar-title",
             style: `color:${color}`
           }
         });
-        renderChildren(__ctx, "e15", [height]);
-        createElement(__ctx, "e16", "div", {
+        renderChildren(__ctx, "e18", [height]);
+        createElement(__ctx, "e19", "div", {
           $: {
             class: "barchart__bar",
             style: `background-color:${color};height:${toPx(height)}`
           }
         });
-        renderChildren(__ctx, "e16");
-        renderChildren(__ctx, "e14", [__ctx.e15, __ctx.e16]);
-        __ctx.$r = __ctx.e14;
+        renderChildren(__ctx, "e19");
+        renderChildren(__ctx, "e17", [__ctx.e18, __ctx.e19]);
+        __ctx.$r = __ctx.e17;
 
         __gctx.pHC();
 
         return __ctx;
       } else {
-        renderChildren(__ctx, "e15", [height]);
+        renderChildren(__ctx, "e18", [height]);
 
         __gctx.pHC();
       }
     })]);
-    __ctx.$r = __ctx.e17;
+    __ctx.$r = __ctx.e20;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
+    renderChildren(__ctx, "e20", [colors.map((color, idx) => {
+      var __ctx = {};
+
+      __gctx.sHC(__ctx);
+
+      var height = idx / colors.length * 140 + 60;
+
+      if (__ctx !== __pctx) {
+        createElement(__ctx, "e17", "div", {
+          $: {
+            class: "barchart__bar-wrapper"
+          }
+        });
+        createElement(__ctx, "e18", "div", {
+          $: {
+            class: "barchart__bar-title",
+            style: `color:${color}`
+          }
+        });
+        renderChildren(__ctx, "e18", [height]);
+        createElement(__ctx, "e19", "div", {
+          $: {
+            class: "barchart__bar",
+            style: `background-color:${color};height:${toPx(height)}`
+          }
+        });
+        renderChildren(__ctx, "e19");
+        renderChildren(__ctx, "e17", [__ctx.e18, __ctx.e19]);
+        __ctx.$r = __ctx.e17;
+
+        __gctx.pHC();
+
+        return __ctx;
+      } else {
+        renderChildren(__ctx, "e18", [height]);
+
+        __gctx.pHC();
+      }
+    })]);
+
     __gctx.pHC();
   }
 }

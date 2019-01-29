@@ -91,3 +91,31 @@ test("should purge the DOM cache when removing nodes", t => {
   ctx.$({ render: true, className: "bigdog" });
   t.true(ctx.$r._.childNodes[0].className === "bigdog");
 });
+
+test("preserves focus", t => {
+  let ctx = compile(
+    `
+     function Cmp(props) {
+       let child;
+       if (props.renderChild) {
+        child = <div />;
+       }
+
+       return (
+        <div>
+          {child}
+          <input value={props.value} id="theinput" />
+        </div>
+      );
+     }`,
+    { renderChild: false, value: "text" }
+  );
+  ctx.$r._.querySelector("input").focus();
+  t.true(document.activeElement.id === "theinput");
+
+  ctx.$({ renderChild: false, value: "changed text" });
+  t.true(document.activeElement.id === "theinput");
+
+  ctx.$({ renderChild: true, value: "changed text" });
+  t.true(document.activeElement.id === "theinput");
+});

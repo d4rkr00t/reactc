@@ -103,88 +103,69 @@ function renderChildren(ctx, pid, children, maybeIdx) {
   let parent = ctx[pid]._;
   let idx = maybeIdx || 0;
   let prevChildren = Array.from(parent.childNodes);
+  let isEmpty = !prevChildren.length;
 
-  if (!children || (!prevChildren.length && !children.length)) return;
+  if (!children || (!prevChildren.length && !children.length)) return idx;
 
-  children.forEach(child => {
-    if (child === null) {
-      if (prevChildren[idx]) {
-        parent.removeChild(prevChildren[idx]);
-        idx++;
-      }
+  let flatChildren = children.reduce((acc, i) => acc.concat(i), []);
+  let nodesToKeep = new WeakSet();
+
+  flatChildren.forEach(child => {
+    if (child === null || child === undefined) {
       return;
     }
-    if (isPrimitiveChild(child)) {
-      if (prevChildren[idx]) {
-        if (prevChildren[idx].nodeType === 3) {
-          if (prevChildren[idx].textContent !== child) {
-            prevChildren[idx].textContent = child;
-          }
-        } else {
-          parent.replaceChild(
-            document.createTextNode(child),
-            prevChildren[idx]
-          );
-        }
-        idx++;
-        return;
-      } else {
-        idx++;
-        return appendChild(parent, document.createTextNode(child));
-      }
-    } else if (Array.isArray(child)) {
-      renderChildren({ $r: { _: parent } }, "$r", child, idx);
-      idx += child.length;
+
+    let isPrimitive = isPrimitiveChild(child);
+    let childElem = isPrimitive
+      ? document.createTextNode(child)
+      : child.$r
+      ? child.$r.$r
+        ? child.$r.$r._
+        : child.$r._
+      : child._;
+    let childIdx = prevChildren.indexOf(childElem);
+    let prevChild = prevChildren[idx];
+
+    // input | c0 |
+    //
+    // 1     | c1 | c0 | 0
+    // input | c0 |    | +1
+    //
+    // 1     | c1 | c1, c0 | +1
+    // 2     | c2 |        | 0
+    // input | c0 |        | +1
+
+    if (childElem === null || childElem === undefined) {
       return;
-    } else {
-      let newChild = child
-        ? child.$r
-          ? child.$r.$r
-            ? child.$r.$r._
-            : child.$r._
-          : child._
-        : null;
-      if (prevChildren[idx]) {
-        if (prevChildren[idx] !== newChild) {
-          try {
-            if (newChild === null) {
-              parent.removeChild(prevChildren[idx]);
-            } else {
-              parent.replaceChild(newChild, prevChildren[idx]);
-            }
-          } catch (e) {}
-        }
-        idx++;
-        return;
-      } else {
-        if (prevChildren[idx]) {
-          if (prevChildren[idx] !== newChild) {
-            try {
-              if (!newChild === null) {
-                parent.removeChild(prevChildren[idx]);
-              } else {
-                parent.replaceChild(newChild, prevChildren[idx]);
-              }
-            } catch (e) {}
-          }
-          idx++;
-          return;
-        }
-        appendChild(parent, newChild);
-        idx++;
-        return;
-      }
+    }
+
+    if (isEmpty) {
+      isEmpty = false;
+      nodesToKeep.add(childElem);
+      return appendChild(parent, childElem);
+    } else if (childIdx === -1 && prevChild && !isPrimitive) {
+      nodesToKeep.add(childElem);
+      return parent.insertBefore(childElem, prevChild);
+    } else if (isPrimitive && prevChild && prevChild.nodeType === 3) {
+      prevChild.textContent = child;
+      idx++;
+      nodesToKeep.add(prevChild);
+      return;
+    } else if (prevChildren[childIdx] === childElem) {
+      idx++;
+      nodesToKeep.add(childElem);
+      return;
+    } else if (!prevChild) {
+      nodesToKeep.add(childElem);
+      return appendChild(parent, childElem);
     }
   });
 
-  while (idx < prevChildren.length) {
-    if (prevChildren[idx].parentNode) {
-      try {
-        prevChildren[idx].parentNode.removeChild(prevChildren[idx]);
-      } catch (e) {}
+  prevChildren.forEach(child => {
+    if (!nodesToKeep.has(child)) {
+      parent.removeChild(child);
     }
-    idx++;
-  }
+  });
 }
 
 function isPrimitiveChild(child) {
@@ -265,35 +246,35 @@ function DynamicChild(props, __gctx, __pctx) {
   let dog;
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e1", "div", {
+    createElement(__ctx, "e55", "div", {
       $: {
         class: props.className
       }
     });
-    renderChildren(__ctx, "e1", ["dog"]);
+    renderChildren(__ctx, "e55", ["dog"]);
 
     if (props.render) {
-      dog = __ctx.e1;
+      dog = __ctx.e55;
     }
 
-    createElement(__ctx, "e2", "div");
-    createElement(__ctx, "e3", "div");
-    renderChildren(__ctx, "e3", ["cat"]);
-    renderChildren(__ctx, "e2", [dog, __ctx.e3]);
-    __ctx.$r = __ctx.e2;
+    createElement(__ctx, "e56", "div");
+    createElement(__ctx, "e57", "div");
+    renderChildren(__ctx, "e57", ["cat"]);
+    renderChildren(__ctx, "e56", [dog, __ctx.e57]);
+    __ctx.$r = __ctx.e56;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    let __e1__class = props.className;
-    __ctx.e1.$p.class !== __e1__class && setAttr(__ctx.e1, "class", __e1__class);
+    let __e55__class = props.className;
+    __ctx.e55.$p.class !== __e55__class && setAttr(__ctx.e55, "class", __e55__class);
 
     if (props.render) {
-      dog = __ctx.e1;
+      dog = __ctx.e55;
     }
 
-    renderChildren(__ctx, "e2", [dog, __ctx.e3]);
+    renderChildren(__ctx, "e56", [dog, __ctx.e57]);
 
     __gctx.pHC();
   }
@@ -312,30 +293,30 @@ function App(__props, __gctx, __pctx) {
   let [render, setRender] = useState(true);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e4", "div");
-    createComponent(__gctx, __ctx, "c1", DynamicChild, {
+    createElement(__ctx, "e58", "div");
+    createComponent(__gctx, __ctx, "c6", DynamicChild, {
       render: render,
       className: "bigdog"
     });
-    createElement(__ctx, "e5", "button", {
+    createElement(__ctx, "e59", "button", {
       $e: {
         click: () => setRender(!render)
       }
     });
-    renderChildren(__ctx, "e5", ["Re-render"]);
-    renderChildren(__ctx, "e4", [__ctx.c1, __ctx.e5]);
-    __ctx.$r = __ctx.e4;
+    renderChildren(__ctx, "e59", ["Re-render"]);
+    renderChildren(__ctx, "e58", [__ctx.c6, __ctx.e59]);
+    __ctx.$r = __ctx.e58;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    __ctx.c1.$({
+    __ctx.c6.$({
       render: render,
       className: "bigdog"
     });
 
-    setEvt(__ctx.e5, "click", () => setRender(!render));
+    setEvt(__ctx.e59, "click", () => setRender(!render));
 
     __gctx.pHC();
   }

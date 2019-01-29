@@ -243,15 +243,73 @@ function App(__props, __gctx, __pctx) {
 
   __gctx.sHC(__ctx);
 
+  let [value, setValue] = useState("");
+
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e60", "div");
-    renderChildren(__ctx, "e60", ["Hello ReactC"]);
-    __ctx.$r = __ctx.e60;
+    createElement(__ctx, "e2", "div");
+    createElement(__ctx, "e3", "input", {
+      $e: {
+        input: e => {
+          console.log(e.target.value);
+          setValue(e.target.value);
+        }
+      },
+      $p: {
+        value: value
+      }
+    });
+    renderChildren(__ctx, "e3");
+    renderChildren(__ctx, "e2", [value.split("").map(item => {
+      var __ctx = {};
+
+      __gctx.sHC(__ctx);
+
+      if (__ctx !== __pctx) {
+        createElement(__ctx, "e1", "div");
+        renderChildren(__ctx, "e1", [item]);
+        __ctx.$r = __ctx.e1;
+
+        __gctx.pHC();
+
+        return __ctx;
+      } else {
+        renderChildren(__ctx, "e1", [item]);
+
+        __gctx.pHC();
+      }
+    }), __ctx.e3]);
+    __ctx.$r = __ctx.e2;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
+    let __e3__value = value;
+    __ctx.e3.$p.value !== __e3__value && setProp(__ctx.e3, "value", __e3__value);
+    setEvt(__ctx.e3, "input", e => {
+      console.log(e.target.value);
+      setValue(e.target.value);
+    });
+    renderChildren(__ctx, "e2", [value.split("").map(item => {
+      var __ctx = {};
+
+      __gctx.sHC(__ctx);
+
+      if (__ctx !== __pctx) {
+        createElement(__ctx, "e1", "div");
+        renderChildren(__ctx, "e1", [item]);
+        __ctx.$r = __ctx.e1;
+
+        __gctx.pHC();
+
+        return __ctx;
+      } else {
+        renderChildren(__ctx, "e1", [item]);
+
+        __gctx.pHC();
+      }
+    }), __ctx.e3]);
+
     __gctx.pHC();
   }
 }
