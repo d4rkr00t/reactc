@@ -127,7 +127,7 @@ function processAttribute(elementType, attrName, attr) {
 }
 
 function setAttributeName(attr, name) {
-  if (t.isStringLiteral(attr.key)) {
+  if (t.isStringLiteral(attr.key) || name.indexOf("-") > -1) {
     return t.objectProperty(t.stringLiteral(name), attr.value);
   }
   return t.objectProperty(t.identifier(name), attr.value);
@@ -151,7 +151,18 @@ function getAttrType(name) {
 }
 
 function shouldWrapInToPx(name) {
-  return ["height", "width", "left", "margin"].indexOf(name) >= 0;
+  return (
+    [
+      "height",
+      "width",
+      "left",
+      "margin",
+      "top",
+      "right",
+      "bottom",
+      "left"
+    ].indexOf(name) >= 0
+  );
 }
 
 function getAttrValue(name, attrs) {
@@ -183,7 +194,7 @@ function processStyles(stylesAttr) {
       if (t.isIdentifier(attr.value)) {
         acc.push(`${attr.name}:\${${attr.value.name}}`);
       } else if (
-        t.isStringLiteral(attr.value) ||
+        (t.isStringLiteral(attr.value) && attr.value.value) ||
         t.isNumericLiteral(attr.value)
       ) {
         acc.push(`${attr.name}:${attr.value.value}`);
