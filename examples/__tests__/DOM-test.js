@@ -119,3 +119,20 @@ test("preserves focus", t => {
   ctx.$({ renderChild: true, value: "changed text" });
   t.true(document.activeElement.id === "theinput");
 });
+
+// Doesn't work in jsdom
+test.skip("calls focus() on autoFocus elements after they have been mounted to the DOM", t => {
+  compile(
+    `
+     function Cmp() {
+       return (
+        <div>
+          <h1>Auto-focus Test</h1>
+          <input autoFocus={true} />
+        </div>
+      );
+     }`
+  );
+
+  t.true(document.activeElement.tag === "INPUT");
+});
