@@ -10,6 +10,7 @@ module.exports = function isDynamic(node) {
   return (
     isFunction(node) ||
     isDynamicTemplateLiteral(node) ||
+    t.isObjectExpression(node) ||
     t.isCallExpression(node) ||
     t.isIdentifier(node) ||
     t.isConditionalExpression(node) ||

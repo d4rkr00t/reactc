@@ -14,7 +14,9 @@ window.localStorage = {
   "nested-elements-complex",
   "nested-elements",
   "simple-hooks",
-  "todomvc"
+  "todomvc",
+  "use-mouse-position",
+  "input-focus"
 ].forEach(name => {
   test(name, t => {
     const div = document.createElement("div");

@@ -233,7 +233,33 @@ let [useState, useEffect] = (() => {
 
 /* END RUNTIME */
 
-let colors = ["#a6e22e", "#a1efe4", "#66d9ef", "#ae81ff", "#cc6633", "#4CAF50", "#00BCD4", "#5C6BC0"];
+/**
+ * Source: https://codepen.io/halvves/pen/qQxPNo
+ */
+const useMousePosition = () => {
+  const [mouse, setMouse] = useState({
+    x: 0,
+    y: 0
+  });
+
+  const onMouse = ({
+    clientX,
+    clientY
+  }) => {
+    setMouse({
+      x: clientX,
+      y: clientY
+    });
+  };
+
+  useEffect(() => {
+    window.addEventListener("mousemove", onMouse);
+    return () => {
+      window.removeEventListener("mousemove", onMouse);
+    };
+  });
+  return mouse;
+};
 
 function App(__props, __gctx, __pctx) {
   var __ctx = __pctx || {
@@ -245,104 +271,28 @@ function App(__props, __gctx, __pctx) {
 
   __gctx.sHC(__ctx);
 
+  const {
+    x,
+    y
+  } = useMousePosition();
+
   if (__ctx !== __pctx) {
-    createElement(__ctx, "y", "div", {
+    createElement(__ctx, "cq", "div", {
       $: {
-        class: "barchart"
+        class: "m",
+        style: `left:${toPx(`${x}px`)};top:${toPx(`${y}px`)}`
       }
     });
-    renderChildren(__ctx, "y", [colors.map((color, idx) => {
-      var __ctx = {};
-
-      __gctx.sHC(__ctx);
-
-      var height = idx / colors.length * 140 + 60;
-
-      if (__ctx !== __pctx) {
-        createElement(__ctx, "v", "div", {
-          $: {
-            class: "barchart__bar-wrapper"
-          }
-        });
-        createElement(__ctx, "w", "div", {
-          $: {
-            class: "barchart__bar-title",
-            style: `color:${color}`
-          }
-        });
-        renderChildren(__ctx, "w", [height]);
-        createElement(__ctx, "x", "div", {
-          $: {
-            class: "barchart__bar",
-            style: `background-color:${color};height:${toPx(height)}`
-          }
-        });
-        renderChildren(__ctx, "x");
-        renderChildren(__ctx, "v", [__ctx.w, __ctx.x]);
-        __ctx.$r = __ctx.v;
-
-        __gctx.pHC();
-
-        return __ctx;
-      } else {
-        let __w__style = `color:${color}`;
-        __ctx.w.$p.style !== __w__style && setAttr(__ctx.w, "style", __w__style);
-        renderChildren(__ctx, "w", [height]);
-        let __x__style = `background-color:${color};height:${toPx(height)}`;
-        __ctx.x.$p.style !== __x__style && setAttr(__ctx.x, "style", __x__style);
-
-        __gctx.pHC();
-      }
-    })]);
-    __ctx.$r = __ctx.y;
+    renderChildren(__ctx, "cq", ["x: ", x, ", y: ", y]);
+    __ctx.$r = __ctx.cq;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "y", [colors.map((color, idx) => {
-      var __ctx = {};
-
-      __gctx.sHC(__ctx);
-
-      var height = idx / colors.length * 140 + 60;
-
-      if (__ctx !== __pctx) {
-        createElement(__ctx, "v", "div", {
-          $: {
-            class: "barchart__bar-wrapper"
-          }
-        });
-        createElement(__ctx, "w", "div", {
-          $: {
-            class: "barchart__bar-title",
-            style: `color:${color}`
-          }
-        });
-        renderChildren(__ctx, "w", [height]);
-        createElement(__ctx, "x", "div", {
-          $: {
-            class: "barchart__bar",
-            style: `background-color:${color};height:${toPx(height)}`
-          }
-        });
-        renderChildren(__ctx, "x");
-        renderChildren(__ctx, "v", [__ctx.w, __ctx.x]);
-        __ctx.$r = __ctx.v;
-
-        __gctx.pHC();
-
-        return __ctx;
-      } else {
-        let __w__style = `color:${color}`;
-        __ctx.w.$p.style !== __w__style && setAttr(__ctx.w, "style", __w__style);
-        renderChildren(__ctx, "w", [height]);
-        let __x__style = `background-color:${color};height:${toPx(height)}`;
-        __ctx.x.$p.style !== __x__style && setAttr(__ctx.x, "style", __x__style);
-
-        __gctx.pHC();
-      }
-    })]);
+    let __cq__style = `left:${toPx(`${x}px`)};top:${toPx(`${y}px`)}`;
+    __ctx.cq.$p.style !== __cq__style && setAttr(__ctx.cq, "style", __cq__style);
+    renderChildren(__ctx, "cq", ["x: ", x, ", y: ", y]);
 
     __gctx.pHC();
   }
