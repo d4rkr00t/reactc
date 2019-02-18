@@ -14,6 +14,10 @@ module.exports = declare(() => {
               if (!isReactFunctionComponent(path)) return;
               transformComponent(path);
             },
+            FunctionExpression(path) {
+              if (!isReactFunctionComponent(path)) return;
+              transformComponent(path);
+            },
             ArrowFunctionExpression(path) {
               if (!isReactFunctionComponent(path)) return;
               transformComponent(path);

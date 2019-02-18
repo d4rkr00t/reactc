@@ -4,11 +4,14 @@ let isCreateElementExpression = require("./is-create-element");
 module.exports = function isReactFunctionComponent(path) {
   if (path.removed) return false;
   let isComponent = false;
+  let node = path.node;
 
   path.traverse({
     CallExpression(path) {
       if (!isComponent) {
-        isComponent = isCreateElementExpression(path.node);
+        isComponent =
+          isCreateElementExpression(path.node) &&
+          path.getFunctionParent().node.id.name === node.id.name;
       }
     }
   });
