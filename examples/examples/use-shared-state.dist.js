@@ -233,124 +233,78 @@ let [useState, useEffect] = (() => {
 
 /* END RUNTIME */
 
-function Date(props, __gctx, __pctx) {
+/**
+ * Source: https://codesandbox.io/s/y3n57mlwvj
+ */
+const createSharedState = defaultValue => {
+  let listeners = [];
+
+  const setSharedState = value => {
+    listeners.forEach(listener => listener(value));
+  };
+
+  return () => {
+    const [value, setVal] = useState(defaultValue);
+    useEffect(() => {
+      listeners.push(setVal);
+      return () => {
+        listeners.splice(-1, 1);
+      };
+    });
+    return [value, setSharedState];
+  };
+};
+
+const useSharedState = createSharedState(0);
+
+function Child(__props, __gctx, __pctx) {
   var __ctx = __pctx || {
-    $p: props,
+    $p: __props,
     $: props => {
-      Date(props, __gctx, __ctx);
+      Child(props, __gctx, __ctx);
     }
   };
 
   __gctx.sHC(__ctx);
 
-  if (__ctx !== __pctx) {
-    createElement(__ctx, "e", "div", {
-      $: {
-        class: "date"
-      }
-    });
-    renderChildren(__ctx, "e", [props.children]);
-    __ctx.$r = __ctx.e;
+  const [value, setValue] = useSharedState();
 
-    __gctx.pHC();
-
-    return __ctx;
-  } else {
-    renderChildren(__ctx, "e", [props.children]);
-
-    __gctx.pHC();
-  }
-}
-
-function Button(props, __gctx, __pctx) {
-  var __ctx = __pctx || {
-    $p: props,
-    $: props => {
-      Button(props, __gctx, __ctx);
-    }
+  const onIncrement = () => {
+    setValue(value + 1);
   };
 
-  __gctx.sHC(__ctx);
-
-  if (__ctx !== __pctx) {
-    createElement(__ctx, "f", "a", {
-      $: {
-        href: "#",
-        class: "button"
-      }
-    });
-    renderChildren(__ctx, "f", [props.children]);
-    __ctx.$r = __ctx.f;
-
-    __gctx.pHC();
-
-    return __ctx;
-  } else {
-    renderChildren(__ctx, "f", [props.children]);
-
-    __gctx.pHC();
-  }
-}
-
-function Title(props, __gctx, __pctx) {
-  var __ctx = __pctx || {
-    $p: props,
-    $: props => {
-      Title(props, __gctx, __ctx);
-    }
+  const onDecrement = () => {
+    setValue(value - 1);
   };
 
-  __gctx.sHC(__ctx);
-
   if (__ctx !== __pctx) {
-    createElement(__ctx, "g", "h1", {
-      $: {
-        class: "title"
+    createElement(__ctx, "cr", "div");
+    createElement(__ctx, "cs", "div");
+    createElement(__ctx, "ct", "button", {
+      $e: {
+        click: onIncrement
       }
     });
-    renderChildren(__ctx, "g", [props.children]);
-    __ctx.$r = __ctx.g;
+    renderChildren(__ctx, "ct", ["+"]);
+    createElement(__ctx, "cu", "button", {
+      $e: {
+        click: onDecrement
+      }
+    });
+    renderChildren(__ctx, "cu", ["-"]);
+    renderChildren(__ctx, "cs", [__ctx.ct, __ctx.cu]);
+    renderChildren(__ctx, "cr", [value, __ctx.cs]);
+    __ctx.$r = __ctx.cr;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "g", [props.children]);
-
-    __gctx.pHC();
-  }
-}
-
-function Link({
-  href,
-  children
-}, __gctx, __pctx) {
-  var __ctx = __pctx || {
-    $p: {
-      href,
-      children
-    },
-    $: props => {
-      Link(props, __gctx, __ctx);
-    }
-  };
-
-  __gctx.sHC(__ctx);
-
-  if (__ctx !== __pctx) {
-    createElement(__ctx, "h", "a", {
-      $: {
-        href: href || "#"
-      }
-    });
-    renderChildren(__ctx, "h", [children]);
-    __ctx.$r = __ctx.h;
-
-    __gctx.pHC();
-
-    return __ctx;
-  } else {
-    renderChildren(__ctx, "h", [children]);
+    let __ct__click = onIncrement;
+    __ctx.ct.$p.click !== __ct__click && setEvt(__ctx.ct, "click", __ct__click);
+    let __cu__click = onDecrement;
+    __ctx.cu.$p.click !== __cu__click && setEvt(__ctx.cu, "click", __cu__click);
+    renderChildren(__ctx, "cr", [value, __ctx.cs]);
 
     __gctx.pHC();
   }
@@ -366,94 +320,48 @@ function App(__props, __gctx, __pctx) {
 
   __gctx.sHC(__ctx);
 
+  const [value, setValue] = useSharedState();
+
+  const onIncrement = () => {
+    setValue(value + 1);
+  };
+
+  const onDecrement = () => {
+    setValue(value - 1);
+  };
+
   if (__ctx !== __pctx) {
-    createElement(__ctx, "i", "div", {
-      $: {
-        class: "App"
+    createElement(__ctx, "cv", "div");
+    createElement(__ctx, "cw", "div");
+    createElement(__ctx, "cx", "button", {
+      $e: {
+        click: onIncrement
       }
     });
-    createElement(__ctx, "j", "div", {
-      $: {
-        class: "row"
+    renderChildren(__ctx, "cx", ["+"]);
+    createElement(__ctx, "cy", "button", {
+      $e: {
+        click: onDecrement
       }
     });
-    createElement(__ctx, "k", "div", {
-      $: {
-        class: "card"
-      }
-    });
-    createElement(__ctx, "l", "div", {
-      $: {
-        class: "wrapper"
-      }
-    });
-    createElement(__ctx, "m", "div", {
-      $: {
-        class: "header"
-      }
-    });
-    createComponent(__gctx, __ctx, "n", Date, {
-      children: "12 Aug 2016"
-    });
-    renderChildren(__ctx, "m", [__ctx.n]);
-    createElement(__ctx, "o", "div", {
-      $: {
-        class: "data"
-      }
-    });
-    createElement(__ctx, "p", "div", {
-      $: {
-        class: "content"
-      }
-    });
-    createElement(__ctx, "q", "span", {
-      $: {
-        class: "author"
-      }
-    });
-    renderChildren(__ctx, "q", ["Jane Doe"]);
-    createComponent(__gctx, __ctx, "s", Link, {
-      children: "Stranger Things: The sound of the Upside Down"
-    });
-    createComponent(__gctx, __ctx, "r", Title, {
-      children: __ctx.s
-    });
-    createElement(__ctx, "t", "p", {
-      $: {
-        class: "text"
-      }
-    });
-    renderChildren(__ctx, "t", ["The antsy bingers of Netflix will eagerly anticipate the digital release of the Survive soundtrack, out today."]);
-    createComponent(__gctx, __ctx, "u", Button, {
-      children: "Read more"
-    });
-    renderChildren(__ctx, "p", [__ctx.q, __ctx.r, __ctx.t, __ctx.u]);
-    renderChildren(__ctx, "o", [__ctx.p]);
-    renderChildren(__ctx, "l", [__ctx.m, __ctx.o]);
-    renderChildren(__ctx, "k", [__ctx.l]);
-    renderChildren(__ctx, "j", [__ctx.k]);
-    renderChildren(__ctx, "i", [__ctx.j]);
-    __ctx.$r = __ctx.i;
+    renderChildren(__ctx, "cy", ["-"]);
+    renderChildren(__ctx, "cw", [__ctx.cx, __ctx.cy]);
+    createComponent(__gctx, __ctx, "cz", Child);
+    renderChildren(__ctx, "cv", [value, __ctx.cw, __ctx.cz]);
+    __ctx.$r = __ctx.cv;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    __ctx.n.$({
-      children: "12 Aug 2016"
-    });
+    let __cx__click = onIncrement;
+    __ctx.cx.$p.click !== __cx__click && setEvt(__ctx.cx, "click", __cx__click);
+    let __cy__click = onDecrement;
+    __ctx.cy.$p.click !== __cy__click && setEvt(__ctx.cy, "click", __cy__click);
 
-    __ctx.s.$({
-      children: "Stranger Things: The sound of the Upside Down"
-    });
+    __ctx.cz.$();
 
-    __ctx.r.$({
-      children: __ctx.s
-    });
-
-    __ctx.u.$({
-      children: "Read more"
-    });
+    renderChildren(__ctx, "cv", [value, __ctx.cw, __ctx.cz]);
 
     __gctx.pHC();
   }

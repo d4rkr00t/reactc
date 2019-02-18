@@ -11,7 +11,7 @@ module.exports = function isReactFunctionComponent(path) {
       if (!isComponent) {
         isComponent =
           isCreateElementExpression(path.node) &&
-          path.getFunctionParent().node.id.name === node.id.name;
+          path.getFunctionParent().node === node;
       }
     }
   });

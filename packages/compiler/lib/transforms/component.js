@@ -180,15 +180,14 @@ function transformComponent(
   initialRenderPath.push(
     ch.createComponent(id, type, processProps(props, directChildren))
   );
-  if (isDynamicProps(props) || isDynamicChildren(children)) {
-    reRenderPath.push(
-      t.expressionStatement(
-        t.callExpression(ch.contextElementUpdater(id), [
-          processProps(props, directChildren)
-        ])
+  reRenderPath.push(
+    t.expressionStatement(
+      t.callExpression(
+        ch.contextElementUpdater(id),
+        [processProps(props, directChildren)].filter(Boolean)
       )
-    );
-  }
+    )
+  );
   return id;
 }
 
