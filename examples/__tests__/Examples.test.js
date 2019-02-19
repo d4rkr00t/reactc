@@ -16,7 +16,10 @@ window.localStorage = {
   "simple-hooks",
   "todomvc",
   "use-mouse-position",
-  "input-focus"
+  "input-focus",
+  "simple-arrow-function",
+  "use-shared-state",
+  "use-window-resize"
 ].forEach(name => {
   test(name, t => {
     const div = document.createElement("div");

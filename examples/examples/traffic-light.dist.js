@@ -234,31 +234,111 @@ let [useState, useEffect] = (() => {
 /* END RUNTIME */
 
 /**
- * Source: https://codepen.io/halvves/pen/qQxPNo
+ * Source: https://codesandbox.io/s/xlw615w7ow
  */
-const useMousePosition = () => {
-  const [mouse, setMouse] = useState({
-    x: 0,
-    y: 0
-  });
+const lightDurations = [5000, 4000, 1000];
 
-  const onMouse = ({
-    clientX,
-    clientY
-  }) => {
-    setMouse({
-      x: clientX,
-      y: clientY
-    });
+const Light = ({
+  color,
+  active
+}, __gctx, __pctx) => {
+  var __ctx = __pctx || {
+    $p: {
+      color,
+      active
+    },
+    $: props => {
+      Light(props, __gctx, __ctx);
+    }
   };
 
+  __gctx.sHC(__ctx);
+
+  if (__ctx !== __pctx) {
+    createElement(__ctx, "cu", "div", {
+      $: {
+        class: "light",
+        style: `background-color:${color};opacity:${active ? 1 : 0.4}`
+      }
+    });
+    renderChildren(__ctx, "cu");
+    __ctx.$r = __ctx.cu;
+
+    __gctx.pHC();
+
+    return __ctx;
+  } else {
+    let __cu__style = `background-color:${color};opacity:${active ? 1 : 0.4}`;
+    __ctx.cu.$p.style !== __cu__style && setAttr(__ctx.cu, "style", __cu__style);
+
+    __gctx.pHC();
+  }
+};
+
+const TrafficLight = ({
+  initialValue
+}, __gctx, __pctx) => {
+  var __ctx = __pctx || {
+    $p: {
+      initialValue
+    },
+    $: props => {
+      TrafficLight(props, __gctx, __ctx);
+    }
+  };
+
+  __gctx.sHC(__ctx);
+
+  const [colorIndex, setColorIndex] = useState(initialValue);
   useEffect(() => {
-    window.addEventListener("mousemove", onMouse);
-    return () => {
-      window.removeEventListener("mousemove", onMouse);
-    };
-  });
-  return mouse;
+    const timer = setTimeout(() => {
+      setColorIndex((colorIndex + 1) % 3);
+    }, lightDurations[colorIndex]);
+    return () => clearTimeout(timer);
+  }, [colorIndex]);
+
+  if (__ctx !== __pctx) {
+    createElement(__ctx, "cv", "div", {
+      $: {
+        class: "traffic-light"
+      }
+    });
+    createComponent(__gctx, __ctx, "cw", Light, {
+      color: "#f00",
+      active: colorIndex === 0
+    });
+    createComponent(__gctx, __ctx, "cx", Light, {
+      color: "#ff0",
+      active: colorIndex === 2
+    });
+    createComponent(__gctx, __ctx, "cy", Light, {
+      color: "#0c0",
+      active: colorIndex === 1
+    });
+    renderChildren(__ctx, "cv", [__ctx.cw, __ctx.cx, __ctx.cy]);
+    __ctx.$r = __ctx.cv;
+
+    __gctx.pHC();
+
+    return __ctx;
+  } else {
+    __ctx.cw.$({
+      color: "#f00",
+      active: colorIndex === 0
+    });
+
+    __ctx.cx.$({
+      color: "#ff0",
+      active: colorIndex === 2
+    });
+
+    __ctx.cy.$({
+      color: "#0c0",
+      active: colorIndex === 1
+    });
+
+    __gctx.pHC();
+  }
 };
 
 function App(__props, __gctx, __pctx) {
@@ -271,31 +351,36 @@ function App(__props, __gctx, __pctx) {
 
   __gctx.sHC(__ctx);
 
-  const {
-    x,
-    y
-  } = useMousePosition();
-
   if (__ctx !== __pctx) {
-    createElement(__ctx, "dc", "div", {
+    createElement(__ctx, "cz", "div", {
       $: {
-        class: "m",
-        style: `left:${toPx(`${x}px`)};top:${toPx(`${y}px`)}`
+        class: "App"
       }
     });
-    renderChildren(__ctx, "dc", ["x: ", x, ", y: ", y]);
-    __ctx.$r = __ctx.dc;
+    createComponent(__gctx, __ctx, "da", TrafficLight, {
+      initialValue: 0
+    });
+    createComponent(__gctx, __ctx, "db", TrafficLight, {
+      initialValue: 1
+    });
+    renderChildren(__ctx, "cz", [__ctx.da, __ctx.db]);
+    __ctx.$r = __ctx.cz;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    let __dc__style = `left:${toPx(`${x}px`)};top:${toPx(`${y}px`)}`;
-    __ctx.dc.$p.style !== __dc__style && setAttr(__ctx.dc, "style", __dc__style);
-    renderChildren(__ctx, "dc", ["x: ", x, ", y: ", y]);
+    __ctx.da.$({
+      initialValue: 0
+    });
+
+    __ctx.db.$({
+      initialValue: 1
+    });
 
     __gctx.pHC();
   }
 }
 
-mount(document.getElementById("app"), gCtx, App, null);
+const rootElement = document.getElementById("app");
+mount(rootElement, gCtx, App, null);

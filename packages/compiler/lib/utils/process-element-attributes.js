@@ -198,7 +198,10 @@ function processStyles(stylesAttr) {
         t.isNumericLiteral(attr.value)
       ) {
         acc.push(`${attr.name}:${attr.value.value}`);
-      } else if (t.isCallExpression(attr.value)) {
+      } else if (
+        t.isCallExpression(attr.value) ||
+        t.isConditionalExpression(attr.value)
+      ) {
         acc.push(`${attr.name}:\${${generator(attr.value).code}}`);
       }
       return acc;

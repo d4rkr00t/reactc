@@ -234,32 +234,28 @@ let [useState, useEffect] = (() => {
 /* END RUNTIME */
 
 /**
- * Source: https://codepen.io/halvves/pen/qQxPNo
+ * Source: https://codesandbox.io/s/509jvrqr8n
  */
-const useMousePosition = () => {
-  const [mouse, setMouse] = useState({
-    x: 0,
-    y: 0
-  });
+function useWindowResize() {
+  const [width, setWidth] = useState(window.innerWidth);
+  const [height, setHeight] = useState(window.innerHeight);
 
-  const onMouse = ({
-    clientX,
-    clientY
-  }) => {
-    setMouse({
-      x: clientX,
-      y: clientY
-    });
+  const listener = () => {
+    setWidth(window.innerWidth);
+    setHeight(window.innerHeight);
   };
 
   useEffect(() => {
-    window.addEventListener("mousemove", onMouse);
+    window.addEventListener("resize", listener);
     return () => {
-      window.removeEventListener("mousemove", onMouse);
+      window.removeEventListener("resize", listener);
     };
-  });
-  return mouse;
-};
+  }, []);
+  return {
+    width,
+    height
+  };
+}
 
 function App(__props, __gctx, __pctx) {
   var __ctx = __pctx || {
@@ -272,30 +268,45 @@ function App(__props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   const {
-    x,
-    y
-  } = useMousePosition();
+    width,
+    height
+  } = useWindowResize();
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "dc", "div", {
+    createElement(__ctx, "dm", "div");
+    createElement(__ctx, "dn", "h1");
+    createElement(__ctx, "do", "span", {
       $: {
-        class: "m",
-        style: `left:${toPx(`${x}px`)};top:${toPx(`${y}px`)}`
+        role: "img",
+        "aria-label": "Left Right Arrow"
       }
     });
-    renderChildren(__ctx, "dc", ["x: ", x, ", y: ", y]);
-    __ctx.$r = __ctx.dc;
+    renderChildren(__ctx, "do", ["\u2194\uFE0F"]);
+    renderChildren(__ctx, "dn", [__ctx.do, " ", "width: ", width, "px"]);
+    createElement(__ctx, "dp", "h1");
+    createElement(__ctx, "dq", "span", {
+      $: {
+        role: "img",
+        "aria-label": "Up Down Arrow"
+      }
+    });
+    renderChildren(__ctx, "dq", ["\u2195\uFE0F"]);
+    renderChildren(__ctx, "dp", [__ctx.dq, " ", "height: ", height, "px"]);
+    createElement(__ctx, "dr", "p");
+    renderChildren(__ctx, "dr", ["Resize the window to update the values"]);
+    renderChildren(__ctx, "dm", [__ctx.dn, __ctx.dp, __ctx.dr]);
+    __ctx.$r = __ctx.dm;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    let __dc__style = `left:${toPx(`${x}px`)};top:${toPx(`${y}px`)}`;
-    __ctx.dc.$p.style !== __dc__style && setAttr(__ctx.dc, "style", __dc__style);
-    renderChildren(__ctx, "dc", ["x: ", x, ", y: ", y]);
+    renderChildren(__ctx, "dn", [__ctx.do, " ", "width: ", width, "px"]);
+    renderChildren(__ctx, "dp", [__ctx.dq, " ", "height: ", height, "px"]);
 
     __gctx.pHC();
   }
 }
 
-mount(document.getElementById("app"), gCtx, App, null);
+const rootElement = document.getElementById("app");
+mount(rootElement, gCtx, App, null);

@@ -25,6 +25,7 @@ if (name !== "all") {
 }
 
 function compile(file, isVerbose) {
+  let htmlPath = path.join(__dirname, "examples", `${file}.html`);
   let filePath = path.join(__dirname, "examples", `${file}.js`);
   let exampleContent = fs.readFileSync(filePath, "utf8");
   let transformed = babel.transform(exampleContent, options).code;
@@ -76,4 +77,6 @@ function compile(file, isVerbose) {
       )}`
     )
   );
+  console.log();
+  console.log(chalk.dim(`Example: ${htmlPath}`));
 }
