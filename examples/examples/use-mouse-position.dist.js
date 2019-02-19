@@ -277,22 +277,22 @@ function App(__props, __gctx, __pctx) {
   } = useMousePosition();
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "cq", "div", {
+    createElement(__ctx, "cu", "div", {
       $: {
         class: "m",
         style: `left:${toPx(`${x}px`)};top:${toPx(`${y}px`)}`
       }
     });
-    renderChildren(__ctx, "cq", ["x: ", x, ", y: ", y]);
-    __ctx.$r = __ctx.cq;
+    renderChildren(__ctx, "cu", ["x: ", x, ", y: ", y]);
+    __ctx.$r = __ctx.cu;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    let __cq__style = `left:${toPx(`${x}px`)};top:${toPx(`${y}px`)}`;
-    __ctx.cq.$p.style !== __cq__style && setAttr(__ctx.cq, "style", __cq__style);
-    renderChildren(__ctx, "cq", ["x: ", x, ", y: ", y]);
+    let __cu__style = `left:${toPx(`${x}px`)};top:${toPx(`${y}px`)}`;
+    __ctx.cu.$p.style !== __cu__style && setAttr(__ctx.cu, "style", __cu__style);
+    renderChildren(__ctx, "cu", ["x: ", x, ", y: ", y]);
 
     __gctx.pHC();
   }

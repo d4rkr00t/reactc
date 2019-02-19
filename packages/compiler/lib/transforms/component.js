@@ -283,6 +283,7 @@ function transfromNestedFunctions(path) {
 
 module.exports = function transformComponentFunction(path) {
   let { id, params } = path.node;
+  id = t.isArrowFunctionExpression(path.node) ? path.parentPath.node.id : id;
   let updatedParams = [
     ...(params.length ? params : [t.identifier("__props")]),
     ch.gCtxId,

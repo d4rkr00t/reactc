@@ -246,35 +246,35 @@ function DynamicChild(props, __gctx, __pctx) {
   let dog;
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "bi", "div", {
+    createElement(__ctx, "bm", "div", {
       $: {
         class: props.className
       }
     });
-    renderChildren(__ctx, "bi", ["dog"]);
+    renderChildren(__ctx, "bm", ["dog"]);
 
     if (props.render) {
-      dog = __ctx.bi;
+      dog = __ctx.bm;
     }
 
-    createElement(__ctx, "bj", "div");
-    createElement(__ctx, "bk", "div");
-    renderChildren(__ctx, "bk", ["cat"]);
-    renderChildren(__ctx, "bj", [dog, __ctx.bk]);
-    __ctx.$r = __ctx.bj;
+    createElement(__ctx, "bn", "div");
+    createElement(__ctx, "bo", "div");
+    renderChildren(__ctx, "bo", ["cat"]);
+    renderChildren(__ctx, "bn", [dog, __ctx.bo]);
+    __ctx.$r = __ctx.bn;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    let __bi__class = props.className;
-    __ctx.bi.$p.class !== __bi__class && setAttr(__ctx.bi, "class", __bi__class);
+    let __bm__class = props.className;
+    __ctx.bm.$p.class !== __bm__class && setAttr(__ctx.bm, "class", __bm__class);
 
     if (props.render) {
-      dog = __ctx.bi;
+      dog = __ctx.bm;
     }
 
-    renderChildren(__ctx, "bj", [dog, __ctx.bk]);
+    renderChildren(__ctx, "bn", [dog, __ctx.bo]);
 
     __gctx.pHC();
   }
@@ -293,30 +293,30 @@ function App(__props, __gctx, __pctx) {
   let [render, setRender] = useState(true);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "bl", "div");
-    createComponent(__gctx, __ctx, "bm", DynamicChild, {
+    createElement(__ctx, "bp", "div");
+    createComponent(__gctx, __ctx, "bq", DynamicChild, {
       render: render,
       className: "bigdog"
     });
-    createElement(__ctx, "bn", "button", {
+    createElement(__ctx, "br", "button", {
       $e: {
         click: () => setRender(!render)
       }
     });
-    renderChildren(__ctx, "bn", ["Re-render"]);
-    renderChildren(__ctx, "bl", [__ctx.bm, __ctx.bn]);
-    __ctx.$r = __ctx.bl;
+    renderChildren(__ctx, "br", ["Re-render"]);
+    renderChildren(__ctx, "bp", [__ctx.bq, __ctx.br]);
+    __ctx.$r = __ctx.bp;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    __ctx.bm.$({
+    __ctx.bq.$({
       render: render,
       className: "bigdog"
     });
 
-    setEvt(__ctx.bn, "click", () => setRender(!render));
+    setEvt(__ctx.br, "click", () => setRender(!render));
 
     __gctx.pHC();
   }

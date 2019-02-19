@@ -244,9 +244,9 @@ function App(__props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "bo", "div");
-    renderChildren(__ctx, "bo", ["Hello ReactC"]);
-    __ctx.$r = __ctx.bo;
+    createElement(__ctx, "bs", "div");
+    renderChildren(__ctx, "bs", ["Hello ReactC"]);
+    __ctx.$r = __ctx.bs;
 
     __gctx.pHC();
 

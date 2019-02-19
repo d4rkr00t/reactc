@@ -233,84 +233,36 @@ let [useState, useEffect] = (() => {
 
 /* END RUNTIME */
 
-/**
- * Source: https://codesandbox.io/s/y3n57mlwvj
- */
-const createSharedState = defaultValue => {
-  let listeners = [];
-
-  const setSharedState = value => {
-    listeners.forEach(listener => listener(value));
-  };
-
-  return () => {
-    const [value, setVal] = useState(defaultValue);
-    useEffect(() => {
-      listeners.push(setVal);
-      return () => {
-        listeners.splice(-1, 1);
-      };
-    });
-    return [value, setSharedState];
-  };
-};
-
-const useSharedState = createSharedState(0);
-
-function Child(__props, __gctx, __pctx) {
+const Countdown = (props, __gctx, __pctx) => {
   var __ctx = __pctx || {
-    $p: __props,
+    $p: props,
     $: props => {
-      Child(props, __gctx, __ctx);
+      Countdown(props, __gctx, __ctx);
     }
   };
 
   __gctx.sHC(__ctx);
 
-  const [value, setValue] = useSharedState();
-
-  const onIncrement = () => {
-    setValue(value + 1);
-  };
-
-  const onDecrement = () => {
-    setValue(value - 1);
-  };
-
   if (__ctx !== __pctx) {
-    createElement(__ctx, "cv", "div");
-    createElement(__ctx, "cw", "div");
-    createElement(__ctx, "cx", "button", {
-      $e: {
-        click: onIncrement
+    createElement(__ctx, "be", "div", {
+      $: {
+        class: "counter"
       }
     });
-    renderChildren(__ctx, "cx", ["+"]);
-    createElement(__ctx, "cy", "button", {
-      $e: {
-        click: onDecrement
-      }
-    });
-    renderChildren(__ctx, "cy", ["-"]);
-    renderChildren(__ctx, "cw", [__ctx.cx, __ctx.cy]);
-    renderChildren(__ctx, "cv", [value, __ctx.cw]);
-    __ctx.$r = __ctx.cv;
+    renderChildren(__ctx, "be", [props.children]);
+    __ctx.$r = __ctx.be;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    let __cx__click = onIncrement;
-    __ctx.cx.$p.click !== __cx__click && setEvt(__ctx.cx, "click", __cx__click);
-    let __cy__click = onDecrement;
-    __ctx.cy.$p.click !== __cy__click && setEvt(__ctx.cy, "click", __cy__click);
-    renderChildren(__ctx, "cv", [value, __ctx.cw]);
+    renderChildren(__ctx, "be", [props.children]);
 
     __gctx.pHC();
   }
-}
+};
 
-function App(__props, __gctx, __pctx) {
+const App = (__props, __gctx, __pctx) => {
   var __ctx = __pctx || {
     $p: __props,
     $: props => {
@@ -320,51 +272,40 @@ function App(__props, __gctx, __pctx) {
 
   __gctx.sHC(__ctx);
 
-  const [value, setValue] = useSharedState();
-
-  const onIncrement = () => {
-    setValue(value + 1);
-  };
-
-  const onDecrement = () => {
-    setValue(value - 1);
-  };
+  var [count, setCount] = useState(0);
+  useEffect(() => {
+    var timeout = setTimeout(() => {
+      return setCount(count + 1);
+    }, 1000);
+    return () => clearTimeout(timeout);
+  });
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "cz", "div");
-    createElement(__ctx, "da", "div");
-    createElement(__ctx, "db", "button", {
+    createElement(__ctx, "bf", "div");
+    createComponent(__gctx, __ctx, "bg", Countdown, {
+      children: count
+    });
+    createElement(__ctx, "bh", "button", {
       $e: {
-        click: onIncrement
+        click: () => setCount(count + 1)
       }
     });
-    renderChildren(__ctx, "db", ["+"]);
-    createElement(__ctx, "dc", "button", {
-      $e: {
-        click: onDecrement
-      }
-    });
-    renderChildren(__ctx, "dc", ["-"]);
-    renderChildren(__ctx, "da", [__ctx.db, __ctx.dc]);
-    createComponent(__gctx, __ctx, "dd", Child);
-    renderChildren(__ctx, "cz", [value, __ctx.da, __ctx.dd]);
-    __ctx.$r = __ctx.cz;
+    renderChildren(__ctx, "bh", ["Update counter"]);
+    renderChildren(__ctx, "bf", [__ctx.bg, __ctx.bh]);
+    __ctx.$r = __ctx.bf;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    let __db__click = onIncrement;
-    __ctx.db.$p.click !== __db__click && setEvt(__ctx.db, "click", __db__click);
-    let __dc__click = onDecrement;
-    __ctx.dc.$p.click !== __dc__click && setEvt(__ctx.dc, "click", __dc__click);
+    __ctx.bg.$({
+      children: count
+    });
 
-    __ctx.dd.$();
-
-    renderChildren(__ctx, "cz", [value, __ctx.da, __ctx.dd]);
+    setEvt(__ctx.bh, "click", () => setCount(count + 1));
 
     __gctx.pHC();
   }
-}
+};
 
 mount(document.getElementById("app"), gCtx, App, null);
