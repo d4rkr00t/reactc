@@ -269,7 +269,67 @@ let [useState, useEffect, useRef] = (() => {
 
 /* END RUNTIME */
 
-function App(__props, __gctx, __pctx) {
+let hasPassiveSupport = undefined;
+
+getHasPassiveEventSupport = () => {
+  if (typeof hasPassiveSupport === "boolean") {
+    return hasPassiveSupport;
+  }
+
+  hasPassiveSupport = false;
+
+  try {
+    const opts = Object.defineProperty({}, "passive", {
+      get() {
+        hasPassiveSupport = true;
+        return hasPassiveSupport;
+      }
+
+    });
+    window.addEventListener("test", null, opts);
+  } catch (e) {
+    hasPassiveSupport = false;
+  }
+
+  return hasPassiveSupport;
+};
+
+const useScrollPosition = () => {
+  const [scroll, setScroll] = useState({
+    x: 0,
+    y: 0
+  });
+  const tickingRef = useRef();
+
+  const handleScroll = () => {
+    setScroll({
+      x: window.pageXOffset,
+      y: window.pageYOffset
+    });
+    tickingRef.current = false;
+  };
+
+  onScroll = () => {
+    if (tickingRef.current) {
+      return;
+    }
+
+    tickingRef.current = true;
+    window.requestAnimationFrame(handleScroll);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", onScroll, getHasPassiveEventSupport() ? {
+      passive: true
+    } : false);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+    };
+  });
+  return scroll;
+};
+
+const App = (__props, __gctx, __pctx) => {
   var __ctx = __pctx || {
     $p: __props,
     $: props => {
@@ -279,75 +339,28 @@ function App(__props, __gctx, __pctx) {
 
   __gctx.sHC(__ctx);
 
-  let [value, setValue] = useState("");
+  const {
+    x,
+    y
+  } = useScrollPosition();
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "c", "div");
-    createElement(__ctx, "d", "input", {
-      $e: {
-        input: e => {
-          console.log(e.target.value);
-          setValue(e.target.value);
-        }
-      },
-      $p: {
-        value: value
+    createElement(__ctx, "b", "div", {
+      $: {
+        class: "d"
       }
     });
-    renderChildren(__ctx, "d");
-    renderChildren(__ctx, "c", [value.split("").map(item => {
-      var __ctx = {};
-
-      __gctx.sHC(__ctx);
-
-      if (__ctx !== __pctx) {
-        createElement(__ctx, "b", "div");
-        renderChildren(__ctx, "b", [item]);
-        __ctx.$r = __ctx.b;
-
-        __gctx.pHC();
-
-        return __ctx;
-      } else {
-        renderChildren(__ctx, "b", [item]);
-
-        __gctx.pHC();
-      }
-    }), __ctx.d]);
-    __ctx.$r = __ctx.c;
+    renderChildren(__ctx, "b", ["x: ", x.toFixed(0), ", y: ", y.toFixed(0)]);
+    __ctx.$r = __ctx.b;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    let __d__value = value;
-    __ctx.d.$p.value !== __d__value && setProp(__ctx.d, "value", __d__value);
-    setEvt(__ctx.d, "input", e => {
-      console.log(e.target.value);
-      setValue(e.target.value);
-    });
-    renderChildren(__ctx, "c", [value.split("").map(item => {
-      var __ctx = {};
-
-      __gctx.sHC(__ctx);
-
-      if (__ctx !== __pctx) {
-        createElement(__ctx, "b", "div");
-        renderChildren(__ctx, "b", [item]);
-        __ctx.$r = __ctx.b;
-
-        __gctx.pHC();
-
-        return __ctx;
-      } else {
-        renderChildren(__ctx, "b", [item]);
-
-        __gctx.pHC();
-      }
-    }), __ctx.d]);
+    renderChildren(__ctx, "b", ["x: ", x.toFixed(0), ", y: ", y.toFixed(0)]);
 
     __gctx.pHC();
   }
-}
+};
 
 mount(document.getElementById("app"), gCtx, App, null);
