@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Use Speech Synthesis</title>
+    <style>
+      html {
+        box-sizing: border-box;
+      }
+
+      *,
+      *:before,
+      *:after {
+        box-sizing: inherit;
+      }
+
+      body {
+        --grid-color: #000;
+        --grid-weight: 1px;
+        --grid-spacing: 32px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        background-position: center center, center center;
+        background-size: var(--grid-spacing) var(--grid-spacing),
+          var(--grid-spacing) var(--grid-spacing);
+        background-image: repeating-linear-gradient(
+            0deg,
+            var(--grid-color),
+            var(--grid-color) var(--grid-weight),
+            transparent var(--grid-weight),
+            transparent var(--grid-spacing)
+          ),
+          repeating-linear-gradient(
+            -90deg,
+            var(--grid-color),
+            var(--grid-color) var(--grid-weight),
+            transparent var(--grid-weight),
+            transparent var(--grid-spacing)
+          );
+        color: #000;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 16px;
+      }
+
+      #root {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1 1 auto;
+        width: 100%;
+      }
+
+      .contain {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        max-width: 468px;
+        padding: 0 16px;
+      }
+
+      button,
+      input,
+      select {
+        appearance: none;
+        display: block;
+        background: #fff;
+        padding: 16px;
+        margin: 12px 0;
+        border: 1px solid #000;
+        border-radius: 0;
+        box-shadow: -4px 4px 0px 0px #000;
+        font-family: "IBM Plex Mono", monospace;
+        cursor: pointer;
+      }
+
+      button:hover,
+      input:hover,
+      select:hover {
+        box-shadow: -2px 2px 0px 0px #000;
+      }
+
+      button:focus,
+      input:focus,
+      select:focus {
+        color: #00f;
+        outline: none;
+        border: 1px solid #00f;
+        box-shadow: -2px 2px 0px 0px #00f;
+      }
+
+      .select {
+        position: relative;
+        flex: 1 0 100%;
+      }
+
+      .select::after {
+        content: "👇";
+        pointer-events: none;
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translate(0, -50%);
+        font-size: 24px;
+        line-height: 1em;
+      }
+
+      select {
+        width: 100%;
+      }
+
+      input {
+        width: 0;
+        flex: 1 1 auto;
+        margin-right: 16px;
+      }
+
+      button {
+        flex: 0 1 auto;
+        font-size: 24px;
+        padding: 0 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="./use-speech-synthesis.dist.js"></script>
+  </body>
+</html>

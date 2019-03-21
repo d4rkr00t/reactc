@@ -269,9 +269,38 @@ let [useState, useEffect, useRef] = (() => {
 
 /* END RUNTIME */
 
-let colors = ["#a6e22e", "#a1efe4", "#66d9ef", "#ae81ff", "#cc6633", "#4CAF50", "#00BCD4", "#5C6BC0"];
+/**
+ * Source: https://codepen.io/halvves/pen/aPmxWK
+ */
+const useSpeechSynthesis = () => {
+  const [voices, setVoices] = useState([]);
+  const synth = useRef();
 
-function App(__props, __gctx, __pctx) {
+  const updateVoices = () => {
+    setVoices(synth.current.getVoices());
+  };
+
+  const speak = (text, voice, pitch = 1, rate = 1) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.voice = voice;
+    utterance.pitch = pitch;
+    utterance.rate = rate;
+    synth.current.speak(utterance);
+  };
+
+  useEffect(() => {
+    if (typeof window !== "object" || !window.speechSynthesis) return;
+    synth.current = window.speechSynthesis;
+    synth.current.onvoiceschanged = updateVoices;
+    updateVoices();
+    return () => {
+      synth.current.onvoiceschanged = null;
+    };
+  }, []);
+  return [voices, speak];
+};
+
+const App = (__props, __gctx, __pctx) => {
   var __ctx = __pctx || {
     $p: __props,
     $: props => {
@@ -281,107 +310,136 @@ function App(__props, __gctx, __pctx) {
 
   __gctx.sHC(__ctx);
 
+  const [voices, speak] = useSpeechSynthesis();
+  const [currentVoice, setCurrentVoice] = useState();
+  const [text, setText] = useState("may i have some hooks, please");
+  useEffect(() => {
+    if (!currentVoice) {
+      setCurrentVoice(voices.filter(v => v.default)[0] || voices[0]);
+    }
+  }, [voices]);
+
+  const handleVoiceChange = e => {
+    setCurrentVoice(voices.filter(v => v.name === e.target.value)[0]);
+  };
+
+  const handleTextChange = e => {
+    setText(e.target.value);
+  };
+
+  const handleSpeak = e => {
+    e.preventDefault();
+    speak(text, currentVoice);
+  };
+
   if (__ctx !== __pctx) {
-    createElement(__ctx, "y", "div", {
+    createElement(__ctx, "dn", "form", {
       $: {
-        class: "barchart"
+        class: "contain"
+      },
+      $e: {
+        submit: handleSpeak
       }
     });
-    renderChildren(__ctx, "y", [colors.map((color, idx) => {
+    createElement(__ctx, "do", "div", {
+      $: {
+        class: "select"
+      }
+    });
+    createElement(__ctx, "dp", "select", {
+      $e: {
+        change: handleVoiceChange
+      }
+    });
+    renderChildren(__ctx, "dp", [voices.map(v => {
       var __ctx = {};
 
       __gctx.sHC(__ctx);
 
-      var height = idx / colors.length * 140 + 60;
-
       if (__ctx !== __pctx) {
-        createElement(__ctx, "v", "div", {
-          $: {
-            class: "barchart__bar-wrapper"
+        createElement(__ctx, "dm", "option", {
+          $p: {
+            value: v.name,
+            selected: currentVoice && currentVoice.name === v.name
           }
         });
-        createElement(__ctx, "w", "div", {
-          $: {
-            class: "barchart__bar-title",
-            style: `color:${color}`
-          }
-        });
-        renderChildren(__ctx, "w", [height]);
-        createElement(__ctx, "x", "div", {
-          $: {
-            class: "barchart__bar",
-            style: `background-color:${color};height:${toPx(height)}`
-          }
-        });
-        renderChildren(__ctx, "x");
-        renderChildren(__ctx, "v", [__ctx.w, __ctx.x]);
-        __ctx.$r = __ctx.v;
+        renderChildren(__ctx, "dm", [`${v.name}`]);
+        __ctx.$r = __ctx.dm;
 
         __gctx.pHC();
 
         return __ctx;
       } else {
-        renderChildren(__ctx, "w", [height]);
-        let __w__style = `color:${color}`;
-        __ctx.w.$p.style !== __w__style && setAttr(__ctx.w, "style", __w__style);
-        let __x__style = `background-color:${color};height:${toPx(height)}`;
-        __ctx.x.$p.style !== __x__style && setAttr(__ctx.x, "style", __x__style);
+        renderChildren(__ctx, "dm", [`${v.name}`]);
+        let __dm__value = v.name;
+        __ctx.dm.$p.value !== __dm__value && setProp(__ctx.dm, "value", __dm__value);
 
         __gctx.pHC();
       }
     })]);
-    __ctx.$r = __ctx.y;
+    renderChildren(__ctx, "do", [__ctx.dp]);
+    createElement(__ctx, "dq", "input", {
+      $: {
+        type: "text"
+      },
+      $e: {
+        input: handleTextChange
+      },
+      $p: {
+        value: text
+      }
+    });
+    renderChildren(__ctx, "dq");
+    createElement(__ctx, "dr", "button", {
+      $: {
+        type: "submit"
+      }
+    });
+    renderChildren(__ctx, "dr", ["\uD83D\uDDE3"]);
+    renderChildren(__ctx, "dn", [__ctx.do, __ctx.dq, __ctx.dr]);
+    __ctx.$r = __ctx.dn;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "y", [colors.map((color, idx) => {
+    renderChildren(__ctx, "dp", [voices.map(v => {
       var __ctx = {};
 
       __gctx.sHC(__ctx);
 
-      var height = idx / colors.length * 140 + 60;
-
       if (__ctx !== __pctx) {
-        createElement(__ctx, "v", "div", {
-          $: {
-            class: "barchart__bar-wrapper"
+        createElement(__ctx, "dm", "option", {
+          $p: {
+            value: v.name,
+            selected: currentVoice && currentVoice.name === v.name
           }
         });
-        createElement(__ctx, "w", "div", {
-          $: {
-            class: "barchart__bar-title",
-            style: `color:${color}`
-          }
-        });
-        renderChildren(__ctx, "w", [height]);
-        createElement(__ctx, "x", "div", {
-          $: {
-            class: "barchart__bar",
-            style: `background-color:${color};height:${toPx(height)}`
-          }
-        });
-        renderChildren(__ctx, "x");
-        renderChildren(__ctx, "v", [__ctx.w, __ctx.x]);
-        __ctx.$r = __ctx.v;
+        renderChildren(__ctx, "dm", [`${v.name}`]);
+        __ctx.$r = __ctx.dm;
 
         __gctx.pHC();
 
         return __ctx;
       } else {
-        renderChildren(__ctx, "w", [height]);
-        let __w__style = `color:${color}`;
-        __ctx.w.$p.style !== __w__style && setAttr(__ctx.w, "style", __w__style);
-        let __x__style = `background-color:${color};height:${toPx(height)}`;
-        __ctx.x.$p.style !== __x__style && setAttr(__ctx.x, "style", __x__style);
+        renderChildren(__ctx, "dm", [`${v.name}`]);
+        let __dm__value = v.name;
+        __ctx.dm.$p.value !== __dm__value && setProp(__ctx.dm, "value", __dm__value);
 
         __gctx.pHC();
       }
     })]);
+    let __dp__change = handleVoiceChange;
+    __ctx.dp.$p.change !== __dp__change && setEvt(__ctx.dp, "change", __dp__change);
+    let __dq__value = text;
+    __ctx.dq.$p.value !== __dq__value && setProp(__ctx.dq, "value", __dq__value);
+    let __dq__input = handleTextChange;
+    __ctx.dq.$p.input !== __dq__input && setEvt(__ctx.dq, "input", __dq__input);
+    let __dn__submit = handleSpeak;
+    __ctx.dn.$p.submit !== __dn__submit && setEvt(__ctx.dn, "submit", __dn__submit);
 
     __gctx.pHC();
   }
-}
+};
 
 mount(document.getElementById("app"), gCtx, App, null);

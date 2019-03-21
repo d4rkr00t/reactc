@@ -85,7 +85,8 @@ function procsessChildren(children, initialRenderPath, reRenderPath) {
       t.isNumericLiteral(child) ||
       t.isIdentifier(child) ||
       t.isMemberExpression(child) ||
-      (t.isCallExpression(child) && !isCreateElementExpression(child))
+      (t.isCallExpression(child) && !isCreateElementExpression(child)) ||
+      t.isTemplateLiteral(child)
     ) {
       return child;
     }
@@ -148,6 +149,9 @@ function transformElement(
     reRenderPath
   );
   initialRenderPath.push(ch.renderChildren(id, directChildren));
+  if (isDynamicChildren(directChildren)) {
+    reRenderPath.push(ch.renderChildren(id, directChildren));
+  }
   if (isDynamicProps(props)) {
     let dynamicProps = getDynamicProps(props.properties);
     reRenderPath.push(
@@ -157,9 +161,6 @@ function transformElement(
         return acc;
       }, [])
     );
-  }
-  if (isDynamicChildren(directChildren)) {
-    reRenderPath.push(ch.renderChildren(id, directChildren));
   }
   return id;
 }
@@ -272,6 +273,9 @@ function transformComponentInternals(path) {
 
 function transfromNestedFunctions(path) {
   if (!isReactFunctionComponent(path)) return;
+  if (!t.isBlockStatement(path.node.body)) {
+    path.node.body = t.blockStatement([t.returnStatement(path.node.body)]);
+  }
   path
     .get("body")
     .unshiftContainer("body", [

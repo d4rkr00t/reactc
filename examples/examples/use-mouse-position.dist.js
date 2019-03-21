@@ -80,6 +80,7 @@ function setProp(ctx, name, value) {
   ctx._[name] = value;
   ctx.$p[name] = value;
 }
+
 function setEvt(ctx, name, value) {
   if (ctx.$p[name]) {
     ctx._.removeEventListener(name, ctx.$p[name]);
@@ -176,18 +177,26 @@ let gCtx = (() => {
   let $h = []; // Stack of hooks contexts
   return {
     // Set hooks context
-    sHC: ctx => $h.push({ ctx, pos: 0 }),
+    sHC: ctx => $h.push({ ctx, pos: 0, effects: [] }),
     // Pop hooks context
     pHC: () => {
       let hc = $h.pop();
       hc.pos = 0;
+      hc.effects.forEach(eff => eff());
+      hc.effects = [];
     },
     // Get hooks context
     gHC: () => $h[$h.length - 1]
   };
 })();
 
-let [useState, useEffect] = (() => {
+let compareArrays = (arr1 = [], arr2 = []) => {
+  if (arr1.length !== arr2.length) return false;
+  if (!arr1.length && !arr2.length) return true;
+  return arr1.every((item, idx) => item === arr2[idx]);
+};
+
+let [useState, useEffect, useRef] = (() => {
   let stateHooks = new Map();
   function useState(value) {
     let hc = gCtx.gHC();
@@ -213,22 +222,49 @@ let [useState, useEffect] = (() => {
   }
 
   let effectHooks = new Map();
-  function useEffect(effect) {
+  function useEffect(effect, cache) {
     let hc = gCtx.gHC();
     let hook = effectHooks.get(hc.ctx) || [];
     let pos = hc.pos;
     let existingHook = hook[pos];
-    if (existingHook) {
-      existingHook();
+    hc.pos += 1;
+    if (
+      (existingHook && compareArrays(existingHook.cache, cache)) ||
+      (existingHook && Array.isArray(cache) && !cache.length)
+    ) {
+      return;
     }
-    let hookDestroy = effect();
-    if (hookDestroy) {
-      hook[pos] = hookDestroy;
+
+    hook[pos] = { cache };
+    effectHooks.set(hc.ctx, hook);
+
+    hc.effects.push(() => {
+      if (existingHook && existingHook.hookDestroy) {
+        existingHook.hookDestroy();
+      }
+      let hookDestroy = effect();
+      let hook = effectHooks.get(hc.ctx) || [];
+      hook[pos] = { hookDestroy, cache };
       effectHooks.set(hc.ctx, hook);
-    }
+    });
   }
 
-  return [useState, useEffect];
+  let refHooks = new Map();
+  function useRef(initialValue) {
+    let hc = gCtx.gHC();
+    let hook = refHooks.get(hc.ctx) || [];
+    let pos = hc.pos;
+    let existingRef = hook[pos];
+    hc.pos += 1;
+    if (existingRef) {
+      return existingRef;
+    }
+    hook[pos] = { current: initialValue };
+    refHooks.set(hc.ctx, hook);
+    return hook[pos];
+  }
+
+  return [useState, useEffect, useRef];
 })();
 
 /* END RUNTIME */
@@ -290,9 +326,9 @@ function App(__props, __gctx, __pctx) {
 
     return __ctx;
   } else {
+    renderChildren(__ctx, "dc", ["x: ", x, ", y: ", y]);
     let __dc__style = `left:${toPx(`${x}px`)};top:${toPx(`${y}px`)}`;
     __ctx.dc.$p.style !== __dc__style && setAttr(__ctx.dc, "style", __dc__style);
-    renderChildren(__ctx, "dc", ["x: ", x, ", y: ", y]);
 
     __gctx.pHC();
   }
