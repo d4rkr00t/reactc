@@ -89,6 +89,10 @@ function setEvt(ctx, name, value) {
   ctx.$p[name] = value;
 }
 
+function setRef(ctx, name, value) {
+  value.current = ctx[name]._;
+}
+
 function setAttrs(ctx, attrs) {
   if (!attrs) return;
   if (attrs.$)
@@ -202,7 +206,12 @@ let [useState, useEffect, useRef] = (() => {
     let hc = gCtx.gHC();
     let hook = stateHooks.get(hc.ctx) || [];
     let pos = hc.pos;
-    let val = hook[pos] === undefined ? value : hook[pos];
+    let val =
+      hook[pos] === undefined
+        ? typeof value === "function"
+          ? value()
+          : value
+        : hook[pos];
 
     hc.pos += 1;
     hook[pos] = val;
@@ -212,7 +221,7 @@ let [useState, useEffect, useRef] = (() => {
       val,
       newVal => {
         let hook = stateHooks.get(hc.ctx) || [];
-        hook[pos] = newVal;
+        hook[pos] = typeof newVal === "function" ? newVal(hook[pos]) : newVal;
         stateHooks.set(hc.ctx, hook);
         if (hc.ctx.$) {
           hc.ctx.$(hc.ctx.$p);
@@ -291,21 +300,21 @@ const Light = ({
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "cu", "div", {
+    createElement(__ctx, "cx", "div", {
       $: {
         class: "light",
         style: `background-color:${color};opacity:${active ? 1 : 0.4}`
       }
     });
-    renderChildren(__ctx, "cu");
-    __ctx.$r = __ctx.cu;
+    renderChildren(__ctx, "cx");
+    __ctx.$r = __ctx.cx;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    let __cu__style = `background-color:${color};opacity:${active ? 1 : 0.4}`;
-    __ctx.cu.$p.style !== __cu__style && setAttr(__ctx.cu, "style", __cu__style);
+    let __cx__style = `background-color:${color};opacity:${active ? 1 : 0.4}`;
+    __ctx.cx.$p.style !== __cx__style && setAttr(__ctx.cx, "style", __cx__style);
 
     __gctx.pHC();
   }
@@ -334,41 +343,41 @@ const TrafficLight = ({
   }, [colorIndex]);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "cv", "div", {
+    createElement(__ctx, "cy", "div", {
       $: {
         class: "traffic-light"
       }
     });
-    createComponent(__gctx, __ctx, "cw", Light, {
+    createComponent(__gctx, __ctx, "cz", Light, {
       color: "#f00",
       active: colorIndex === 0
     });
-    createComponent(__gctx, __ctx, "cx", Light, {
+    createComponent(__gctx, __ctx, "da", Light, {
       color: "#ff0",
       active: colorIndex === 2
     });
-    createComponent(__gctx, __ctx, "cy", Light, {
+    createComponent(__gctx, __ctx, "db", Light, {
       color: "#0c0",
       active: colorIndex === 1
     });
-    renderChildren(__ctx, "cv", [__ctx.cw, __ctx.cx, __ctx.cy]);
-    __ctx.$r = __ctx.cv;
+    renderChildren(__ctx, "cy", [__ctx.cz, __ctx.da, __ctx.db]);
+    __ctx.$r = __ctx.cy;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    __ctx.cw.$({
+    __ctx.cz.$({
       color: "#f00",
       active: colorIndex === 0
     });
 
-    __ctx.cx.$({
+    __ctx.da.$({
       color: "#ff0",
       active: colorIndex === 2
     });
 
-    __ctx.cy.$({
+    __ctx.db.$({
       color: "#0c0",
       active: colorIndex === 1
     });
@@ -388,29 +397,29 @@ function App(__props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "cz", "div", {
+    createElement(__ctx, "dc", "div", {
       $: {
         class: "App"
       }
     });
-    createComponent(__gctx, __ctx, "da", TrafficLight, {
+    createComponent(__gctx, __ctx, "dd", TrafficLight, {
       initialValue: 0
     });
-    createComponent(__gctx, __ctx, "db", TrafficLight, {
+    createComponent(__gctx, __ctx, "de", TrafficLight, {
       initialValue: 1
     });
-    renderChildren(__ctx, "cz", [__ctx.da, __ctx.db]);
-    __ctx.$r = __ctx.cz;
+    renderChildren(__ctx, "dc", [__ctx.dd, __ctx.de]);
+    __ctx.$r = __ctx.dc;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    __ctx.da.$({
+    __ctx.dd.$({
       initialValue: 0
     });
 
-    __ctx.db.$({
+    __ctx.de.$({
       initialValue: 1
     });
 

@@ -5,7 +5,8 @@ let isReactFunctionComponent = require("../utils/checks/is-react-fc");
 let isDynamic = require("../utils/checks/is-dynamic");
 let {
   processElementAttributes,
-  processElementAttribute
+  processElementAttribute,
+  normalizeAttrs
 } = require("../utils/process-element-attributes");
 
 function createId(value) {
@@ -140,9 +141,16 @@ function transformElement(
   reRenderPath
 ) {
   let id = createElementId();
+  let attrs = normalizeAttrs(type, props);
+  let hasRef = attrs && attrs.ref.length;
   initialRenderPath.push(
-    ch.createElement(id, type, processElementAttributes(type, props))
+    ch.createElement(id, type, processElementAttributes(attrs))
   );
+
+  if (hasRef) {
+    initialRenderPath.push(ch.setRef(id, attrs.ref[0]));
+  }
+
   let directChildren = procsessChildren(
     children,
     initialRenderPath,
@@ -161,6 +169,9 @@ function transformElement(
         return acc;
       }, [])
     );
+  }
+  if (hasRef) {
+    reRenderPath.push(ch.setRef(id, attrs.ref[0]));
   }
   return id;
 }

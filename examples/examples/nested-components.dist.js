@@ -89,6 +89,10 @@ function setEvt(ctx, name, value) {
   ctx.$p[name] = value;
 }
 
+function setRef(ctx, name, value) {
+  value.current = ctx[name]._;
+}
+
 function setAttrs(ctx, attrs) {
   if (!attrs) return;
   if (attrs.$)
@@ -202,7 +206,12 @@ let [useState, useEffect, useRef] = (() => {
     let hc = gCtx.gHC();
     let hook = stateHooks.get(hc.ctx) || [];
     let pos = hc.pos;
-    let val = hook[pos] === undefined ? value : hook[pos];
+    let val =
+      hook[pos] === undefined
+        ? typeof value === "function"
+          ? value()
+          : value
+        : hook[pos];
 
     hc.pos += 1;
     hook[pos] = val;
@@ -212,7 +221,7 @@ let [useState, useEffect, useRef] = (() => {
       val,
       newVal => {
         let hook = stateHooks.get(hc.ctx) || [];
-        hook[pos] = newVal;
+        hook[pos] = typeof newVal === "function" ? newVal(hook[pos]) : newVal;
         stateHooks.set(hc.ctx, hook);
         if (hc.ctx.$) {
           hc.ctx.$(hc.ctx.$p);
@@ -280,19 +289,19 @@ function Date(props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "e", "div", {
+    createElement(__ctx, "h", "div", {
       $: {
         class: "date"
       }
     });
-    renderChildren(__ctx, "e", [props.children]);
-    __ctx.$r = __ctx.e;
+    renderChildren(__ctx, "h", [props.children]);
+    __ctx.$r = __ctx.h;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "e", [props.children]);
+    renderChildren(__ctx, "h", [props.children]);
 
     __gctx.pHC();
   }
@@ -309,20 +318,20 @@ function Button(props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "f", "a", {
+    createElement(__ctx, "i", "a", {
       $: {
         href: "#",
         class: "button"
       }
     });
-    renderChildren(__ctx, "f", [props.children]);
-    __ctx.$r = __ctx.f;
+    renderChildren(__ctx, "i", [props.children]);
+    __ctx.$r = __ctx.i;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "f", [props.children]);
+    renderChildren(__ctx, "i", [props.children]);
 
     __gctx.pHC();
   }
@@ -339,19 +348,19 @@ function Title(props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "g", "h1", {
+    createElement(__ctx, "j", "h1", {
       $: {
         class: "title"
       }
     });
-    renderChildren(__ctx, "g", [props.children]);
-    __ctx.$r = __ctx.g;
+    renderChildren(__ctx, "j", [props.children]);
+    __ctx.$r = __ctx.j;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "g", [props.children]);
+    renderChildren(__ctx, "j", [props.children]);
 
     __gctx.pHC();
   }
@@ -374,19 +383,19 @@ function Link({
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "h", "a", {
+    createElement(__ctx, "k", "a", {
       $: {
         href: href || "#"
       }
     });
-    renderChildren(__ctx, "h", [children]);
-    __ctx.$r = __ctx.h;
+    renderChildren(__ctx, "k", [children]);
+    __ctx.$r = __ctx.k;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "h", [children]);
+    renderChildren(__ctx, "k", [children]);
 
     __gctx.pHC();
   }
@@ -403,91 +412,91 @@ function App(__props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "i", "div", {
+    createElement(__ctx, "l", "div", {
       $: {
         class: "App"
       }
     });
-    createElement(__ctx, "j", "div", {
+    createElement(__ctx, "m", "div", {
       $: {
         class: "row"
       }
     });
-    createElement(__ctx, "k", "div", {
+    createElement(__ctx, "n", "div", {
       $: {
         class: "card"
       }
     });
-    createElement(__ctx, "l", "div", {
+    createElement(__ctx, "o", "div", {
       $: {
         class: "wrapper"
       }
     });
-    createElement(__ctx, "m", "div", {
+    createElement(__ctx, "p", "div", {
       $: {
         class: "header"
       }
     });
-    createComponent(__gctx, __ctx, "n", Date, {
+    createComponent(__gctx, __ctx, "q", Date, {
       children: "12 Aug 2016"
     });
-    renderChildren(__ctx, "m", [__ctx.n]);
-    createElement(__ctx, "o", "div", {
+    renderChildren(__ctx, "p", [__ctx.q]);
+    createElement(__ctx, "r", "div", {
       $: {
         class: "data"
       }
     });
-    createElement(__ctx, "p", "div", {
+    createElement(__ctx, "s", "div", {
       $: {
         class: "content"
       }
     });
-    createElement(__ctx, "q", "span", {
+    createElement(__ctx, "t", "span", {
       $: {
         class: "author"
       }
     });
-    renderChildren(__ctx, "q", ["Jane Doe"]);
-    createComponent(__gctx, __ctx, "s", Link, {
+    renderChildren(__ctx, "t", ["Jane Doe"]);
+    createComponent(__gctx, __ctx, "v", Link, {
       children: "Stranger Things: The sound of the Upside Down"
     });
-    createComponent(__gctx, __ctx, "r", Title, {
-      children: __ctx.s
+    createComponent(__gctx, __ctx, "u", Title, {
+      children: __ctx.v
     });
-    createElement(__ctx, "t", "p", {
+    createElement(__ctx, "w", "p", {
       $: {
         class: "text"
       }
     });
-    renderChildren(__ctx, "t", ["The antsy bingers of Netflix will eagerly anticipate the digital release of the Survive soundtrack, out today."]);
-    createComponent(__gctx, __ctx, "u", Button, {
+    renderChildren(__ctx, "w", ["The antsy bingers of Netflix will eagerly anticipate the digital release of the Survive soundtrack, out today."]);
+    createComponent(__gctx, __ctx, "x", Button, {
       children: "Read more"
     });
-    renderChildren(__ctx, "p", [__ctx.q, __ctx.r, __ctx.t, __ctx.u]);
-    renderChildren(__ctx, "o", [__ctx.p]);
-    renderChildren(__ctx, "l", [__ctx.m, __ctx.o]);
-    renderChildren(__ctx, "k", [__ctx.l]);
-    renderChildren(__ctx, "j", [__ctx.k]);
-    renderChildren(__ctx, "i", [__ctx.j]);
-    __ctx.$r = __ctx.i;
+    renderChildren(__ctx, "s", [__ctx.t, __ctx.u, __ctx.w, __ctx.x]);
+    renderChildren(__ctx, "r", [__ctx.s]);
+    renderChildren(__ctx, "o", [__ctx.p, __ctx.r]);
+    renderChildren(__ctx, "n", [__ctx.o]);
+    renderChildren(__ctx, "m", [__ctx.n]);
+    renderChildren(__ctx, "l", [__ctx.m]);
+    __ctx.$r = __ctx.l;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    __ctx.n.$({
+    __ctx.q.$({
       children: "12 Aug 2016"
     });
 
-    __ctx.s.$({
+    __ctx.v.$({
       children: "Stranger Things: The sound of the Upside Down"
     });
 
-    __ctx.r.$({
-      children: __ctx.s
+    __ctx.u.$({
+      children: __ctx.v
     });
 
-    __ctx.u.$({
+    __ctx.x.$({
       children: "Read more"
     });
 

@@ -89,6 +89,10 @@ function setEvt(ctx, name, value) {
   ctx.$p[name] = value;
 }
 
+function setRef(ctx, name, value) {
+  value.current = ctx[name]._;
+}
+
 function setAttrs(ctx, attrs) {
   if (!attrs) return;
   if (attrs.$)
@@ -202,7 +206,12 @@ let [useState, useEffect, useRef] = (() => {
     let hc = gCtx.gHC();
     let hook = stateHooks.get(hc.ctx) || [];
     let pos = hc.pos;
-    let val = hook[pos] === undefined ? value : hook[pos];
+    let val =
+      hook[pos] === undefined
+        ? typeof value === "function"
+          ? value()
+          : value
+        : hook[pos];
 
     hc.pos += 1;
     hook[pos] = val;
@@ -212,7 +221,7 @@ let [useState, useEffect, useRef] = (() => {
       val,
       newVal => {
         let hook = stateHooks.get(hc.ctx) || [];
-        hook[pos] = newVal;
+        hook[pos] = typeof newVal === "function" ? newVal(hook[pos]) : newVal;
         stateHooks.set(hc.ctx, hook);
         if (hc.ctx.$) {
           hc.ctx.$(hc.ctx.$p);
@@ -314,33 +323,33 @@ function Child(__props, __gctx, __pctx) {
   };
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "dd", "div");
-    createElement(__ctx, "de", "div");
-    createElement(__ctx, "df", "button", {
+    createElement(__ctx, "dh", "div");
+    createElement(__ctx, "di", "div");
+    createElement(__ctx, "dj", "button", {
       $e: {
         click: onIncrement
       }
     });
-    renderChildren(__ctx, "df", ["+"]);
-    createElement(__ctx, "dg", "button", {
+    renderChildren(__ctx, "dj", ["+"]);
+    createElement(__ctx, "dk", "button", {
       $e: {
         click: onDecrement
       }
     });
-    renderChildren(__ctx, "dg", ["-"]);
-    renderChildren(__ctx, "de", [__ctx.df, __ctx.dg]);
-    renderChildren(__ctx, "dd", [value, __ctx.de]);
-    __ctx.$r = __ctx.dd;
+    renderChildren(__ctx, "dk", ["-"]);
+    renderChildren(__ctx, "di", [__ctx.dj, __ctx.dk]);
+    renderChildren(__ctx, "dh", [value, __ctx.di]);
+    __ctx.$r = __ctx.dh;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    let __df__click = onIncrement;
-    __ctx.df.$p.click !== __df__click && setEvt(__ctx.df, "click", __df__click);
-    let __dg__click = onDecrement;
-    __ctx.dg.$p.click !== __dg__click && setEvt(__ctx.dg, "click", __dg__click);
-    renderChildren(__ctx, "dd", [value, __ctx.de]);
+    let __dj__click = onIncrement;
+    __ctx.dj.$p.click !== __dj__click && setEvt(__ctx.dj, "click", __dj__click);
+    let __dk__click = onDecrement;
+    __ctx.dk.$p.click !== __dk__click && setEvt(__ctx.dk, "click", __dk__click);
+    renderChildren(__ctx, "dh", [value, __ctx.di]);
 
     __gctx.pHC();
   }
@@ -367,37 +376,37 @@ function App(__props, __gctx, __pctx) {
   };
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "dh", "div");
-    createElement(__ctx, "di", "div");
-    createElement(__ctx, "dj", "button", {
+    createElement(__ctx, "dl", "div");
+    createElement(__ctx, "dm", "div");
+    createElement(__ctx, "dn", "button", {
       $e: {
         click: onIncrement
       }
     });
-    renderChildren(__ctx, "dj", ["+"]);
-    createElement(__ctx, "dk", "button", {
+    renderChildren(__ctx, "dn", ["+"]);
+    createElement(__ctx, "do", "button", {
       $e: {
         click: onDecrement
       }
     });
-    renderChildren(__ctx, "dk", ["-"]);
-    renderChildren(__ctx, "di", [__ctx.dj, __ctx.dk]);
-    createComponent(__gctx, __ctx, "dl", Child);
-    renderChildren(__ctx, "dh", [value, __ctx.di, __ctx.dl]);
-    __ctx.$r = __ctx.dh;
+    renderChildren(__ctx, "do", ["-"]);
+    renderChildren(__ctx, "dm", [__ctx.dn, __ctx.do]);
+    createComponent(__gctx, __ctx, "dp", Child);
+    renderChildren(__ctx, "dl", [value, __ctx.dm, __ctx.dp]);
+    __ctx.$r = __ctx.dl;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    let __dj__click = onIncrement;
-    __ctx.dj.$p.click !== __dj__click && setEvt(__ctx.dj, "click", __dj__click);
-    let __dk__click = onDecrement;
-    __ctx.dk.$p.click !== __dk__click && setEvt(__ctx.dk, "click", __dk__click);
+    let __dn__click = onIncrement;
+    __ctx.dn.$p.click !== __dn__click && setEvt(__ctx.dn, "click", __dn__click);
+    let __do__click = onDecrement;
+    __ctx.do.$p.click !== __do__click && setEvt(__ctx.do, "click", __do__click);
 
-    __ctx.dl.$();
+    __ctx.dp.$();
 
-    renderChildren(__ctx, "dh", [value, __ctx.di, __ctx.dl]);
+    renderChildren(__ctx, "dl", [value, __ctx.dm, __ctx.dp]);
 
     __gctx.pHC();
   }

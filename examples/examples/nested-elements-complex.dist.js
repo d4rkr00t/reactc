@@ -89,6 +89,10 @@ function setEvt(ctx, name, value) {
   ctx.$p[name] = value;
 }
 
+function setRef(ctx, name, value) {
+  value.current = ctx[name]._;
+}
+
 function setAttrs(ctx, attrs) {
   if (!attrs) return;
   if (attrs.$)
@@ -202,7 +206,12 @@ let [useState, useEffect, useRef] = (() => {
     let hc = gCtx.gHC();
     let hook = stateHooks.get(hc.ctx) || [];
     let pos = hc.pos;
-    let val = hook[pos] === undefined ? value : hook[pos];
+    let val =
+      hook[pos] === undefined
+        ? typeof value === "function"
+          ? value()
+          : value
+        : hook[pos];
 
     hc.pos += 1;
     hook[pos] = val;
@@ -212,7 +221,7 @@ let [useState, useEffect, useRef] = (() => {
       val,
       newVal => {
         let hook = stateHooks.get(hc.ctx) || [];
-        hook[pos] = newVal;
+        hook[pos] = typeof newVal === "function" ? newVal(hook[pos]) : newVal;
         stateHooks.set(hc.ctx, hook);
         if (hc.ctx.$) {
           hc.ctx.$(hc.ctx.$p);
@@ -282,12 +291,12 @@ function App(__props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "y", "div", {
+    createElement(__ctx, "ab", "div", {
       $: {
         class: "barchart"
       }
     });
-    renderChildren(__ctx, "y", [colors.map((color, idx) => {
+    renderChildren(__ctx, "ab", [colors.map((color, idx) => {
       var __ctx = {};
 
       __gctx.sHC(__ctx);
@@ -295,48 +304,48 @@ function App(__props, __gctx, __pctx) {
       var height = idx / colors.length * 140 + 60;
 
       if (__ctx !== __pctx) {
-        createElement(__ctx, "v", "div", {
+        createElement(__ctx, "y", "div", {
           $: {
             class: "barchart__bar-wrapper"
           }
         });
-        createElement(__ctx, "w", "div", {
+        createElement(__ctx, "z", "div", {
           $: {
             class: "barchart__bar-title",
             style: `color:${color}`
           }
         });
-        renderChildren(__ctx, "w", [height]);
-        createElement(__ctx, "x", "div", {
+        renderChildren(__ctx, "z", [height]);
+        createElement(__ctx, "aa", "div", {
           $: {
             class: "barchart__bar",
             style: `background-color:${color};height:${toPx(height)}`
           }
         });
-        renderChildren(__ctx, "x");
-        renderChildren(__ctx, "v", [__ctx.w, __ctx.x]);
-        __ctx.$r = __ctx.v;
+        renderChildren(__ctx, "aa");
+        renderChildren(__ctx, "y", [__ctx.z, __ctx.aa]);
+        __ctx.$r = __ctx.y;
 
         __gctx.pHC();
 
         return __ctx;
       } else {
-        renderChildren(__ctx, "w", [height]);
-        let __w__style = `color:${color}`;
-        __ctx.w.$p.style !== __w__style && setAttr(__ctx.w, "style", __w__style);
-        let __x__style = `background-color:${color};height:${toPx(height)}`;
-        __ctx.x.$p.style !== __x__style && setAttr(__ctx.x, "style", __x__style);
+        renderChildren(__ctx, "z", [height]);
+        let __z__style = `color:${color}`;
+        __ctx.z.$p.style !== __z__style && setAttr(__ctx.z, "style", __z__style);
+        let __aa__style = `background-color:${color};height:${toPx(height)}`;
+        __ctx.aa.$p.style !== __aa__style && setAttr(__ctx.aa, "style", __aa__style);
 
         __gctx.pHC();
       }
     })]);
-    __ctx.$r = __ctx.y;
+    __ctx.$r = __ctx.ab;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "y", [colors.map((color, idx) => {
+    renderChildren(__ctx, "ab", [colors.map((color, idx) => {
       var __ctx = {};
 
       __gctx.sHC(__ctx);
@@ -344,37 +353,37 @@ function App(__props, __gctx, __pctx) {
       var height = idx / colors.length * 140 + 60;
 
       if (__ctx !== __pctx) {
-        createElement(__ctx, "v", "div", {
+        createElement(__ctx, "y", "div", {
           $: {
             class: "barchart__bar-wrapper"
           }
         });
-        createElement(__ctx, "w", "div", {
+        createElement(__ctx, "z", "div", {
           $: {
             class: "barchart__bar-title",
             style: `color:${color}`
           }
         });
-        renderChildren(__ctx, "w", [height]);
-        createElement(__ctx, "x", "div", {
+        renderChildren(__ctx, "z", [height]);
+        createElement(__ctx, "aa", "div", {
           $: {
             class: "barchart__bar",
             style: `background-color:${color};height:${toPx(height)}`
           }
         });
-        renderChildren(__ctx, "x");
-        renderChildren(__ctx, "v", [__ctx.w, __ctx.x]);
-        __ctx.$r = __ctx.v;
+        renderChildren(__ctx, "aa");
+        renderChildren(__ctx, "y", [__ctx.z, __ctx.aa]);
+        __ctx.$r = __ctx.y;
 
         __gctx.pHC();
 
         return __ctx;
       } else {
-        renderChildren(__ctx, "w", [height]);
-        let __w__style = `color:${color}`;
-        __ctx.w.$p.style !== __w__style && setAttr(__ctx.w, "style", __w__style);
-        let __x__style = `background-color:${color};height:${toPx(height)}`;
-        __ctx.x.$p.style !== __x__style && setAttr(__ctx.x, "style", __x__style);
+        renderChildren(__ctx, "z", [height]);
+        let __z__style = `color:${color}`;
+        __ctx.z.$p.style !== __z__style && setAttr(__ctx.z, "style", __z__style);
+        let __aa__style = `background-color:${color};height:${toPx(height)}`;
+        __ctx.aa.$p.style !== __aa__style && setAttr(__ctx.aa, "style", __aa__style);
 
         __gctx.pHC();
       }

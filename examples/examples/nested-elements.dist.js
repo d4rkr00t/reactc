@@ -89,6 +89,10 @@ function setEvt(ctx, name, value) {
   ctx.$p[name] = value;
 }
 
+function setRef(ctx, name, value) {
+  value.current = ctx[name]._;
+}
+
 function setAttrs(ctx, attrs) {
   if (!attrs) return;
   if (attrs.$)
@@ -202,7 +206,12 @@ let [useState, useEffect, useRef] = (() => {
     let hc = gCtx.gHC();
     let hook = stateHooks.get(hc.ctx) || [];
     let pos = hc.pos;
-    let val = hook[pos] === undefined ? value : hook[pos];
+    let val =
+      hook[pos] === undefined
+        ? typeof value === "function"
+          ? value()
+          : value
+        : hook[pos];
 
     hc.pos += 1;
     hook[pos] = val;
@@ -212,7 +221,7 @@ let [useState, useEffect, useRef] = (() => {
       val,
       newVal => {
         let hook = stateHooks.get(hc.ctx) || [];
-        hook[pos] = newVal;
+        hook[pos] = typeof newVal === "function" ? newVal(hook[pos]) : newVal;
         stateHooks.set(hc.ctx, hook);
         if (hc.ctx.$) {
           hc.ctx.$(hc.ctx.$p);
@@ -282,140 +291,140 @@ function App(__props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "z", "div", {
+    createElement(__ctx, "ac", "div", {
       $: {
         class: "panel"
       }
     });
-    createElement(__ctx, "aa", "div", {
+    createElement(__ctx, "ad", "div", {
       $: {
         class: "panel__table panel__line"
       }
     });
-    createElement(__ctx, "ab", "table");
-    createElement(__ctx, "ac", "tr");
-    createElement(__ctx, "ad", "td");
-    createElement(__ctx, "ae", "span", {
+    createElement(__ctx, "ae", "table");
+    createElement(__ctx, "af", "tr");
+    createElement(__ctx, "ag", "td");
+    createElement(__ctx, "ah", "span", {
       $: {
         class: "panel__mute"
       }
     });
-    renderChildren(__ctx, "ae", ["Scope:"]);
-    renderChildren(__ctx, "ad", [__ctx.ae]);
-    createElement(__ctx, "af", "td", {
+    renderChildren(__ctx, "ah", ["Scope:"]);
+    renderChildren(__ctx, "ag", [__ctx.ah]);
+    createElement(__ctx, "ai", "td", {
       $: {
         class: "panel__badge-col"
       }
     });
-    createElement(__ctx, "ag", "span", {
+    createElement(__ctx, "aj", "span", {
       $: {
         class: "panel__badge"
       }
     });
-    renderChildren(__ctx, "ag", ["fn"]);
-    renderChildren(__ctx, "af", [__ctx.ag]);
-    createElement(__ctx, "ah", "td");
-    renderChildren(__ctx, "ah", ["z-entity-gallery__thumbs"]);
-    renderChildren(__ctx, "ac", [__ctx.ad, __ctx.af, __ctx.ah]);
-    createElement(__ctx, "ai", "tr");
-    createElement(__ctx, "aj", "td");
-    renderChildren(__ctx, "aj");
-    createElement(__ctx, "ak", "td", {
+    renderChildren(__ctx, "aj", ["fn"]);
+    renderChildren(__ctx, "ai", [__ctx.aj]);
+    createElement(__ctx, "ak", "td");
+    renderChildren(__ctx, "ak", ["z-entity-gallery__thumbs"]);
+    renderChildren(__ctx, "af", [__ctx.ag, __ctx.ai, __ctx.ak]);
+    createElement(__ctx, "al", "tr");
+    createElement(__ctx, "am", "td");
+    renderChildren(__ctx, "am");
+    createElement(__ctx, "an", "td", {
       $: {
         class: "panel__badge-col"
       }
     });
-    createElement(__ctx, "al", "span", {
+    createElement(__ctx, "ao", "span", {
       $: {
         class: "panel__badge -purple"
       }
     });
-    renderChildren(__ctx, "al", ["bem"]);
-    renderChildren(__ctx, "ak", [__ctx.al]);
-    createElement(__ctx, "am", "td");
-    createElement(__ctx, "an", "span", {
+    renderChildren(__ctx, "ao", ["bem"]);
+    renderChildren(__ctx, "an", [__ctx.ao]);
+    createElement(__ctx, "ap", "td");
+    createElement(__ctx, "aq", "span", {
       $: {
         class: "panel__mute"
       }
     });
-    renderChildren(__ctx, "an", ["block:"]);
-    createElement(__ctx, "ao", "span", {
+    renderChildren(__ctx, "aq", ["block:"]);
+    createElement(__ctx, "ar", "span", {
       $: {
         class: "panel__mute"
       }
     });
-    renderChildren(__ctx, "ao", [" | elem:"]);
-    renderChildren(__ctx, "am", [__ctx.an, "z-entity-gallery", __ctx.ao, "image"]);
-    renderChildren(__ctx, "ai", [__ctx.aj, __ctx.ak, __ctx.am]);
-    createElement(__ctx, "ap", "tr");
-    createElement(__ctx, "aq", "td", {
+    renderChildren(__ctx, "ar", [" | elem:"]);
+    renderChildren(__ctx, "ap", [__ctx.aq, "z-entity-gallery", __ctx.ar, "image"]);
+    renderChildren(__ctx, "al", [__ctx.am, __ctx.an, __ctx.ap]);
+    createElement(__ctx, "as", "tr");
+    createElement(__ctx, "at", "td", {
       $: {
         colspan: "4",
         class: "panel__table-sep"
       }
     });
-    renderChildren(__ctx, "aq");
-    renderChildren(__ctx, "ap", [__ctx.aq]);
-    createElement(__ctx, "ar", "tr");
-    createElement(__ctx, "as", "td");
-    createElement(__ctx, "at", "span", {
+    renderChildren(__ctx, "at");
+    renderChildren(__ctx, "as", [__ctx.at]);
+    createElement(__ctx, "au", "tr");
+    createElement(__ctx, "av", "td");
+    createElement(__ctx, "aw", "span", {
       $: {
         class: "panel__mute"
       }
     });
-    renderChildren(__ctx, "at", ["Parent:"]);
-    renderChildren(__ctx, "as", [__ctx.at]);
-    createElement(__ctx, "au", "td", {
+    renderChildren(__ctx, "aw", ["Parent:"]);
+    renderChildren(__ctx, "av", [__ctx.aw]);
+    createElement(__ctx, "ax", "td", {
       $: {
         class: "panel__badge-col"
       }
     });
-    createElement(__ctx, "av", "span", {
+    createElement(__ctx, "ay", "span", {
       $: {
         class: "panel__badge -blue"
       }
     });
-    renderChildren(__ctx, "av", ["P"]);
-    renderChildren(__ctx, "au", [__ctx.av]);
-    createElement(__ctx, "aw", "td");
-    renderChildren(__ctx, "aw", ["z-entity-gallery"]);
-    renderChildren(__ctx, "ar", [__ctx.as, __ctx.au, __ctx.aw]);
-    createElement(__ctx, "ax", "tr");
-    createElement(__ctx, "ay", "td", {
+    renderChildren(__ctx, "ay", ["P"]);
+    renderChildren(__ctx, "ax", [__ctx.ay]);
+    createElement(__ctx, "az", "td");
+    renderChildren(__ctx, "az", ["z-entity-gallery"]);
+    renderChildren(__ctx, "au", [__ctx.av, __ctx.ax, __ctx.az]);
+    createElement(__ctx, "ba", "tr");
+    createElement(__ctx, "bb", "td", {
       $: {
         colspan: "4",
         class: "panel__table-sep"
       }
     });
-    renderChildren(__ctx, "ay");
-    renderChildren(__ctx, "ax", [__ctx.ay]);
-    createElement(__ctx, "az", "tr");
-    createElement(__ctx, "ba", "td");
-    createElement(__ctx, "bb", "span", {
+    renderChildren(__ctx, "bb");
+    renderChildren(__ctx, "ba", [__ctx.bb]);
+    createElement(__ctx, "bc", "tr");
+    createElement(__ctx, "bd", "td");
+    createElement(__ctx, "be", "span", {
       $: {
         class: "panel__mute"
       }
     });
-    renderChildren(__ctx, "bb", ["File:"]);
-    renderChildren(__ctx, "ba", [__ctx.bb]);
-    createElement(__ctx, "bc", "td", {
+    renderChildren(__ctx, "be", ["File:"]);
+    renderChildren(__ctx, "bd", [__ctx.be]);
+    createElement(__ctx, "bf", "td", {
       $: {
         colspan: "2",
         class: "panel__files"
       }
     });
-    createElement(__ctx, "bd", "div", {
+    createElement(__ctx, "bg", "div", {
       $: {
         class: "panel__file"
       }
     });
-    renderChildren(__ctx, "bd", ["contribs/z-entity-search/blocks-deskpad/z-entity-gallery/__thumbs/z-entity-gallery__thumbs.priv.js:22"]);
-    renderChildren(__ctx, "bc", [__ctx.bd]);
-    renderChildren(__ctx, "az", [__ctx.ba, __ctx.bc]);
-    renderChildren(__ctx, "ab", [__ctx.ac, __ctx.ai, __ctx.ap, __ctx.ar, __ctx.ax, __ctx.az]);
-    renderChildren(__ctx, "aa", [__ctx.ab]);
-    renderChildren(__ctx, "z", [__ctx.aa]);
-    __ctx.$r = __ctx.z;
+    renderChildren(__ctx, "bg", ["contribs/z-entity-search/blocks-deskpad/z-entity-gallery/__thumbs/z-entity-gallery__thumbs.priv.js:22"]);
+    renderChildren(__ctx, "bf", [__ctx.bg]);
+    renderChildren(__ctx, "bc", [__ctx.bd, __ctx.bf]);
+    renderChildren(__ctx, "ae", [__ctx.af, __ctx.al, __ctx.as, __ctx.au, __ctx.ba, __ctx.bc]);
+    renderChildren(__ctx, "ad", [__ctx.ae]);
+    renderChildren(__ctx, "ac", [__ctx.ad]);
+    __ctx.$r = __ctx.ac;
 
     __gctx.pHC();
 

@@ -89,6 +89,10 @@ function setEvt(ctx, name, value) {
   ctx.$p[name] = value;
 }
 
+function setRef(ctx, name, value) {
+  value.current = ctx[name]._;
+}
+
 function setAttrs(ctx, attrs) {
   if (!attrs) return;
   if (attrs.$)
@@ -202,7 +206,12 @@ let [useState, useEffect, useRef] = (() => {
     let hc = gCtx.gHC();
     let hook = stateHooks.get(hc.ctx) || [];
     let pos = hc.pos;
-    let val = hook[pos] === undefined ? value : hook[pos];
+    let val =
+      hook[pos] === undefined
+        ? typeof value === "function"
+          ? value()
+          : value
+        : hook[pos];
 
     hc.pos += 1;
     hook[pos] = val;
@@ -212,7 +221,7 @@ let [useState, useEffect, useRef] = (() => {
       val,
       newVal => {
         let hook = stateHooks.get(hc.ctx) || [];
-        hook[pos] = newVal;
+        hook[pos] = typeof newVal === "function" ? newVal(hook[pos]) : newVal;
         stateHooks.set(hc.ctx, hook);
         if (hc.ctx.$) {
           hc.ctx.$(hc.ctx.$p);
@@ -333,7 +342,7 @@ const App = (__props, __gctx, __pctx) => {
   };
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "dn", "form", {
+    createElement(__ctx, "dr", "form", {
       $: {
         class: "contain"
       },
@@ -341,44 +350,44 @@ const App = (__props, __gctx, __pctx) => {
         submit: handleSpeak
       }
     });
-    createElement(__ctx, "do", "div", {
+    createElement(__ctx, "ds", "div", {
       $: {
         class: "select"
       }
     });
-    createElement(__ctx, "dp", "select", {
+    createElement(__ctx, "dt", "select", {
       $e: {
         change: handleVoiceChange
       }
     });
-    renderChildren(__ctx, "dp", [voices.map(v => {
+    renderChildren(__ctx, "dt", [voices.map(v => {
       var __ctx = {};
 
       __gctx.sHC(__ctx);
 
       if (__ctx !== __pctx) {
-        createElement(__ctx, "dm", "option", {
+        createElement(__ctx, "dq", "option", {
           $p: {
             value: v.name,
             selected: currentVoice && currentVoice.name === v.name
           }
         });
-        renderChildren(__ctx, "dm", [`${v.name}`]);
-        __ctx.$r = __ctx.dm;
+        renderChildren(__ctx, "dq", [`${v.name}`]);
+        __ctx.$r = __ctx.dq;
 
         __gctx.pHC();
 
         return __ctx;
       } else {
-        renderChildren(__ctx, "dm", [`${v.name}`]);
-        let __dm__value = v.name;
-        __ctx.dm.$p.value !== __dm__value && setProp(__ctx.dm, "value", __dm__value);
+        renderChildren(__ctx, "dq", [`${v.name}`]);
+        let __dq__value = v.name;
+        __ctx.dq.$p.value !== __dq__value && setProp(__ctx.dq, "value", __dq__value);
 
         __gctx.pHC();
       }
     })]);
-    renderChildren(__ctx, "do", [__ctx.dp]);
-    createElement(__ctx, "dq", "input", {
+    renderChildren(__ctx, "ds", [__ctx.dt]);
+    createElement(__ctx, "du", "input", {
       $: {
         type: "text"
       },
@@ -389,54 +398,54 @@ const App = (__props, __gctx, __pctx) => {
         value: text
       }
     });
-    renderChildren(__ctx, "dq");
-    createElement(__ctx, "dr", "button", {
+    renderChildren(__ctx, "du");
+    createElement(__ctx, "dv", "button", {
       $: {
         type: "submit"
       }
     });
-    renderChildren(__ctx, "dr", ["\uD83D\uDDE3"]);
-    renderChildren(__ctx, "dn", [__ctx.do, __ctx.dq, __ctx.dr]);
-    __ctx.$r = __ctx.dn;
+    renderChildren(__ctx, "dv", ["\uD83D\uDDE3"]);
+    renderChildren(__ctx, "dr", [__ctx.ds, __ctx.du, __ctx.dv]);
+    __ctx.$r = __ctx.dr;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "dp", [voices.map(v => {
+    renderChildren(__ctx, "dt", [voices.map(v => {
       var __ctx = {};
 
       __gctx.sHC(__ctx);
 
       if (__ctx !== __pctx) {
-        createElement(__ctx, "dm", "option", {
+        createElement(__ctx, "dq", "option", {
           $p: {
             value: v.name,
             selected: currentVoice && currentVoice.name === v.name
           }
         });
-        renderChildren(__ctx, "dm", [`${v.name}`]);
-        __ctx.$r = __ctx.dm;
+        renderChildren(__ctx, "dq", [`${v.name}`]);
+        __ctx.$r = __ctx.dq;
 
         __gctx.pHC();
 
         return __ctx;
       } else {
-        renderChildren(__ctx, "dm", [`${v.name}`]);
-        let __dm__value = v.name;
-        __ctx.dm.$p.value !== __dm__value && setProp(__ctx.dm, "value", __dm__value);
+        renderChildren(__ctx, "dq", [`${v.name}`]);
+        let __dq__value = v.name;
+        __ctx.dq.$p.value !== __dq__value && setProp(__ctx.dq, "value", __dq__value);
 
         __gctx.pHC();
       }
     })]);
-    let __dp__change = handleVoiceChange;
-    __ctx.dp.$p.change !== __dp__change && setEvt(__ctx.dp, "change", __dp__change);
-    let __dq__value = text;
-    __ctx.dq.$p.value !== __dq__value && setProp(__ctx.dq, "value", __dq__value);
-    let __dq__input = handleTextChange;
-    __ctx.dq.$p.input !== __dq__input && setEvt(__ctx.dq, "input", __dq__input);
-    let __dn__submit = handleSpeak;
-    __ctx.dn.$p.submit !== __dn__submit && setEvt(__ctx.dn, "submit", __dn__submit);
+    let __dt__change = handleVoiceChange;
+    __ctx.dt.$p.change !== __dt__change && setEvt(__ctx.dt, "change", __dt__change);
+    let __du__value = text;
+    __ctx.du.$p.value !== __du__value && setProp(__ctx.du, "value", __du__value);
+    let __du__input = handleTextChange;
+    __ctx.du.$p.input !== __du__input && setEvt(__ctx.du, "input", __du__input);
+    let __dr__submit = handleSpeak;
+    __ctx.dr.$p.submit !== __dr__submit && setEvt(__ctx.dr, "submit", __dr__submit);
 
     __gctx.pHC();
   }

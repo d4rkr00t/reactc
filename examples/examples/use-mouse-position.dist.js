@@ -89,6 +89,10 @@ function setEvt(ctx, name, value) {
   ctx.$p[name] = value;
 }
 
+function setRef(ctx, name, value) {
+  value.current = ctx[name]._;
+}
+
 function setAttrs(ctx, attrs) {
   if (!attrs) return;
   if (attrs.$)
@@ -202,7 +206,12 @@ let [useState, useEffect, useRef] = (() => {
     let hc = gCtx.gHC();
     let hook = stateHooks.get(hc.ctx) || [];
     let pos = hc.pos;
-    let val = hook[pos] === undefined ? value : hook[pos];
+    let val =
+      hook[pos] === undefined
+        ? typeof value === "function"
+          ? value()
+          : value
+        : hook[pos];
 
     hc.pos += 1;
     hook[pos] = val;
@@ -212,7 +221,7 @@ let [useState, useEffect, useRef] = (() => {
       val,
       newVal => {
         let hook = stateHooks.get(hc.ctx) || [];
-        hook[pos] = newVal;
+        hook[pos] = typeof newVal === "function" ? newVal(hook[pos]) : newVal;
         stateHooks.set(hc.ctx, hook);
         if (hc.ctx.$) {
           hc.ctx.$(hc.ctx.$p);
@@ -313,22 +322,22 @@ function App(__props, __gctx, __pctx) {
   } = useMousePosition();
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "dc", "div", {
+    createElement(__ctx, "df", "div", {
       $: {
         class: "m",
         style: `left:${toPx(`${x}px`)};top:${toPx(`${y}px`)}`
       }
     });
-    renderChildren(__ctx, "dc", ["x: ", x, ", y: ", y]);
-    __ctx.$r = __ctx.dc;
+    renderChildren(__ctx, "df", ["x: ", x, ", y: ", y]);
+    __ctx.$r = __ctx.df;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "dc", ["x: ", x, ", y: ", y]);
-    let __dc__style = `left:${toPx(`${x}px`)};top:${toPx(`${y}px`)}`;
-    __ctx.dc.$p.style !== __dc__style && setAttr(__ctx.dc, "style", __dc__style);
+    renderChildren(__ctx, "df", ["x: ", x, ", y: ", y]);
+    let __df__style = `left:${toPx(`${x}px`)};top:${toPx(`${y}px`)}`;
+    __ctx.df.$p.style !== __df__style && setAttr(__ctx.df, "style", __df__style);
 
     __gctx.pHC();
   }

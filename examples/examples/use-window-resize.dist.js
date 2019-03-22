@@ -89,6 +89,10 @@ function setEvt(ctx, name, value) {
   ctx.$p[name] = value;
 }
 
+function setRef(ctx, name, value) {
+  value.current = ctx[name]._;
+}
+
 function setAttrs(ctx, attrs) {
   if (!attrs) return;
   if (attrs.$)
@@ -202,7 +206,12 @@ let [useState, useEffect, useRef] = (() => {
     let hc = gCtx.gHC();
     let hook = stateHooks.get(hc.ctx) || [];
     let pos = hc.pos;
-    let val = hook[pos] === undefined ? value : hook[pos];
+    let val =
+      hook[pos] === undefined
+        ? typeof value === "function"
+          ? value()
+          : value
+        : hook[pos];
 
     hc.pos += 1;
     hook[pos] = val;
@@ -212,7 +221,7 @@ let [useState, useEffect, useRef] = (() => {
       val,
       newVal => {
         let hook = stateHooks.get(hc.ctx) || [];
-        hook[pos] = newVal;
+        hook[pos] = typeof newVal === "function" ? newVal(hook[pos]) : newVal;
         stateHooks.set(hc.ctx, hook);
         if (hc.ctx.$) {
           hc.ctx.$(hc.ctx.$p);
@@ -309,36 +318,36 @@ function App(__props, __gctx, __pctx) {
   } = useWindowResize();
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "ds", "div");
-    createElement(__ctx, "dt", "h1");
-    createElement(__ctx, "du", "span", {
+    createElement(__ctx, "dw", "div");
+    createElement(__ctx, "dx", "h1");
+    createElement(__ctx, "dy", "span", {
       $: {
         role: "img",
         "aria-label": "Left Right Arrow"
       }
     });
-    renderChildren(__ctx, "du", ["\u2194\uFE0F"]);
-    renderChildren(__ctx, "dt", [__ctx.du, " ", "width: ", width, "px"]);
-    createElement(__ctx, "dv", "h1");
-    createElement(__ctx, "dw", "span", {
+    renderChildren(__ctx, "dy", ["\u2194\uFE0F"]);
+    renderChildren(__ctx, "dx", [__ctx.dy, " ", "width: ", width, "px"]);
+    createElement(__ctx, "dz", "h1");
+    createElement(__ctx, "ea", "span", {
       $: {
         role: "img",
         "aria-label": "Up Down Arrow"
       }
     });
-    renderChildren(__ctx, "dw", ["\u2195\uFE0F"]);
-    renderChildren(__ctx, "dv", [__ctx.dw, " ", "height: ", height, "px"]);
-    createElement(__ctx, "dx", "p");
-    renderChildren(__ctx, "dx", ["Resize the window to update the values"]);
-    renderChildren(__ctx, "ds", [__ctx.dt, __ctx.dv, __ctx.dx]);
-    __ctx.$r = __ctx.ds;
+    renderChildren(__ctx, "ea", ["\u2195\uFE0F"]);
+    renderChildren(__ctx, "dz", [__ctx.ea, " ", "height: ", height, "px"]);
+    createElement(__ctx, "eb", "p");
+    renderChildren(__ctx, "eb", ["Resize the window to update the values"]);
+    renderChildren(__ctx, "dw", [__ctx.dx, __ctx.dz, __ctx.eb]);
+    __ctx.$r = __ctx.dw;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "dt", [__ctx.du, " ", "width: ", width, "px"]);
-    renderChildren(__ctx, "dv", [__ctx.dw, " ", "height: ", height, "px"]);
+    renderChildren(__ctx, "dx", [__ctx.dy, " ", "width: ", width, "px"]);
+    renderChildren(__ctx, "dz", [__ctx.ea, " ", "height: ", height, "px"]);
 
     __gctx.pHC();
   }

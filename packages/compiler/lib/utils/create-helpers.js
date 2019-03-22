@@ -40,6 +40,15 @@ function contextElementUpdater(id) {
   return memberExpression(CTX, id, "$");
 }
 
+function setRef(id, ref) {
+  return t.expressionStatement(
+    t.callExpression(
+      t.identifier("setRef"),
+      [ctxId, t.stringLiteral(id), ref.value].filter(Boolean)
+    )
+  );
+}
+
 /**
  * createElement(__ctx, "id", "type", { ...props });
  */
@@ -144,6 +153,8 @@ function setAttr(id, type, key, value) {
     properties: "setProp"
   };
   let fn = typeToSetter[type];
+  if (!fn) return [];
+
   if (isFunction(value)) {
     return [
       t.expressionStatement(
@@ -212,6 +223,7 @@ module.exports = {
   initComponentContext,
   setHooksContext,
   popHooksContext,
+  setRef,
   setAttr,
   setRootElement,
   contextElementUpdater,

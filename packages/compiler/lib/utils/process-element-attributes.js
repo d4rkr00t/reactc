@@ -28,51 +28,32 @@ let generator = require("@babel/generator").default;
  *   }
  * }
  */
-function processElementAttributes(elementType, attrs) {
-  if (t.isNullLiteral(attrs)) {
+function processElementAttributes(normalizedAttrs) {
+  if (!normalizedAttrs) {
     return;
   }
 
-  let newAttrs = attrs.properties
-    .map(p => t.cloneNode(p))
-    .reduce(
-      (acc, attr) => {
-        let [type, processed] = processElementAttribute(
-          elementType,
-          attr,
-          attrs
-        );
-        acc[type].push(processed);
-        return acc;
-      },
-      {
-        attributes: [],
-        properties: [],
-        eventHandlers: []
-      }
-    );
-
   if (
-    newAttrs.attributes.length ||
-    newAttrs.eventHandlers.length ||
-    newAttrs.properties.length
+    normalizedAttrs.attributes.length ||
+    normalizedAttrs.eventHandlers.length ||
+    normalizedAttrs.properties.length
   ) {
     return t.objectExpression(
       [
-        newAttrs.attributes.length &&
+        normalizedAttrs.attributes.length &&
           t.objectProperty(
             t.identifier("$"),
-            t.objectExpression(newAttrs.attributes)
+            t.objectExpression(normalizedAttrs.attributes)
           ),
-        newAttrs.eventHandlers.length &&
+        normalizedAttrs.eventHandlers.length &&
           t.objectProperty(
             t.identifier("$e"),
-            t.objectExpression(newAttrs.eventHandlers)
+            t.objectExpression(normalizedAttrs.eventHandlers)
           ),
-        newAttrs.properties.length &&
+        normalizedAttrs.properties.length &&
           t.objectProperty(
             t.identifier("$p"),
-            t.objectExpression(newAttrs.properties)
+            t.objectExpression(normalizedAttrs.properties)
           )
       ].filter(Boolean)
     );
@@ -145,6 +126,8 @@ function getAttrName(attr) {
 function getAttrType(name) {
   return name.startsWith("on")
     ? "eventHandlers"
+    : name === "ref"
+    ? "ref"
     : isProperty(name)
     ? "properties"
     : "attributes";
@@ -200,7 +183,8 @@ function processStyles(stylesAttr) {
         acc.push(`${attr.name}:${attr.value.value}`);
       } else if (
         t.isCallExpression(attr.value) ||
-        t.isConditionalExpression(attr.value)
+        t.isConditionalExpression(attr.value) ||
+        t.isTemplateLiteral(attr.value)
       ) {
         acc.push(`${attr.name}:\${${generator(attr.value).code}}`);
       }
@@ -214,4 +198,34 @@ function processStyles(stylesAttr) {
   );
 }
 
-module.exports = { processElementAttributes, processElementAttribute };
+function normalizeAttrs(elementType, attrs) {
+  if (t.isNullLiteral(attrs)) {
+    return;
+  }
+
+  return attrs.properties
+    .map(p => t.cloneNode(p))
+    .reduce(
+      (acc, attr) => {
+        let [type, processed] = processElementAttribute(
+          elementType,
+          attr,
+          attrs
+        );
+        acc[type].push(processed);
+        return acc;
+      },
+      {
+        attributes: [],
+        properties: [],
+        eventHandlers: [],
+        ref: []
+      }
+    );
+}
+
+module.exports = {
+  processElementAttributes,
+  processElementAttribute,
+  normalizeAttrs
+};

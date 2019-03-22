@@ -89,6 +89,10 @@ function setEvt(ctx, name, value) {
   ctx.$p[name] = value;
 }
 
+function setRef(ctx, name, value) {
+  value.current = ctx[name]._;
+}
+
 function setAttrs(ctx, attrs) {
   if (!attrs) return;
   if (attrs.$)
@@ -202,7 +206,12 @@ let [useState, useEffect, useRef] = (() => {
     let hc = gCtx.gHC();
     let hook = stateHooks.get(hc.ctx) || [];
     let pos = hc.pos;
-    let val = hook[pos] === undefined ? value : hook[pos];
+    let val =
+      hook[pos] === undefined
+        ? typeof value === "function"
+          ? value()
+          : value
+        : hook[pos];
 
     hc.pos += 1;
     hook[pos] = val;
@@ -212,7 +221,7 @@ let [useState, useEffect, useRef] = (() => {
       val,
       newVal => {
         let hook = stateHooks.get(hc.ctx) || [];
-        hook[pos] = newVal;
+        hook[pos] = typeof newVal === "function" ? newVal(hook[pos]) : newVal;
         stateHooks.set(hc.ctx, hook);
         if (hc.ctx.$) {
           hc.ctx.$(hc.ctx.$p);
@@ -269,6 +278,7 @@ let [useState, useEffect, useRef] = (() => {
 
 /* END RUNTIME */
 
+// Source: https://codepen.io/halvves/pen/oQdLbQ
 let hasPassiveSupport = undefined;
 
 getHasPassiveEventSupport = () => {
@@ -345,19 +355,19 @@ const App = (__props, __gctx, __pctx) => {
   } = useScrollPosition();
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "b", "div", {
+    createElement(__ctx, "dg", "div", {
       $: {
         class: "d"
       }
     });
-    renderChildren(__ctx, "b", ["x: ", x.toFixed(0), ", y: ", y.toFixed(0)]);
-    __ctx.$r = __ctx.b;
+    renderChildren(__ctx, "dg", ["x: ", x.toFixed(0), ", y: ", y.toFixed(0)]);
+    __ctx.$r = __ctx.dg;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "b", ["x: ", x.toFixed(0), ", y: ", y.toFixed(0)]);
+    renderChildren(__ctx, "dg", ["x: ", x.toFixed(0), ", y: ", y.toFixed(0)]);
 
     __gctx.pHC();
   }

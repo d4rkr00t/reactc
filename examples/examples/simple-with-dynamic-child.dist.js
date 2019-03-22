@@ -89,6 +89,10 @@ function setEvt(ctx, name, value) {
   ctx.$p[name] = value;
 }
 
+function setRef(ctx, name, value) {
+  value.current = ctx[name]._;
+}
+
 function setAttrs(ctx, attrs) {
   if (!attrs) return;
   if (attrs.$)
@@ -202,7 +206,12 @@ let [useState, useEffect, useRef] = (() => {
     let hc = gCtx.gHC();
     let hook = stateHooks.get(hc.ctx) || [];
     let pos = hc.pos;
-    let val = hook[pos] === undefined ? value : hook[pos];
+    let val =
+      hook[pos] === undefined
+        ? typeof value === "function"
+          ? value()
+          : value
+        : hook[pos];
 
     hc.pos += 1;
     hook[pos] = val;
@@ -212,7 +221,7 @@ let [useState, useEffect, useRef] = (() => {
       val,
       newVal => {
         let hook = stateHooks.get(hc.ctx) || [];
-        hook[pos] = newVal;
+        hook[pos] = typeof newVal === "function" ? newVal(hook[pos]) : newVal;
         stateHooks.set(hc.ctx, hook);
         if (hc.ctx.$) {
           hc.ctx.$(hc.ctx.$p);
@@ -282,35 +291,35 @@ function DynamicChild(props, __gctx, __pctx) {
   let dog;
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "bm", "div", {
+    createElement(__ctx, "bp", "div", {
       $: {
         class: props.className
       }
     });
-    renderChildren(__ctx, "bm", ["dog"]);
+    renderChildren(__ctx, "bp", ["dog"]);
 
     if (props.render) {
-      dog = __ctx.bm;
+      dog = __ctx.bp;
     }
 
-    createElement(__ctx, "bn", "div");
-    createElement(__ctx, "bo", "div");
-    renderChildren(__ctx, "bo", ["cat"]);
-    renderChildren(__ctx, "bn", [dog, __ctx.bo]);
-    __ctx.$r = __ctx.bn;
+    createElement(__ctx, "bq", "div");
+    createElement(__ctx, "br", "div");
+    renderChildren(__ctx, "br", ["cat"]);
+    renderChildren(__ctx, "bq", [dog, __ctx.br]);
+    __ctx.$r = __ctx.bq;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    let __bm__class = props.className;
-    __ctx.bm.$p.class !== __bm__class && setAttr(__ctx.bm, "class", __bm__class);
+    let __bp__class = props.className;
+    __ctx.bp.$p.class !== __bp__class && setAttr(__ctx.bp, "class", __bp__class);
 
     if (props.render) {
-      dog = __ctx.bm;
+      dog = __ctx.bp;
     }
 
-    renderChildren(__ctx, "bn", [dog, __ctx.bo]);
+    renderChildren(__ctx, "bq", [dog, __ctx.br]);
 
     __gctx.pHC();
   }
@@ -329,30 +338,30 @@ function App(__props, __gctx, __pctx) {
   let [render, setRender] = useState(true);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "bp", "div");
-    createComponent(__gctx, __ctx, "bq", DynamicChild, {
+    createElement(__ctx, "bs", "div");
+    createComponent(__gctx, __ctx, "bt", DynamicChild, {
       render: render,
       className: "bigdog"
     });
-    createElement(__ctx, "br", "button", {
+    createElement(__ctx, "bu", "button", {
       $e: {
         click: () => setRender(!render)
       }
     });
-    renderChildren(__ctx, "br", ["Re-render"]);
-    renderChildren(__ctx, "bp", [__ctx.bq, __ctx.br]);
-    __ctx.$r = __ctx.bp;
+    renderChildren(__ctx, "bu", ["Re-render"]);
+    renderChildren(__ctx, "bs", [__ctx.bt, __ctx.bu]);
+    __ctx.$r = __ctx.bs;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    __ctx.bq.$({
+    __ctx.bt.$({
       render: render,
       className: "bigdog"
     });
 
-    setEvt(__ctx.br, "click", () => setRender(!render));
+    setEvt(__ctx.bu, "click", () => setRender(!render));
 
     __gctx.pHC();
   }

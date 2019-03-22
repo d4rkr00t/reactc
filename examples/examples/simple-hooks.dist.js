@@ -89,6 +89,10 @@ function setEvt(ctx, name, value) {
   ctx.$p[name] = value;
 }
 
+function setRef(ctx, name, value) {
+  value.current = ctx[name]._;
+}
+
 function setAttrs(ctx, attrs) {
   if (!attrs) return;
   if (attrs.$)
@@ -202,7 +206,12 @@ let [useState, useEffect, useRef] = (() => {
     let hc = gCtx.gHC();
     let hook = stateHooks.get(hc.ctx) || [];
     let pos = hc.pos;
-    let val = hook[pos] === undefined ? value : hook[pos];
+    let val =
+      hook[pos] === undefined
+        ? typeof value === "function"
+          ? value()
+          : value
+        : hook[pos];
 
     hc.pos += 1;
     hook[pos] = val;
@@ -212,7 +221,7 @@ let [useState, useEffect, useRef] = (() => {
       val,
       newVal => {
         let hook = stateHooks.get(hc.ctx) || [];
-        hook[pos] = newVal;
+        hook[pos] = typeof newVal === "function" ? newVal(hook[pos]) : newVal;
         stateHooks.set(hc.ctx, hook);
         if (hc.ctx.$) {
           hc.ctx.$(hc.ctx.$p);
@@ -280,19 +289,19 @@ function Countdown(props, __gctx, __pctx) {
   __gctx.sHC(__ctx);
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "bi", "div", {
+    createElement(__ctx, "bl", "div", {
       $: {
         class: "counter"
       }
     });
-    renderChildren(__ctx, "bi", [props.children]);
-    __ctx.$r = __ctx.bi;
+    renderChildren(__ctx, "bl", [props.children]);
+    __ctx.$r = __ctx.bl;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    renderChildren(__ctx, "bi", [props.children]);
+    renderChildren(__ctx, "bl", [props.children]);
 
     __gctx.pHC();
   }
@@ -317,28 +326,28 @@ function App(__props, __gctx, __pctx) {
   });
 
   if (__ctx !== __pctx) {
-    createElement(__ctx, "bj", "div");
-    createComponent(__gctx, __ctx, "bk", Countdown, {
+    createElement(__ctx, "bm", "div");
+    createComponent(__gctx, __ctx, "bn", Countdown, {
       children: count
     });
-    createElement(__ctx, "bl", "button", {
+    createElement(__ctx, "bo", "button", {
       $e: {
         click: () => setCount(count + 1)
       }
     });
-    renderChildren(__ctx, "bl", ["Update counter"]);
-    renderChildren(__ctx, "bj", [__ctx.bk, __ctx.bl]);
-    __ctx.$r = __ctx.bj;
+    renderChildren(__ctx, "bo", ["Update counter"]);
+    renderChildren(__ctx, "bm", [__ctx.bn, __ctx.bo]);
+    __ctx.$r = __ctx.bm;
 
     __gctx.pHC();
 
     return __ctx;
   } else {
-    __ctx.bk.$({
+    __ctx.bn.$({
       children: count
     });
 
-    setEvt(__ctx.bl, "click", () => setCount(count + 1));
+    setEvt(__ctx.bo, "click", () => setCount(count + 1));
 
     __gctx.pHC();
   }
