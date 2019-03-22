@@ -238,8 +238,9 @@ let [useState, useEffect, useRef] = (() => {
     let existingHook = hook[pos];
     hc.pos += 1;
     if (
-      (existingHook && compareArrays(existingHook.cache, cache)) ||
-      (existingHook && Array.isArray(cache) && !cache.length)
+      existingHook &&
+      Array.isArray(cache) &&
+      (compareArrays(existingHook.cache, cache) || !cache.length)
     ) {
       return;
     }
